@@ -12,6 +12,7 @@
 #include "param.h"
 #include "shader.h"
 #include "camera.h"
+#include "chunk.h"
 
 Camera cam;
 double oldmx, oldmy;
@@ -23,7 +24,7 @@ void mouse_button_callback(GLFWwindow*, int, int, int);
 void pollMovement(GLFWwindow *window, float dt) {
     float coeff1 = 0.7f;
     float coeff2 = 1.8f;
-    float coeff3 = -4.5f;
+    float coeff3 = -0.1f;
 
     glm::vec3 viewDir = glm::vec3(-sinf(cam.yaw), 0, cosf(cam.yaw));
     glm::vec3 leftDir = glm::vec3(cosf(cam.yaw), 0, sinf(cam.yaw));
@@ -73,22 +74,23 @@ void pollMovement(GLFWwindow *window, float dt) {
     }
 }
 
-//! TEMP
-void loadCube(GLuint vbo, GLuint vao) {
+void loadChunk(GLuint vao, const Chunk &chunk) {
+    GLuint vbo;
+    glGenBuffers(1, &vbo);
+
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-    GLfloat *buff = new GLfloat[3];
-    buff[0] = 0;
-    buff[1] = 0;
-    buff[2] = 0;
-    glBufferData(GL_ARRAY_BUFFER, 1, buff, GL_STATIC_DRAW);
-    size_t stride = 3 * sizeof(GLfloat);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)(0 * sizeof(GLfloat)));
+    GLuint *buff = (GLuint*)chunk.getBuff();
+    glBufferData(GL_ARRAY_BUFFER, chunk.getBuffSize(), buff, GL_DYNAMIC_DRAW);
+    size_t stride = 4 * sizeof(uint32_t);
+    glVertexAttribPointer(0, 3, GL_UNSIGNED_INT, GL_FALSE, stride, (void*)(0 * sizeof(GLuint)));
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 1, GL_UNSIGNED_INT, GL_FALSE, stride, (void*)(3 * sizeof(GLuint)));
     glEnableVertexAttribArray(0);
     
-    glBindVertexArray(0); // Unbind VAO
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
     delete[] buff;
 }
 
@@ -140,18 +142,30 @@ int main() {
     glfwGetWindowSize(window, &width, &height);
     float ratio = (float)width / (float)height;
     glClearColor(0.509f, 0.788f, 0.902f, 1.f);
-    glfwSwapInterval(0);
+    // glfwSwapInterval(0);
 
     // glfwSetKeyCallback(window, key_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     // glfwSetWindowSizeCallback(window, window_size_callback);
 
     //! TEMP
-    GLuint vbo, vao;
-    glGenBuffers(1, &vbo);
+    Chunk chunk;
+    chunk.startFilling();
+    for (int xx = 0; xx < 16; xx++) {
+        for (int zz = 0; zz < 16; zz++) {
+            chunk.setBlock(xx, 2, zz, Block(1));
+        }
+    }
+    for (int yy = 0; yy < 32; yy++) 
+        chunk.setBlock(1, yy, 1, Block(1));
+    chunk.stopFilling();
+
+    GLuint vao;
     glGenVertexArrays(1, &vao);
-    loadCube(vbo, vao);
-    cam.pos += glm::vec3(0.f, .5f, 1.f);
+    loadChunk(vao, chunk); // TODO: check for empty buffer
+    cam.pos += glm::vec3(0.f, (30 * 0.15), 1.f);
+    cam.yaw = M_PI / 4.f;
+    //! END TEMP
     
     // Main loop
     float oTime = glfwGetTime();
@@ -185,7 +199,7 @@ int main() {
 
         glBindTexture(GL_TEXTURE_2D, texture);
         glBindVertexArray(vao);
-        glDrawArrays(GL_POINTS, 0, 1);
+        glDrawArrays(GL_POINTS, 0, chunk.getBlocksCount());
         glBindVertexArray(0);
 
         glfwSwapBuffers(window);
