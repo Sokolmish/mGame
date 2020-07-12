@@ -5,7 +5,7 @@
 #include <string>
 
 #include "param.h"
-
+#include "shader.h"
 
 int main() {
     // Window init
@@ -31,6 +31,10 @@ int main() {
         glfwTerminate();
         return -1;
     }
+
+    // Shaders loading
+    Shader::shaderDirectory = "./game/shaders/";
+    Shader testShader = Shader::loadShader("testShader");
 
     glClearColor(0.509f, 0.788f, 0.902f, 1.f);
     
