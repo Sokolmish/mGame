@@ -1,5 +1,6 @@
 #include "glew.h"
 #include <GLFW/glfw3.h>
+#include "SOIL.h"
 
 #include <iostream>
 #include <string>
@@ -120,6 +121,21 @@ int main() {
     Shader::shaderDirectory = "./game/shaders/";
     Shader cubeShader = Shader::loadShader("cubeShader");
 
+    // Texture loading
+    int imgWidth, imgHeight;
+    unsigned char* image = SOIL_load_image("./game/demoTexture.png", &imgWidth, &imgHeight, nullptr, SOIL_LOAD_RGB);
+    GLuint texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 16, 16, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    SOIL_free_image_data(image);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
     int width, height;
     glfwGetWindowSize(window, &width, &height);
     float ratio = (float)width / (float)height;
@@ -162,9 +178,12 @@ int main() {
         cubeShader.use();
         cubeShader.setUniform("m_proj_view", m_proj_view);
         cubeShader.setUniform("cubeHalfSize", 0.15f);
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
+
+        glBindTexture(GL_TEXTURE_2D, texture);
         glBindVertexArray(vao);
         glDrawArrays(GL_POINTS, 0, 1);
         glBindVertexArray(0);

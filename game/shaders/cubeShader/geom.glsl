@@ -26,13 +26,13 @@ void emitQuad(int v1, int v2, int v3, int v4) {
     texCoord = vec2(0, 0);
     EmitVertex();
     gl_Position = vertices[v2];
-    texCoord = vec2(1, 0);
+    texCoord = vec2(0, 1);
     EmitVertex();
     gl_Position = vertices[v3];
-    texCoord = vec2(1, 1);
+    texCoord = vec2(1, 0);
     EmitVertex();
     gl_Position = vertices[v4];
-    texCoord = vec2(0, 1);
+    texCoord = vec2(1, 1);
     EmitVertex();
 
     EndPrimitive();
@@ -41,14 +41,14 @@ void emitQuad(int v1, int v2, int v3, int v4) {
 void main() {
     faceNum = 0; // Top
     emitQuad(2, 6, 3, 7);
-    faceNum = 4; // Forward
-    emitQuad(7, 6, 4, 5);
     faceNum = 1; // Bottom
     emitQuad(4, 5, 0, 1);
     faceNum = 3; // Left
-    emitQuad(0, 3, 4, 7);
+    emitQuad(7, 4, 3, 0);
     faceNum = 2; // Right
-    emitQuad(1, 5, 2, 6);
+    emitQuad(2, 1, 6, 5);
+    faceNum = 4; // Forward
+    emitQuad(6, 5, 7, 4);
     faceNum = 5; // Backward
-    emitQuad(0, 1, 3, 2);
+    emitQuad(3, 0, 2, 1);
 }
