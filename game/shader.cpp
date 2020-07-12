@@ -116,9 +116,9 @@ inline bool checkFileExist(const std::string &name) {
 } 
 
 Shader Shader::loadShader(const std::string &name) {
-    std::string vName = shaderDirectory + name + "/vertex.glsl";
-    std::string fName = shaderDirectory + name + "/fragment.glsl";
-    std::string gName = shaderDirectory + name + "/geometry.glsl";
+    std::string vName = shaderDirectory + name + "/vert.glsl";
+    std::string fName = shaderDirectory + name + "/frag.glsl";
+    std::string gName = shaderDirectory + name + "/geom.glsl";
     if (!checkFileExist(vName))
         throw std::runtime_error("Missing file: " + vName);
     if (!checkFileExist(fName))
