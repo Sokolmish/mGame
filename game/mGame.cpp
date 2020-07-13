@@ -91,7 +91,6 @@ void loadChunk(GLuint vao, const Chunk &chunk) {
     
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-    delete[] buff;
 }
 
 int main() {
