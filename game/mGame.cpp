@@ -13,6 +13,7 @@
 #include "shader.h"
 #include "camera.h"
 #include "chunk.h"
+#include "font.h"
 
 Camera cam;
 double oldmx, oldmy;
@@ -121,10 +122,11 @@ int main() {
     // Shaders loading
     Shader::shaderDirectory = "./game/shaders/";
     Shader cubeShader = Shader::loadShader("cubeShader");
+    Shader textShader = Shader::loadShader("textShader");
 
     // Texture loading
     int imgWidth, imgHeight;
-    unsigned char* image = SOIL_load_image("./game/demoTexture.png", &imgWidth, &imgHeight, nullptr, SOIL_LOAD_RGB);
+    unsigned char* image = SOIL_load_image("./game/textures/demoTexture.png", &imgWidth, &imgHeight, nullptr, SOIL_LOAD_RGB);
     GLuint texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -164,6 +166,8 @@ int main() {
     loadChunk(vao, chunk); // TODO: check for empty buffer
     cam.pos += glm::vec3(0.f, (30 * 0.15), 1.f);
     cam.yaw = M_PI / 4.f;
+
+    Font font("./game/fonts/consola.ttf", 0, 48);
     //! END TEMP
     
     // Main loop
@@ -180,6 +184,11 @@ int main() {
         ratio = (float)width / (float)height;
         glViewport(0, 0, width, height);
     
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Cube shader
+        cubeShader.use();
+
         glm::mat4 m_proj_view =
             glm::perspective(45.f, ratio, 0.1f, 100.f) *
             glm::scale(glm::mat4(1.f), glm::vec3(cam.zoom, cam.zoom, 1.f)) *
@@ -188,18 +197,31 @@ int main() {
             glm::rotate(glm::mat4(1.f), cam.yaw, glm::vec3(0, 1, 0)) *
             glm::translate(glm::mat4(1.f), -cam.pos);
 
-        cubeShader.use();
         cubeShader.setUniform("m_proj_view", m_proj_view);
         cubeShader.setUniform("cubeHalfSize", 0.15f);
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
+        glDisable(GL_BLEND);
 
         glBindTexture(GL_TEXTURE_2D, texture);
         glBindVertexArray(vao);
         glDrawArrays(GL_POINTS, 0, chunk.getBlocksCount());
+        glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0);
+
+        // Text shader
+
+        textShader.use();
+        glm::mat4 proj = glm::ortho(0.0f, (float)width, 0.0f, (float)height);
+        textShader.setUniform("projection", proj);
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        
+        font.RenderText(textShader, "This is sample text", 25.0f, 25.0f, 1.0f, glm::vec3(0.f));
+        font.RenderText(textShader, "This is sample text", 540.0f, 570.0f, 0.5f, glm::vec3(0.f));
 
         glfwSwapBuffers(window);
     }

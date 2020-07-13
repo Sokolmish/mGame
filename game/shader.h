@@ -27,6 +27,9 @@ public:
     GLuint getProgramId() const;
 
     void setUniform(const std::string &name, GLfloat val) const;
+    void setUniform(const std::string &name, GLfloat v1, GLfloat v2) const;
+    void setUniform(const std::string &name, GLfloat v1, GLfloat v2, GLfloat v3) const;
+    void setUniform(const std::string &name, GLfloat v1, GLfloat v2, GLfloat v3, GLfloat v4) const;
     void setUniform(const std::string &name, const glm::vec2 &val) const;
     void setUniform(const std::string &name, const glm::vec3 &val) const;
     void setUniform(const std::string &name, const glm::vec4 &val) const;
