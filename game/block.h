@@ -35,6 +35,10 @@ public:
         return WorldDirection(data & (0b11 << 18));
     }
 
+    uint16_t getId() const {
+        return data & 0b1111111111111111; // 16 bit
+    }
+
     uint32_t getData() const {
         return data;
     }

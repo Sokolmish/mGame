@@ -11,89 +11,16 @@
 #include <sstream>
 
 #include "util.h"
+#include "inputEvents.h"
 #include "param.h"
 #include "shader.h"
 #include "camera.h"
 #include "chunk.h"
 #include "font.h"
 
-Camera cam;
-double oldmx, oldmy;
-
 // void key_callback(GLFWwindow*, int, int, int, int);
 void mouse_button_callback(GLFWwindow*, int, int, int);
 // void window_size_callback(GLFWwindow*, int, int);
-
-inline float stepYaw(float yaw, float d) {
-    yaw = fmodf(cam.yaw - d, 2 * M_PI);
-    if (yaw < 0)
-        return 2 * M_PI + yaw;
-    else
-        return yaw;
-}
-
-inline float stepPitch(float pitch, float d) {
-    pitch -= d;
-    if (pitch > M_PI_2)
-        return M_PI_2;
-    else if (pitch < -M_PI_2)
-        return -M_PI_2;
-    else
-        return pitch;
-}
-
-void pollMovement(GLFWwindow *window, float dt) {
-    float coeff1 = 2.f;
-    float coeff2 = 0.8f;
-    float coeff3 = -0.1f;
-
-    glm::vec3 viewDir = glm::vec3(-sinf(cam.yaw), 0, cosf(cam.yaw));
-    glm::vec3 leftDir = glm::vec3(cosf(cam.yaw), 0, sinf(cam.yaw));
-    
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        cam.pos -= coeff1 * dt * viewDir;
-    }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        cam.pos += coeff1 * dt * viewDir;
-    }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        cam.pos -= coeff1 * dt * leftDir;
-    }
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        cam.pos += coeff1 * dt * leftDir;
-    }
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        cam.pos.y += coeff1 * dt;
-    }
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-        cam.pos.y -= coeff1 * dt;
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-        cam.yaw = stepYaw(cam.yaw, coeff2 * dt);
-    }
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        cam.yaw = stepYaw(cam.yaw, -coeff2 * dt);
-    }
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-        cam.pitch = stepPitch(cam.pitch, -coeff2 * dt);
-    }
-    if (glfwGetKey(window, GLFW_KEY_DOWN)  == GLFW_PRESS) {
-        cam.pitch = stepPitch(cam.pitch, coeff2 * dt);
-    }
-
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-        double mx, my;
-        glfwGetCursorPos(window, &mx, &my);
-        double dmx = mx - oldmx;
-        double dmy = my - oldmy;
-        oldmx = mx;
-        oldmy = my;
-
-        cam.yaw = stepYaw(cam.yaw, dmx * -coeff3 * dt);
-        cam.pitch = stepPitch(cam.pitch, dmy * coeff3 * dt);
-    }
-}
 
 void loadChunk(GLuint vao, const Chunk &chunk) {
     GLuint vbo;
@@ -169,6 +96,8 @@ int main() {
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     // glfwSetWindowSizeCallback(window, window_size_callback);
 
+    Camera cam;
+
     //! TEMP
     Chunk chunk;
     chunk.startFilling();
@@ -187,7 +116,9 @@ int main() {
     cam.pos += glm::vec3(0.f, (30 * 0.15), 1.f);
     cam.yaw = M_PI / 4.f;
 
-    Font font("./game/fonts/ArialMT.ttf", 0, 48);
+    Font font("./game/fonts/ConsolaMono-Bold.ttf", 0, 36);
+
+    float nearVal = 0.01f;
     //! END TEMP
     
     // Main loop
@@ -198,7 +129,22 @@ int main() {
         oTime = nTime;
 
         glfwPollEvents();
-        pollMovement(window, dt);
+        bool isCameraUpdated = false;
+        isCameraUpdated = InputPoller::pollLooking(window, cam, dt) || isCameraUpdated;
+        auto lastPos = cam.pos;
+        isCameraUpdated = InputPoller::pollMovement(window, cam, dt) || isCameraUpdated;
+        if (!(cam.pos.x > 15 || cam.pos.x < 0 || cam.pos.y > 15 || cam.pos.y < 0)) {
+            // Assumes that last pos be in stable zone
+            for (int i = 0; i < 3; i++) {
+                if (fabsf(roundf(cam.pos[i]) - roundf(lastPos[i])) >= 1e-2) { // Zone II
+                    glm::vec3 tdelta(0.f);
+                    tdelta[i] = cam.pos[i] > lastPos[i] ? 1 : -1;
+                    if (chunk.checkBlock(glm::round(glm::round(lastPos) + tdelta))) {
+                        cam.pos[i] = roundf(lastPos[i]) + (-0.015 + 0.5) * (cam.pos[i] > lastPos[i] ? 1 : -1);
+                    }
+                }
+            }
+        }
 
         glfwGetWindowSize(window, &width, &height);
         ratio = (float)width / (float)height;
@@ -210,7 +156,7 @@ int main() {
         cubeShader.use();
 
         glm::mat4 m_proj_view =
-            glm::perspective(45.f, ratio, 0.1f, 100.f) *
+            glm::perspective(45.f, ratio, nearVal, 100.f) *
             glm::scale(glm::mat4(1.f), glm::vec3(cam.zoom, cam.zoom, 1.f)) *
             glm::scale(glm::mat4(1.f), glm::vec3(0.3, 0.3, 0.3)) *
             glm::rotate(glm::mat4(1.f), cam.roll, glm::vec3(0, 0, -1)) *
@@ -245,7 +191,7 @@ int main() {
         statusSS << "pos=" << cam.pos << ";";
         statusSS << "yaw=" << formatFloat("%.2f", glm::degrees(cam.yaw)) << ";";
         statusSS << "pitch=" << formatFloat("%.2f", glm::degrees(cam.pitch)) << ";";
-        font.RenderText(textShader, statusSS.str(), 10, height - 26, 0.4, glm::vec3(0.f));
+        font.RenderText(textShader, statusSS.str(), 10, height - 22, 0.6, glm::vec3(0.f));
         glfwSwapBuffers(window);
     }
 
@@ -255,5 +201,5 @@ int main() {
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-        glfwGetCursorPos(window, &oldmx, &oldmy);
+        glfwGetCursorPos(window, &InputPoller::oldmx, &InputPoller::oldmy);
 }

@@ -38,12 +38,17 @@ Block Chunk::getBlock(char x, char y, char z) const {
         return Block();
 }
 
-bool Chunk::checkBlock(char x, char y, char z) const {
-    return data.find(getIndex(x, y, z)) != data.end();
-}
-
 bool Chunk::checkBlock(int index) const {
     return data.find(index) != data.end();
+}
+
+bool Chunk::checkBlock(char x, char y, char z) const {
+    // return data.find(getIndex(x, y, z)) != data.end();
+    return checkBlock(getIndex(x, y, z));
+}
+
+bool Chunk::checkBlock(const glm::ivec3 &vec) const {
+    return checkBlock((char)vec.x, (char)vec.y, (char)vec.z);
 }
 
 void Chunk::updateBuff() {

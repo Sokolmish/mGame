@@ -6,7 +6,9 @@
 struct Camera {
     glm::vec3 pos;
     float yaw, pitch, roll;
-    float zoom = 1.f;
+    float zoom;
+
+    Camera() : pos(glm::vec3(0.f)), yaw(0), pitch(0), roll(0), zoom(1.f) {}
 };
 
 #endif

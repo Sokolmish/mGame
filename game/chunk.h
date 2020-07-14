@@ -20,8 +20,9 @@ public:
 
     void setBlock(char x, char y, char z, const Block &block);
     Block getBlock(char x, char y, char z) const;
-    bool checkBlock(char x, char y, char z) const;
     bool checkBlock(int index) const;
+    bool checkBlock(char x, char y, char z) const;
+    bool checkBlock(const glm::ivec3 &vec) const;
 
     void updateBuff();
     const uint32_t *getBuff() const;
