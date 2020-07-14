@@ -16,7 +16,7 @@ Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath, c
     std::string src;
     const GLchar *ptr;
     GLint vSucc, fSucc, gSucc;
-    GLuint vertexId, fragmentId, geometryId;
+    GLuint vertexId, fragmentId, geometryId = 0;
     bool hasGeometry = geometryPath.length() != 0;
     // Vertex shader
     src = readFile(vertexPath);

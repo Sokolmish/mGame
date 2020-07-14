@@ -8,7 +8,9 @@
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <sstream>
 
+#include "util.h"
 #include "param.h"
 #include "shader.h"
 #include "camera.h"
@@ -22,9 +24,27 @@ double oldmx, oldmy;
 void mouse_button_callback(GLFWwindow*, int, int, int);
 // void window_size_callback(GLFWwindow*, int, int);
 
+inline float stepYaw(float yaw, float d) {
+    yaw = fmodf(cam.yaw - d, 2 * M_PI);
+    if (yaw < 0)
+        return 2 * M_PI + yaw;
+    else
+        return yaw;
+}
+
+inline float stepPitch(float pitch, float d) {
+    pitch -= d;
+    if (pitch > M_PI_2)
+        return M_PI_2;
+    else if (pitch < -M_PI_2)
+        return -M_PI_2;
+    else
+        return pitch;
+}
+
 void pollMovement(GLFWwindow *window, float dt) {
-    float coeff1 = 0.7f;
-    float coeff2 = 1.8f;
+    float coeff1 = 2.f;
+    float coeff2 = 0.8f;
     float coeff3 = -0.1f;
 
     glm::vec3 viewDir = glm::vec3(-sinf(cam.yaw), 0, cosf(cam.yaw));
@@ -50,16 +70,16 @@ void pollMovement(GLFWwindow *window, float dt) {
     }
 
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-        cam.yaw = fmodf(cam.yaw - coeff2 * dt, 2 * M_PI);
+        cam.yaw = stepYaw(cam.yaw, coeff2 * dt);
     }
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        cam.yaw = fmodf(cam.yaw + coeff2 * dt, 2 * M_PI);
+        cam.yaw = stepYaw(cam.yaw, -coeff2 * dt);
     }
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-        cam.pitch = fmodf(cam.pitch + coeff2 * dt, 2 * M_PI);
+        cam.pitch = stepPitch(cam.pitch, -coeff2 * dt);
     }
     if (glfwGetKey(window, GLFW_KEY_DOWN)  == GLFW_PRESS) {
-        cam.pitch = fmodf(cam.pitch - coeff2 * dt, 2 * M_PI);
+        cam.pitch = stepPitch(cam.pitch, coeff2 * dt);
     }
 
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
@@ -70,8 +90,8 @@ void pollMovement(GLFWwindow *window, float dt) {
         oldmx = mx;
         oldmy = my;
 
-        cam.yaw = fmodf(cam.yaw - (dmx * -coeff3 * dt), 2 * M_PI);
-        cam.pitch = fmodf(cam.pitch - (dmy * coeff3 * dt), 2 * M_PI); 
+        cam.yaw = stepYaw(cam.yaw, dmx * -coeff3 * dt);
+        cam.pitch = stepPitch(cam.pitch, dmy * coeff3 * dt);
     }
 }
 
@@ -167,7 +187,7 @@ int main() {
     cam.pos += glm::vec3(0.f, (30 * 0.15), 1.f);
     cam.yaw = M_PI / 4.f;
 
-    Font font("./game/fonts/consola.ttf", 0, 48);
+    Font font("./game/fonts/ArialMT.ttf", 0, 48);
     //! END TEMP
     
     // Main loop
@@ -192,13 +212,14 @@ int main() {
         glm::mat4 m_proj_view =
             glm::perspective(45.f, ratio, 0.1f, 100.f) *
             glm::scale(glm::mat4(1.f), glm::vec3(cam.zoom, cam.zoom, 1.f)) *
+            glm::scale(glm::mat4(1.f), glm::vec3(0.3, 0.3, 0.3)) *
             glm::rotate(glm::mat4(1.f), cam.roll, glm::vec3(0, 0, -1)) *
             glm::rotate(glm::mat4(1.f), cam.pitch, glm::vec3(-1, 0, 0)) *
             glm::rotate(glm::mat4(1.f), cam.yaw, glm::vec3(0, 1, 0)) *
             glm::translate(glm::mat4(1.f), -cam.pos);
 
         cubeShader.setUniform("m_proj_view", m_proj_view);
-        cubeShader.setUniform("cubeHalfSize", 0.15f);
+        cubeShader.setUniform("cubeHalfSize", 1.f);
 
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
@@ -220,9 +241,11 @@ int main() {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         
-        font.RenderText(textShader, "This is sample text", 25.0f, 25.0f, 1.0f, glm::vec3(0.f));
-        font.RenderText(textShader, "This is sample text", 540.0f, 570.0f, 0.5f, glm::vec3(0.f));
-
+        std::stringstream statusSS;
+        statusSS << "pos=" << cam.pos << ";";
+        statusSS << "yaw=" << formatFloat("%.2f", glm::degrees(cam.yaw)) << ";";
+        statusSS << "pitch=" << formatFloat("%.2f", glm::degrees(cam.pitch)) << ";";
+        font.RenderText(textShader, statusSS.str(), 10, height - 26, 0.4, glm::vec3(0.f));
         glfwSwapBuffers(window);
     }
 

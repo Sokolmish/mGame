@@ -12,23 +12,27 @@
 class Font {
 private:
     struct Character {
-        GLuint    TextureID;
-        // uint8_t     atlasX, atlasY;
-        glm::ivec2  Size;
-        glm::ivec2  Bearing;
-        GLuint    Advance;
-        // uint8_t *buff;
+        int         width, height;
+        int         bearingX, bearingY;
+        GLuint      Advance;
+        int         atlasX, atlasY;
     };
-    std::map<GLchar, Font::Character> Characters;
+    friend struct RawChar;
+    std::map<GLchar, Font::Character> characters;
+    
+    GLuint texture;
     GLuint VAO, VBO;
-    // const uint8_t atlasWidth = 16;
-    // const uint8_t atlasHeight = 8;
-    // uint8_t *atlas;
-    // std::vector<Character> chars;
+    
+    uint32_t atlasWidth;
+    uint32_t atlasHeight;
+    uint32_t tileWidth;
+    uint32_t tileHeight;
+    uint8_t *atlas;
 public:
     Font(const std::string &path, uint32_t width, uint32_t height);
     ~Font();
-    void RenderText(Shader &s, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color);
+    void RenderText(Shader &s, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color) const;
+    void ShowAtlas(int x, int y, int width, int height) const;
 };
 
 #endif
