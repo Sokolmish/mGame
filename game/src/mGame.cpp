@@ -1,6 +1,5 @@
 #include "../headers/glew.h"
 #include <GLFW/glfw3.h>
-#include "../headers/SOIL.h"
 
 #include <iostream>
 #include <string>
@@ -17,6 +16,7 @@
 #include "../headers/camera.h"
 #include "../headers/chunk.h"
 #include "../headers/font.h"
+#include "../headers/image.h"
 
 // void key_callback(GLFWwindow*, int, int, int, int);
 void mouse_button_callback(GLFWwindow*, int, int, int);
@@ -73,7 +73,8 @@ int main() {
 
     // Texture loading
     int imgWidth, imgHeight;
-    unsigned char* image = SOIL_load_image("./game/textures/demoTexture.png", &imgWidth, &imgHeight, nullptr, SOIL_LOAD_RGB);
+    // unsigned char* image = SOIL_load_image("./game/textures/demoTexture.png", &imgWidth, &imgHeight, nullptr, SOIL_LOAD_RGB);
+    Image image("./game/textures/demoTexture.png");
     GLuint texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -81,9 +82,10 @@ int main() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 16, 16, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 16, 16, 0, GL_RGB, GL_UNSIGNED_BYTE, image.getData());
     glGenerateMipmap(GL_TEXTURE_2D);
-    SOIL_free_image_data(image);
+    // SOIL_free_image_data(image);
+    image.release();
     glBindTexture(GL_TEXTURE_2D, 0);
 
     int width, height;
