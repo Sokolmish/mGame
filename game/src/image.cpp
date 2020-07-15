@@ -1,4 +1,4 @@
-#include "../headers/image.h"
+#include "../include/image.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_NO_PSD
@@ -7,7 +7,7 @@
 #define STBI_NO_PIC
 #define STBI_NO_PNM
 
-#include "stb_image.h"
+#include "../include/stb_image.h"
 
 Image::Image(const std::string &path) {
     int n;

@@ -1,11 +1,11 @@
-#include "../headers/inputEvents.h"
+#include "../include/inputEvents.h"
 #include <cmath>
 #include <glm/vec3.hpp>
 
 double InputPoller::oldmx = 0.0;
 double InputPoller::oldmy = 0.0;
 
-float InputPoller::coeffMovement = 1.0f;
+float InputPoller::coeffMovement = 3.0f;
 float InputPoller::coeffCameraKeyboard = 1.8f;
 float InputPoller::coeffCameraMouse = -0.1f;
 
