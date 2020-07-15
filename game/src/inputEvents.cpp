@@ -1,4 +1,4 @@
-#include "inputEvents.h"
+#include "../headers/inputEvents.h"
 #include <cmath>
 #include <glm/vec3.hpp>
 

@@ -1,6 +1,6 @@
-#include "glew.h"
+#include "../headers/glew.h"
 #include <GLFW/glfw3.h>
-#include "SOIL.h"
+#include "../headers/SOIL.h"
 
 #include <iostream>
 #include <string>
@@ -10,13 +10,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <sstream>
 
-#include "util.h"
-#include "inputEvents.h"
-#include "param.h"
-#include "shader.h"
-#include "camera.h"
-#include "chunk.h"
-#include "font.h"
+#include "../headers/param.h"
+#include "../headers/util.h"
+#include "../headers/inputEvents.h"
+#include "../headers/shader.h"
+#include "../headers/camera.h"
+#include "../headers/chunk.h"
+#include "../headers/font.h"
 
 // void key_callback(GLFWwindow*, int, int, int, int);
 void mouse_button_callback(GLFWwindow*, int, int, int);

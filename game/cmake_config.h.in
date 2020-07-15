@@ -1,0 +1,7 @@
+#ifndef __CMAKE_CONFIG_H__
+#define __CMAKE_CONFIG_H__
+
+#define Tutorial_VERSION_MAJOR @Tutorial_VERSION_MAJOR@
+#define Tutorial_VERSION_MINOR @Tutorial_VERSION_MINOR@
+
+#endif
