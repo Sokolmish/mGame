@@ -136,13 +136,20 @@ int main() {
         auto lastPos = cam.pos;
         isCameraUpdated = InputPoller::pollMovement(window, cam, dt) || isCameraUpdated;
         if (!(cam.pos.x > 15 || cam.pos.x < 0 || cam.pos.y > 15 || cam.pos.y < 0)) {
-            // Assumes that last pos be in stable zone
             for (int i = 0; i < 3; i++) {
+                // Assumes that last pos be in stable zone
                 if (fabsf(roundf(cam.pos[i]) - roundf(lastPos[i])) >= 1e-2) { // Zone II
                     glm::vec3 tdelta(0.f);
                     tdelta[i] = cam.pos[i] > lastPos[i] ? 1 : -1;
                     if (chunk.checkBlock(glm::round(glm::round(lastPos) + tdelta))) {
-                        cam.pos[i] = roundf(lastPos[i]) + (-0.015 + 0.5) * (cam.pos[i] > lastPos[i] ? 1 : -1);
+                        cam.pos[i] = roundf(lastPos[i]) + (0.5 - 0.015) * (cam.pos[i] > lastPos[i] ? 1 : -1);
+                    }
+                }
+                else if (fabsf(cam.pos[i] - roundf(lastPos[i])) >= 0.45f) { // Zone I
+                    glm::vec3 tdelta(0.f);
+                    tdelta[i] = cam.pos[i] > roundf(lastPos[i]) ? 1 : -1;
+                    if (chunk.checkBlock(glm::round(glm::round(lastPos) + tdelta))) {
+                        cam.pos[i] = roundf(lastPos[i]) + (0.5 - 0.05 - 2e-3) * (cam.pos[i] > lastPos[i] ? 1 : -1);
                     }
                 }
             }

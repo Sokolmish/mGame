@@ -5,7 +5,7 @@
 double InputPoller::oldmx = 0.0;
 double InputPoller::oldmy = 0.0;
 
-float InputPoller::coeffMovement = 3.5f;
+float InputPoller::coeffMovement = 1.0f;
 float InputPoller::coeffCameraKeyboard = 1.8f;
 float InputPoller::coeffCameraMouse = -0.1f;
 
