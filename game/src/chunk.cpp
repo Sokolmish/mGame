@@ -1,4 +1,4 @@
-#include "chunk.h"
+#include "../headers/chunk.h"
 
 inline size_t getIndex(char x, char y, char z) {
     return (y * 16 + z) * 16 + x;
