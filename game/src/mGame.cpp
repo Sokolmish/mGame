@@ -111,7 +111,10 @@ int main() {
         }
     }
     for (int yy = 0; yy < 16; yy++) 
-        chunk.setBlock(1, yy, 1, Block(1));
+        chunk.setBlock(2, yy, 2, Block(1));
+    for (int xx = 2; xx < 4; xx++) 
+        for (int yy = 3; yy < 7; yy++) 
+            chunk.setBlock(xx, yy, 2, Block(1));
     chunk.stopFilling();
 
     GLuint vao;
@@ -142,26 +145,26 @@ int main() {
 
         if (!(newPos.x > 16 || newPos.x < -1 || newPos.z > 16 || newPos.z < -1)) {
             float bb[3][2] = {
-                { newPos.x, newPos.x + 2 * player.halfSize },
+                { newPos.x - player.halfSize, newPos.x + player.halfSize },
                 { newPos.y, newPos.y + player.height },
-                { newPos.z, newPos.z + 2 * player.halfSize },
+                { newPos.z- player.halfSize, newPos.z + player.halfSize },
             };
             if (chunk.checkBlock(newPos.x, floorf(bb[1][0]), newPos.z)) {
                 newPos.y = lastPos.y;
             }
-            if (chunk.checkBlock(newPos.x, ceilf(bb[1][1]), newPos.z)) {
+            if (chunk.checkBlock(newPos.x, floorf(bb[1][1]), newPos.z)) {
                 newPos.y = lastPos.y;
             }
             if (chunk.checkBlock(floorf(bb[0][0]), newPos.y, newPos.z)) {
                 newPos.x = lastPos.x;
             }
-            if (chunk.checkBlock(ceilf(bb[0][1]), newPos.y, newPos.z)) {
+            if (chunk.checkBlock(floorf(bb[0][1]), newPos.y, newPos.z)) {
                 newPos.x = lastPos.x;
             }
             if (chunk.checkBlock(newPos.x, newPos.y, floorf(bb[2][0]))) {
                 newPos.z = lastPos.z;
             }
-            if (chunk.checkBlock(newPos.x, newPos.y, ceilf(bb[2][1]))) {
+            if (chunk.checkBlock(newPos.x, newPos.y, floorf(bb[2][1]))) {
                 newPos.z = lastPos.z;
             }
             player.setPos(newPos);
@@ -191,6 +194,7 @@ int main() {
 
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
+        glEnable(GL_CCW);
         glDisable(GL_BLEND);
 
         glBindTexture(GL_TEXTURE_2D, texture);
@@ -214,6 +218,7 @@ int main() {
         statusSS << "yaw=" << formatFloat("%.2f", glm::degrees(player.getYaw())) << ";";
         statusSS << "pitch=" << formatFloat("%.2f", glm::degrees(player.getPitch())) << ";";
         font.RenderText(textShader, statusSS.str(), 10, height - 22, 0.6, glm::vec3(0.f));
+        
         glfwSwapBuffers(window);
     }
 
