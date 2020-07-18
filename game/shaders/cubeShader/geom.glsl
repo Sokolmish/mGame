@@ -12,14 +12,14 @@ flat out int faceNum;
 void emitQuad(int v1, int v2, int v3, int v4) {
     vec4 pos = gl_in[0].gl_Position;
     vec4 vertices[8] = vec4[](
-        m_proj_view * (pos + vec4(cubeHalfSize * vec3(-1, -1, +1), 1.0)), // l b n 0
-        m_proj_view * (pos + vec4(cubeHalfSize * vec3(+1, -1, +1), 1.0)), // r b n 1
-        m_proj_view * (pos + vec4(cubeHalfSize * vec3(+1, +1, +1), 1.0)), // r t n 2
-        m_proj_view * (pos + vec4(cubeHalfSize * vec3(-1, +1, +1), 1.0)), // l t n 3
-        m_proj_view * (pos + vec4(cubeHalfSize * vec3(-1, -1, -1), 1.0)), // l b f 4
-        m_proj_view * (pos + vec4(cubeHalfSize * vec3(+1, -1, -1), 1.0)), // r b f 5
-        m_proj_view * (pos + vec4(cubeHalfSize * vec3(+1, +1, -1), 1.0)), // r t f 6
-        m_proj_view * (pos + vec4(cubeHalfSize * vec3(-1, +1, -1), 1.0))  // l t f 7
+        m_proj_view * (pos + vec4(cubeHalfSize * vec3(-0, -0, +2), 1.0)), // l b n 0
+        m_proj_view * (pos + vec4(cubeHalfSize * vec3(+2, -0, +2), 1.0)), // r b n 1
+        m_proj_view * (pos + vec4(cubeHalfSize * vec3(+2, +2, +2), 1.0)), // r t n 2
+        m_proj_view * (pos + vec4(cubeHalfSize * vec3(-0, +2, +2), 1.0)), // l t n 3
+        m_proj_view * (pos + vec4(cubeHalfSize * vec3(-0, -0, -0), 1.0)), // l b f 4
+        m_proj_view * (pos + vec4(cubeHalfSize * vec3(+2, -0, -0), 1.0)), // r b f 5
+        m_proj_view * (pos + vec4(cubeHalfSize * vec3(+2, +2, -0), 1.0)), // r t f 6
+        m_proj_view * (pos + vec4(cubeHalfSize * vec3(-0, +2, -0), 1.0))  // l t f 7
     );
 
     gl_Position = vertices[v1];

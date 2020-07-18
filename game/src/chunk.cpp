@@ -39,7 +39,8 @@ Block Chunk::getBlock(char x, char y, char z) const {
 }
 
 bool Chunk::checkBlock(int index) const {
-    return data.find(index) != data.end();
+    auto it = data.find(index);
+    return it != data.end() && it->second.getId() != 0;
 }
 
 bool Chunk::checkBlock(char x, char y, char z) const {

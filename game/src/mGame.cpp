@@ -13,7 +13,7 @@
 #include "../include/util.h"
 #include "../include/inputEvents.h"
 #include "../include/shader.h"
-#include "../include/camera.h"
+#include "../include/player.h"
 #include "../include/chunk.h"
 #include "../include/font.h"
 #include "../include/image.h"
@@ -89,13 +89,13 @@ int main() {
     glfwGetWindowSize(window, &width, &height);
     float ratio = (float)width / (float)height;
     glClearColor(0.509f, 0.788f, 0.902f, 1.f);
-    // glfwSwapInterval(0);
+    glfwSwapInterval(0);
 
     // glfwSetKeyCallback(window, key_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     // glfwSetWindowSizeCallback(window, window_size_callback);
 
-    Camera cam;
+    Player player;
 
     //! TEMP
     Chunk chunk;
@@ -105,15 +105,20 @@ int main() {
             chunk.setBlock(xx, 2, zz, Block(1));
         }
     }
-    for (int yy = 0; yy < 32; yy++) 
+    for (int xx = 7; xx < 10; xx++) {
+        for (int zz = 7; zz < 10; zz++) {
+            chunk.setBlock(xx, 5, zz, Block(1));
+        }
+    }
+    for (int yy = 0; yy < 16; yy++) 
         chunk.setBlock(1, yy, 1, Block(1));
     chunk.stopFilling();
 
     GLuint vao;
     glGenVertexArrays(1, &vao);
     loadChunk(vao, chunk); // TODO: check for empty buffer
-    cam.pos += glm::vec3(0.f, (30 * 0.15), 1.f);
-    cam.yaw = M_PI / 4.f;
+    player.setPos(5.f, (30 * 0.15), 5.f);
+    player.setYaw(M_PI_4);
 
     Font font("./game/fonts/ConsolaMono-Bold.ttf", 0, 36);
 
@@ -129,27 +134,37 @@ int main() {
 
         glfwPollEvents();
         bool isCameraUpdated = false;
-        isCameraUpdated = InputPoller::pollLooking(window, cam, dt) || isCameraUpdated;
-        auto lastPos = cam.pos;
-        isCameraUpdated = InputPoller::pollMovement(window, cam, dt) || isCameraUpdated;
-        if (!(cam.pos.x > 15 || cam.pos.x < 0 || cam.pos.y > 15 || cam.pos.y < 0)) {
-            for (int i = 0; i < 3; i++) {
-                // Assumes that last pos be in stable zone
-                if (fabsf(roundf(cam.pos[i]) - roundf(lastPos[i])) >= 1e-2) { // Zone II
-                    glm::vec3 tdelta(0.f);
-                    tdelta[i] = cam.pos[i] > lastPos[i] ? 1 : -1;
-                    if (chunk.checkBlock(glm::round(glm::round(lastPos) + tdelta))) {
-                        cam.pos[i] = roundf(lastPos[i]) + (0.5 - 0.015) * (cam.pos[i] > lastPos[i] ? 1 : -1);
-                    }
-                }
-                else if (fabsf(cam.pos[i] - roundf(lastPos[i])) >= 0.45f) { // Zone I
-                    glm::vec3 tdelta(0.f);
-                    tdelta[i] = cam.pos[i] > roundf(lastPos[i]) ? 1 : -1;
-                    if (chunk.checkBlock(glm::round(glm::round(lastPos) + tdelta))) {
-                        cam.pos[i] = roundf(lastPos[i]) + (0.5 - 0.05 - 2e-3) * (cam.pos[i] > lastPos[i] ? 1 : -1);
-                    }
-                }
+        isCameraUpdated = InputPoller::pollLooking(window, player, dt) || isCameraUpdated;
+        glm::vec3 lastPos = player.getPos();
+        isCameraUpdated = InputPoller::pollMovement(window, player, dt) || isCameraUpdated;
+        
+        glm::vec3 newPos = player.getPos();
+
+        if (!(newPos.x > 16 || newPos.x < -1 || newPos.z > 16 || newPos.z < -1)) {
+            float bb[3][2] = {
+                { newPos.x, newPos.x + 2 * player.halfSize },
+                { newPos.y, newPos.y + player.height },
+                { newPos.z, newPos.z + 2 * player.halfSize },
+            };
+            if (chunk.checkBlock(newPos.x, floorf(bb[1][0]), newPos.z)) {
+                newPos.y = lastPos.y;
             }
+            if (chunk.checkBlock(newPos.x, ceilf(bb[1][1]), newPos.z)) {
+                newPos.y = lastPos.y;
+            }
+            if (chunk.checkBlock(floorf(bb[0][0]), newPos.y, newPos.z)) {
+                newPos.x = lastPos.x;
+            }
+            if (chunk.checkBlock(ceilf(bb[0][1]), newPos.y, newPos.z)) {
+                newPos.x = lastPos.x;
+            }
+            if (chunk.checkBlock(newPos.x, newPos.y, floorf(bb[2][0]))) {
+                newPos.z = lastPos.z;
+            }
+            if (chunk.checkBlock(newPos.x, newPos.y, ceilf(bb[2][1]))) {
+                newPos.z = lastPos.z;
+            }
+            player.setPos(newPos);
         }
 
         glfwGetWindowSize(window, &width, &height);
@@ -161,6 +176,7 @@ int main() {
         // Cube shader
         cubeShader.use();
 
+        Camera cam = player.getCamera();        
         glm::mat4 m_proj_view =
             glm::perspective(45.f, ratio, nearVal, 100.f) *
             glm::scale(glm::mat4(1.f), glm::vec3(cam.zoom, cam.zoom, 1.f)) *
@@ -194,9 +210,9 @@ int main() {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         
         std::stringstream statusSS;
-        statusSS << "pos=" << cam.pos << ";";
-        statusSS << "yaw=" << formatFloat("%.2f", glm::degrees(cam.yaw)) << ";";
-        statusSS << "pitch=" << formatFloat("%.2f", glm::degrees(cam.pitch)) << ";";
+        statusSS << "pos=" << player.getPos() << ";";
+        statusSS << "yaw=" << formatFloat("%.2f", glm::degrees(player.getYaw())) << ";";
+        statusSS << "pitch=" << formatFloat("%.2f", glm::degrees(player.getPitch())) << ";";
         font.RenderText(textShader, statusSS.str(), 10, height - 22, 0.6, glm::vec3(0.f));
         glfwSwapBuffers(window);
     }

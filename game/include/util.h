@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <glm/vec3.hpp>
+#include <cmath>
 
 std::string formatFloat(const std::string &format, float num) {
     char str[16];
@@ -13,6 +14,11 @@ std::string formatFloat(const std::string &format, float num) {
 std::ostream& operator<<(std::ostream &os, const glm::vec3 &v) {
     os << "(" << formatFloat("%.2f", v.x) << ";" << formatFloat("%.2f", v.y) << ";" << formatFloat("%.2f", v.z) << ")";
     return os;
+}
+
+float fractf(float x) {
+    float wh;
+    return modff(x, &wh);
 }
 
 #endif

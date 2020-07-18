@@ -5,9 +5,9 @@
 double InputPoller::oldmx = 0.0;
 double InputPoller::oldmy = 0.0;
 
-float InputPoller::coeffMovement = 3.0f;
+float InputPoller::coeffMovement = 3.2f;
 float InputPoller::coeffCameraKeyboard = 1.8f;
-float InputPoller::coeffCameraMouse = -0.1f;
+float InputPoller::coeffCameraMouse = -2.5f;
 
 inline float stepYaw(float yaw, float d) {
     yaw = fmodf(yaw - d, 2 * M_PI);
@@ -27,60 +27,57 @@ inline float stepPitch(float pitch, float d) {
         return pitch;
 }
 
-bool InputPoller::pollMovement(GLFWwindow *window, Camera &cam, float dt) {
+bool InputPoller::pollMovement(GLFWwindow *window, Player &player, float dt) {
     bool isUpdated = false;
-
-    glm::vec3 viewDir = glm::vec3(-sinf(cam.yaw), 0, cosf(cam.yaw));
-    glm::vec3 leftDir = glm::vec3(cosf(cam.yaw), 0, sinf(cam.yaw));
-    
+    glm::vec3 moveDir = player.getMoveDir();                 // (-sinf(yaw), 0, cosf(yaw));
+    glm::vec3 leftDir = glm::vec3(moveDir.z, 0, -moveDir.x); // (cosf(yaw), 0, sinf(yaw));  
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        cam.pos -= coeffMovement * dt * viewDir;
+        player.move(glm::vec3(-coeffMovement * dt * moveDir));
         isUpdated = true;
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        cam.pos += coeffMovement * dt * viewDir;
+        player.move(glm::vec3(coeffMovement * dt * moveDir));
         isUpdated = true;
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        cam.pos -= coeffMovement * dt * leftDir;
+        player.move(glm::vec3(-coeffMovement * dt * leftDir));
         isUpdated = true;
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        cam.pos += coeffMovement * dt * leftDir;
+        player.move(glm::vec3(coeffMovement * dt * leftDir));
         isUpdated = true;
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        cam.pos.y += coeffMovement * dt;
+        player.move(0, coeffMovement * dt, 0);
         isUpdated = true;
     }
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-        cam.pos.y -= coeffMovement * dt;
+        player.move(0, -coeffMovement * dt, 0);
         isUpdated = true;
     }
-    
     return isUpdated;
 }
 
-bool InputPoller::pollLooking(GLFWwindow *window, Camera &cam, float dt) {
+bool InputPoller::pollLooking(GLFWwindow *window, Player &player, float dt) {
     bool isUpdated = false;
-
+    // Keyboard
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-        cam.yaw = stepYaw(cam.yaw, coeffCameraKeyboard * dt);
+        player.setYaw((player.getYaw(), coeffCameraKeyboard * dt));
         isUpdated = true;
     }
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        cam.yaw = stepYaw(cam.yaw, -coeffCameraKeyboard * dt);
+        player.setYaw(stepYaw(player.getYaw(), -coeffCameraKeyboard * dt));
         isUpdated = true;
     }
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-        cam.pitch = stepPitch(cam.pitch, -coeffCameraKeyboard * dt);
+        player.setPitch(stepPitch(player.getPitch(), -coeffCameraKeyboard * dt));
         isUpdated = true;
     }
     if (glfwGetKey(window, GLFW_KEY_DOWN)  == GLFW_PRESS) {
-        cam.pitch = stepPitch(cam.pitch, coeffCameraKeyboard * dt);
+        player.setPitch(stepPitch(player.getPitch(), coeffCameraKeyboard * dt));
         isUpdated = true;
     }
-
+    // Mouse
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
         double mx, my;
         glfwGetCursorPos(window, &mx, &my);
@@ -89,11 +86,10 @@ bool InputPoller::pollLooking(GLFWwindow *window, Camera &cam, float dt) {
         oldmx = mx;
         oldmy = my;
 
-        cam.yaw = stepYaw(cam.yaw, dmx * -coeffCameraMouse * dt);
-        cam.pitch = stepPitch(cam.pitch, dmy * coeffCameraMouse * dt);
+        player.setYaw(stepYaw(player.getYaw(), dmx * -coeffCameraMouse * dt));
+        player.setPitch(stepPitch(player.getPitch(), dmy * coeffCameraMouse * dt));
 
         isUpdated = true;
     }
-
     return isUpdated;
 }

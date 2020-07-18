@@ -2,7 +2,7 @@
 #define __INPUT_EVENTS_H__
 
 #include <GLFW/glfw3.h>
-#include "camera.h"
+#include "player.h"
 
 class InputPoller {
 public:
@@ -12,8 +12,8 @@ public:
     static float coeffCameraKeyboard;
     static float coeffCameraMouse;
 
-    static bool pollMovement(GLFWwindow *window, Camera &cam, float dt);
-    static bool pollLooking(GLFWwindow *window, Camera &cam, float dt);
+    static bool pollMovement(GLFWwindow *window, Player &player, float dt);
+    static bool pollLooking(GLFWwindow *window, Player &player, float dt);
 };
 
 #endif
