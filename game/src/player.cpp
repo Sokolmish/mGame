@@ -8,6 +8,9 @@ Player::Player() {
 
     pos = glm::vec3(0);
     yaw = pitch = 0;
+
+    velocity = acceleration = glm::vec3(0);
+    flightMode = false;
 }
 
 Camera Player::getCamera() const {
@@ -59,4 +62,28 @@ float Player::getYaw() const {
 
 float Player::getPitch() const {
     return pitch;
+}
+
+glm::vec3 Player::getVelocity() const {
+    return velocity;
+}
+
+glm::vec3 Player::getAcceleration() const {
+    return acceleration;
+}
+
+void Player::setVelocity(const glm::vec3 &v) {
+    velocity = v;
+}
+
+void Player::setAcceleration(const glm::vec3 &a) {
+    acceleration = a;
+}
+
+bool Player::isFlight() const {
+    return flightMode;
+}
+
+void Player::setFlight(bool flight) {
+    flightMode = flight;
 }

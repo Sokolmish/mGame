@@ -2,8 +2,7 @@
 #define __BLOCK_H__
 
 #include <stdint.h>
-
-enum WorldDirection { NORTH, SOUTH, EAST, WEST };
+#include "util.h"
 
 class Block {
 private:
@@ -21,18 +20,22 @@ public:
         data = Id;
     }
 
-    void rotateY(WorldDirection dir) {
-        data |= (dir & 0b11) << 16;
+    void rotateY(WDir dir) {
+        // data |= (dir & 0b11) << 16;
+        throw "NotImplemented";
     }
     void rotateX(int dir) {
-        data |= (dir & 0b11) << 18;
+        // data |= (dir & 0b11) << 18;
+        throw "NotImplemented";
     }
 
-    WorldDirection getYRotation() const {
-        return WorldDirection(data & (0b11 << 16));
+    WDir getYRotation() const {
+        // return WDir(data & (0b11 << 16));
+        throw "NotImplemented";
     }
     int getXRotation() const {
-        return WorldDirection(data & (0b11 << 18));
+        // return WDir(data & (0b11 << 18));
+        throw "NotImplemented";
     }
 
     uint16_t getId() const {

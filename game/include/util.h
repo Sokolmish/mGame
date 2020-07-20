@@ -3,22 +3,14 @@
 
 #include <iostream>
 #include <glm/vec3.hpp>
-#include <cmath>
 
-std::string formatFloat(const std::string &format, float num) {
-    char str[16];
-    snprintf(str, 16, format.c_str(), num);
-    return std::string(str);
-}
+enum WDir { NORTH = 1, EAST = 2, SOUTH = 4, WEST = 8, UP = 16, DOWN = 32 };
+typedef uint32_t WMultiDir;
 
-std::ostream& operator<<(std::ostream &os, const glm::vec3 &v) {
-    os << "(" << formatFloat("%.2f", v.x) << ";" << formatFloat("%.2f", v.y) << ";" << formatFloat("%.2f", v.z) << ")";
-    return os;
-}
+std::string formatFloat(const std::string &format, float num);
 
-float fractf(float x) {
-    float wh;
-    return modff(x, &wh);
-}
+std::ostream& operator<<(std::ostream &os, const glm::vec3 &v);
+
+float fractf(float x);
 
 #endif

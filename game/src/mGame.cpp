@@ -18,9 +18,11 @@
 #include "../include/font.h"
 #include "../include/image.h"
 
-// void key_callback(GLFWwindow*, int, int, int, int);
+void key_callback(GLFWwindow*, int, int, int, int);
 void mouse_button_callback(GLFWwindow*, int, int, int);
 // void window_size_callback(GLFWwindow*, int, int);
+
+Player *tempPlayerRef;
 
 void loadChunk(GLuint vao, const Chunk &chunk) {
     GLuint vbo;
@@ -39,6 +41,97 @@ void loadChunk(GLuint vao, const Chunk &chunk) {
     
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+}
+
+bool checkGrounded(const Player &player, const Chunk &chunk) {
+    glm::vec3 pos = player.getPos();
+    for (int xx = pos.x - player.halfSize; xx <= pos.x + player.halfSize; xx++) {
+        for (int zz = pos.z - player.halfSize; zz <= pos.z + player.halfSize; zz++) {
+            if (fractf(pos.y) < 5e-3f && chunk.checkBlock(xx, pos.y - 1, zz))
+                return true;
+            else if (fractf(pos.y) > 1.f - 2e-3f && chunk.checkBlock(xx, pos.y, zz))
+                return true;
+        }
+    }
+    return false;
+}
+
+bool checkNewPos(const Player &player, const Chunk &chunk, const glm::vec3 &pos) {
+    if (pos.x - player.halfSize < 0 || pos.x + player.halfSize > 16)
+        return false;
+    if (pos.z - player.halfSize < 0 || pos.z + player.halfSize > 16)
+        return false;
+    for (int yy = pos.y; yy <= pos.y + player.height; yy++) {
+        for (int xx = pos.x - player.halfSize; xx <= pos.x + player.halfSize; xx++) {
+            for (int zz = pos.z - player.halfSize; zz <= pos.z + player.halfSize; zz++) {
+                if (chunk.checkBlock(xx, yy, zz)) {
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
+void doPhysics(GLFWwindow *window, Player &player, Chunk &chunk, bool &isGrounded, float dt) {
+    glm::vec3 delta = InputPoller::pollMovement(window, player, dt);
+    glm::vec3 lastPos = player.getPos();
+
+    isGrounded = checkGrounded(player, chunk);
+    
+    if (!player.isFlight()) {
+        if (!isGrounded) {
+            player.setAcceleration(glm::vec3(0, -9.81f, 0));
+        }
+        else {  
+            player.setAcceleration(glm::vec3(0));
+            player.setVelocity(glm::vec3(0));
+            if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+                player.setVelocity(glm::vec3(0, 4.8, 0));
+        }
+    }
+    else {
+        player.setAcceleration(glm::vec3(0));
+    }
+
+    if (player.getAcceleration() != glm::vec3(0)) {
+        glm::vec3 dvel = player.getVelocity() + player.getAcceleration() * dt;
+        player.setVelocity(dvel);
+    }
+    if (player.getVelocity() != glm::vec3(0.f)) {
+        glm::vec3 dpos = player.getVelocity() * dt;
+        delta += dpos;
+    }
+
+    int dimMoved = -1;
+    while (glm::length(delta) >= 0.3) {
+        glm::vec3 curDelta = 0.3f * glm::normalize(delta);
+        delta -= curDelta;
+        glm::vec3 pos3 = player.getPos();
+        dimMoved = 0;
+        for (int i = 0; i < 3; i++) {
+            glm::vec3 td(0.f);
+            td[i] = curDelta[i];
+            if (checkNewPos(player, chunk, pos3 + td)) {
+                pos3 += td;
+                dimMoved++;
+            }
+        }
+        player.setPos(pos3);
+        if (dimMoved == 0)
+            break;
+    }
+
+    if (dimMoved != 0) {
+        glm::vec3 pos3 = lastPos;
+        for (int i = 0; i < 3; i++) {
+            glm::vec3 td(0.f);
+            td[i] = delta[i];
+            if (checkNewPos(player, chunk, pos3 + td))
+                pos3 += td;
+        }
+        player.setPos(pos3);
+    }
 }
 
 int main() {
@@ -91,41 +184,48 @@ int main() {
     glClearColor(0.509f, 0.788f, 0.902f, 1.f);
     glfwSwapInterval(0);
 
-    // glfwSetKeyCallback(window, key_callback);
+    glfwSetKeyCallback(window, key_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     // glfwSetWindowSizeCallback(window, window_size_callback);
 
     Player player;
 
     //! TEMP
+    tempPlayerRef = &player;
     Chunk chunk;
     chunk.startFilling();
-    for (int xx = 0; xx < 16; xx++) {
-        for (int zz = 0; zz < 16; zz++) {
+    for (int xx = 0; xx < 16; xx++)
+        for (int zz = 0; zz < 16; zz++)
             chunk.setBlock(xx, 2, zz, Block(1));
-        }
-    }
-    for (int xx = 7; xx < 10; xx++) {
-        for (int zz = 7; zz < 10; zz++) {
+
+    for (int xx = 7; xx < 10; xx++)
+        for (int zz = 7; zz < 10; zz++)
             chunk.setBlock(xx, 5, zz, Block(1));
-        }
-    }
+
+
     for (int yy = 0; yy < 16; yy++) 
         chunk.setBlock(2, yy, 2, Block(1));
-    for (int xx = 2; xx < 4; xx++) 
-        for (int yy = 3; yy < 7; yy++) 
+    for (int xx = 3; xx < 5; xx++) 
+        for (int yy = 3; yy < 8; yy++) 
             chunk.setBlock(xx, yy, 2, Block(1));
+    for (int zz = 5; zz < 9; zz++)
+        chunk.setBlock(5, 3, zz, Block(1));
+    for (int zz = 9; zz < 13; zz++)
+        chunk.setBlock(5, 4, zz, Block(1));
+    chunk.setBlock(7, 6, 4, Block(1));
+    chunk.setBlock(7, 6, 3, Block(1));
+    chunk.setBlock(8, 6, 3, Block(1));
     chunk.stopFilling();
 
     GLuint vao;
     glGenVertexArrays(1, &vao);
     loadChunk(vao, chunk); // TODO: check for empty buffer
-    player.setPos(5.f, (30 * 0.15), 5.f);
+    player.setPos(5.f, 7, 5.f);
     player.setYaw(M_PI_4);
 
     Font font("./game/fonts/ConsolaMono-Bold.ttf", 0, 36);
 
-    float nearVal = 0.01f;
+    float nearVal = 0.005f;
     //! END TEMP
     
     // Main loop
@@ -138,37 +238,8 @@ int main() {
         glfwPollEvents();
         bool isCameraUpdated = false;
         isCameraUpdated = InputPoller::pollLooking(window, player, dt) || isCameraUpdated;
-        glm::vec3 lastPos = player.getPos();
-        isCameraUpdated = InputPoller::pollMovement(window, player, dt) || isCameraUpdated;
-        
-        glm::vec3 newPos = player.getPos();
-
-        if (!(newPos.x > 16 || newPos.x < -1 || newPos.z > 16 || newPos.z < -1)) {
-            float bb[3][2] = {
-                { newPos.x - player.halfSize, newPos.x + player.halfSize },
-                { newPos.y, newPos.y + player.height },
-                { newPos.z- player.halfSize, newPos.z + player.halfSize },
-            };
-            if (chunk.checkBlock(newPos.x, floorf(bb[1][0]), newPos.z)) {
-                newPos.y = lastPos.y;
-            }
-            if (chunk.checkBlock(newPos.x, floorf(bb[1][1]), newPos.z)) {
-                newPos.y = lastPos.y;
-            }
-            if (chunk.checkBlock(floorf(bb[0][0]), newPos.y, newPos.z)) {
-                newPos.x = lastPos.x;
-            }
-            if (chunk.checkBlock(floorf(bb[0][1]), newPos.y, newPos.z)) {
-                newPos.x = lastPos.x;
-            }
-            if (chunk.checkBlock(newPos.x, newPos.y, floorf(bb[2][0]))) {
-                newPos.z = lastPos.z;
-            }
-            if (chunk.checkBlock(newPos.x, newPos.y, floorf(bb[2][1]))) {
-                newPos.z = lastPos.z;
-            }
-            player.setPos(newPos);
-        }
+        bool isGrounded;
+        doPhysics(window, player, chunk, isGrounded, dt);
 
         glfwGetWindowSize(window, &width, &height);
         ratio = (float)width / (float)height;
@@ -217,7 +288,13 @@ int main() {
         statusSS << "pos=" << player.getPos() << ";";
         statusSS << "yaw=" << formatFloat("%.2f", glm::degrees(player.getYaw())) << ";";
         statusSS << "pitch=" << formatFloat("%.2f", glm::degrees(player.getPitch())) << ";";
-        font.RenderText(textShader, statusSS.str(), 10, height - 22, 0.6, glm::vec3(0.f));
+        font.RenderText(textShader, statusSS.str(), 10, height - 20, 0.5, glm::vec3(0.f));
+        statusSS = std::stringstream();
+        if (isGrounded)
+            statusSS << "grounded;";
+        if (player.isFlight())
+            statusSS << "flightmod;";
+        font.RenderText(textShader, statusSS.str(), 10, height - 38, 0.5, glm::vec3(0.f));
         
         glfwSwapBuffers(window);
     }
@@ -229,4 +306,10 @@ int main() {
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
         glfwGetCursorPos(window, &InputPoller::oldmx, &InputPoller::oldmy);
+}
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
+        tempPlayerRef->setFlight(!tempPlayerRef->isFlight());
+    }
 }

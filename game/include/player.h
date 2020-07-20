@@ -8,6 +8,9 @@ class Player {
 private:
     glm::vec3 pos;
     float yaw, pitch;
+    glm::vec3 velocity;
+    glm::vec3 acceleration;
+    bool flightMode;
 public:
     float halfSize;
     float height, camHeight;
@@ -27,6 +30,14 @@ public:
     void setPitch(float pitch);
     float getYaw() const;
     float getPitch() const;
+
+    glm::vec3 getVelocity() const;
+    glm::vec3 getAcceleration() const;
+    void setVelocity(const glm::vec3 &v);
+    void setAcceleration(const glm::vec3 &a);
+
+    bool isFlight() const;
+    void setFlight(bool flight);
 };
 
 #endif

@@ -12,8 +12,8 @@ public:
     static float coeffCameraKeyboard;
     static float coeffCameraMouse;
 
-    static bool pollMovement(GLFWwindow *window, Player &player, float dt);
     static bool pollLooking(GLFWwindow *window, Player &player, float dt);
+    static glm::vec3 pollMovement(GLFWwindow *window, Player &player, float dt);
 };
 
 #endif

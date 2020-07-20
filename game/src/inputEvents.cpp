@@ -27,35 +27,38 @@ inline float stepPitch(float pitch, float d) {
         return pitch;
 }
 
-bool InputPoller::pollMovement(GLFWwindow *window, Player &player, float dt) {
-    bool isUpdated = false;
+glm::vec3 InputPoller::pollMovement(GLFWwindow *window, Player &player, float dt) {
+    // bool isUpdated = false;
     glm::vec3 moveDir = player.getMoveDir();                 // (-sinf(yaw), 0, cosf(yaw));
     glm::vec3 leftDir = glm::vec3(moveDir.z, 0, -moveDir.x); // (cosf(yaw), 0, sinf(yaw));  
+    glm::vec3 res(0.f);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        player.move(glm::vec3(-coeffMovement * dt * moveDir));
-        isUpdated = true;
+        res += glm::vec3(-coeffMovement * dt * moveDir);
+        // isUpdated = true;
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        player.move(glm::vec3(coeffMovement * dt * moveDir));
-        isUpdated = true;
+        res += glm::vec3(coeffMovement * dt * moveDir);
+        // isUpdated = true;
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        player.move(glm::vec3(-coeffMovement * dt * leftDir));
-        isUpdated = true;
+        res += glm::vec3(-coeffMovement * dt * leftDir);
+        // isUpdated = true;
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        player.move(glm::vec3(coeffMovement * dt * leftDir));
-        isUpdated = true;
+        res += glm::vec3(coeffMovement * dt * leftDir);
+        // isUpdated = true;
     }
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        player.move(0, coeffMovement * dt, 0);
-        isUpdated = true;
+    if (player.isFlight()) {
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+            res.y += coeffMovement * dt;
+            // isUpdated = true;
+        }
+        if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+            res.y += -coeffMovement * dt;
+            // isUpdated = true;
+        }
     }
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-        player.move(0, -coeffMovement * dt, 0);
-        isUpdated = true;
-    }
-    return isUpdated;
+    return res;
 }
 
 bool InputPoller::pollLooking(GLFWwindow *window, Player &player, float dt) {
