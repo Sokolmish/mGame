@@ -7,7 +7,7 @@ double InputPoller::oldmy = 0.0;
 
 float InputPoller::coeffMovement = 3.0f;
 float InputPoller::coeffCameraKeyboard = 1.8f;
-float InputPoller::coeffCameraMouse = 3.4f;
+float InputPoller::coeffCameraMouse = 3.0f;
 
 inline float stepYaw(float yaw, float d) {
     yaw = fmodf(yaw - d, 2 * M_PI);

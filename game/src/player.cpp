@@ -147,6 +147,7 @@ void Player::doPhysics(GLFWwindow *window, const Chunk &chunk, float dt) {
     }
     else {
         setAcceleration(glm::vec3(0));
+        setVelocity(glm::vec3(0));
     }
 
     if (getAcceleration() != glm::vec3(0)) {
@@ -159,8 +160,8 @@ void Player::doPhysics(GLFWwindow *window, const Chunk &chunk, float dt) {
     }
 
     int dimMoved = -1;
-    while (glm::length(delta) >= 0.3) {
-        glm::vec3 curDelta = 0.3f * glm::normalize(delta);
+    while (glm::length(delta) >= 0.15) {
+        glm::vec3 curDelta = 0.15f * glm::normalize(delta);
         delta -= curDelta;
         glm::vec3 pos3 = getPos();
         dimMoved = 0;
