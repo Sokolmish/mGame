@@ -7,6 +7,7 @@
 class InputPoller {
 public:
     static double oldmx, oldmy;
+    static double dmx, dmy;
 
     static float coeffMovement;
     static float coeffCameraKeyboard;

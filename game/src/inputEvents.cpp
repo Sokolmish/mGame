@@ -5,9 +5,9 @@
 double InputPoller::oldmx = 0.0;
 double InputPoller::oldmy = 0.0;
 
-float InputPoller::coeffMovement = 3.2f;
+float InputPoller::coeffMovement = 3.0f;
 float InputPoller::coeffCameraKeyboard = 1.8f;
-float InputPoller::coeffCameraMouse = -2.5f;
+float InputPoller::coeffCameraMouse = 3.4f;
 
 inline float stepYaw(float yaw, float d) {
     yaw = fmodf(yaw - d, 2 * M_PI);
@@ -81,18 +81,16 @@ bool InputPoller::pollLooking(GLFWwindow *window, Player &player, float dt) {
         isUpdated = true;
     }
     // Mouse
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-        double mx, my;
-        glfwGetCursorPos(window, &mx, &my);
-        double dmx = mx - oldmx;
-        double dmy = my - oldmy;
-        oldmx = mx;
-        oldmy = my;
+    double mx, my;
+    glfwGetCursorPos(window, &mx, &my);
+    double dmx = mx - oldmx;
+    double dmy = my - oldmy;
+    oldmx = mx;
+    oldmy = my;
 
-        player.setYaw(stepYaw(player.getYaw(), dmx * -coeffCameraMouse * dt));
-        player.setPitch(stepPitch(player.getPitch(), dmy * coeffCameraMouse * dt));
+    player.setYaw(stepYaw(player.getYaw(), dmx * -coeffCameraMouse * dt));
+    player.setPitch(stepPitch(player.getPitch(), dmy * coeffCameraMouse * dt));
 
-        isUpdated = true;
-    }
+    isUpdated = true;
     return isUpdated;
 }

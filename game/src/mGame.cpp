@@ -20,6 +20,7 @@
 
 void key_callback(GLFWwindow*, int, int, int, int);
 void mouse_button_callback(GLFWwindow*, int, int, int);
+void cursor_position_callback(GLFWwindow*, double, double);
 // void window_size_callback(GLFWwindow*, int, int);
 
 Player *tempPlayerRef;
@@ -93,8 +94,11 @@ int main() {
     glClearColor(0.509f, 0.788f, 0.902f, 1.f);
     glfwSwapInterval(0);
 
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
     glfwSetKeyCallback(window, key_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetCursorPosCallback(window, cursor_position_callback);
     // glfwSetWindowSizeCallback(window, window_size_callback);
 
     Player player;
@@ -152,6 +156,8 @@ int main() {
         glfwGetWindowSize(window, &width, &height);
         ratio = (float)width / (float)height;
         glViewport(0, 0, width, height);
+        
+        // glfwSetCursorPos(window, width / 2.f, height / 2.f);
     
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -212,12 +218,19 @@ int main() {
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-        glfwGetCursorPos(window, &InputPoller::oldmx, &InputPoller::oldmy);
+    // if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    //     glfwGetCursorPos(window, &InputPoller::oldmx, &InputPoller::oldmy);
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
         tempPlayerRef->setFlight(!tempPlayerRef->isFlight());
     }
+}
+
+void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
+    // InputPoller::dmx = xpos - InputPoller::oldmx;
+    // InputPoller::dmy = ypos - InputPoller::oldmy;
+    // InputPoller::oldmx = xpos;
+    // InputPoller::oldmy = ypos;
 }
