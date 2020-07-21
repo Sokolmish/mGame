@@ -2,7 +2,10 @@
 #define __PLAYER_H__
 
 #include "camera.h"
+#include <GLFW/glfw3.h>
 #include <glm/vec3.hpp>
+#include "chunk.h"
+
 
 class Player {
 private:
@@ -11,6 +14,11 @@ private:
     glm::vec3 velocity;
     glm::vec3 acceleration;
     bool flightMode;
+
+    bool checkNewPos(const Chunk &chunk, const glm::vec3 &pos) const;
+
+    mutable char _cached = 0;
+
 public:
     float halfSize;
     float height, camHeight;
@@ -38,6 +46,9 @@ public:
 
     bool isFlight() const;
     void setFlight(bool flight);
+    bool isGrounded(const Chunk &chunk) const;
+
+    void doPhysics(GLFWwindow *window, const Chunk &chunk, float dt);
 };
 
 #endif

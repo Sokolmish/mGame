@@ -43,97 +43,6 @@ void loadChunk(GLuint vao, const Chunk &chunk) {
     glBindVertexArray(0);
 }
 
-bool checkGrounded(const Player &player, const Chunk &chunk) {
-    glm::vec3 pos = player.getPos();
-    for (int xx = pos.x - player.halfSize; xx <= pos.x + player.halfSize; xx++) {
-        for (int zz = pos.z - player.halfSize; zz <= pos.z + player.halfSize; zz++) {
-            if (fractf(pos.y) < 5e-3f && chunk.checkBlock(xx, pos.y - 1, zz))
-                return true;
-            else if (fractf(pos.y) > 1.f - 2e-3f && chunk.checkBlock(xx, pos.y, zz))
-                return true;
-        }
-    }
-    return false;
-}
-
-bool checkNewPos(const Player &player, const Chunk &chunk, const glm::vec3 &pos) {
-    if (pos.x - player.halfSize < 0 || pos.x + player.halfSize > 16)
-        return false;
-    if (pos.z - player.halfSize < 0 || pos.z + player.halfSize > 16)
-        return false;
-    for (int yy = pos.y; yy <= pos.y + player.height; yy++) {
-        for (int xx = pos.x - player.halfSize; xx <= pos.x + player.halfSize; xx++) {
-            for (int zz = pos.z - player.halfSize; zz <= pos.z + player.halfSize; zz++) {
-                if (chunk.checkBlock(xx, yy, zz)) {
-                    return false;
-                }
-            }
-        }
-    }
-    return true;
-}
-
-void doPhysics(GLFWwindow *window, Player &player, Chunk &chunk, bool &isGrounded, float dt) {
-    glm::vec3 delta = InputPoller::pollMovement(window, player, dt);
-    glm::vec3 lastPos = player.getPos();
-
-    isGrounded = checkGrounded(player, chunk);
-    
-    if (!player.isFlight()) {
-        if (!isGrounded) {
-            player.setAcceleration(glm::vec3(0, -9.81f, 0));
-        }
-        else {  
-            player.setAcceleration(glm::vec3(0));
-            player.setVelocity(glm::vec3(0));
-            if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-                player.setVelocity(glm::vec3(0, 4.8, 0));
-        }
-    }
-    else {
-        player.setAcceleration(glm::vec3(0));
-    }
-
-    if (player.getAcceleration() != glm::vec3(0)) {
-        glm::vec3 dvel = player.getVelocity() + player.getAcceleration() * dt;
-        player.setVelocity(dvel);
-    }
-    if (player.getVelocity() != glm::vec3(0.f)) {
-        glm::vec3 dpos = player.getVelocity() * dt;
-        delta += dpos;
-    }
-
-    int dimMoved = -1;
-    while (glm::length(delta) >= 0.3) {
-        glm::vec3 curDelta = 0.3f * glm::normalize(delta);
-        delta -= curDelta;
-        glm::vec3 pos3 = player.getPos();
-        dimMoved = 0;
-        for (int i = 0; i < 3; i++) {
-            glm::vec3 td(0.f);
-            td[i] = curDelta[i];
-            if (checkNewPos(player, chunk, pos3 + td)) {
-                pos3 += td;
-                dimMoved++;
-            }
-        }
-        player.setPos(pos3);
-        if (dimMoved == 0)
-            break;
-    }
-
-    if (dimMoved != 0) {
-        glm::vec3 pos3 = lastPos;
-        for (int i = 0; i < 3; i++) {
-            glm::vec3 td(0.f);
-            td[i] = delta[i];
-            if (checkNewPos(player, chunk, pos3 + td))
-                pos3 += td;
-        }
-        player.setPos(pos3);
-    }
-}
-
 int main() {
     // Window init
     GLFWwindow* window;
@@ -238,8 +147,7 @@ int main() {
         glfwPollEvents();
         bool isCameraUpdated = false;
         isCameraUpdated = InputPoller::pollLooking(window, player, dt) || isCameraUpdated;
-        bool isGrounded;
-        doPhysics(window, player, chunk, isGrounded, dt);
+        player.doPhysics(window, chunk, dt);
 
         glfwGetWindowSize(window, &width, &height);
         ratio = (float)width / (float)height;
@@ -290,7 +198,7 @@ int main() {
         statusSS << "pitch=" << formatFloat("%.2f", glm::degrees(player.getPitch())) << ";";
         font.RenderText(textShader, statusSS.str(), 10, height - 20, 0.5, glm::vec3(0.f));
         statusSS = std::stringstream();
-        if (isGrounded)
+        if (player.isGrounded(chunk))
             statusSS << "grounded;";
         if (player.isFlight())
             statusSS << "flightmod;";
