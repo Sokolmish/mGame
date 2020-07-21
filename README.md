@@ -22,7 +22,11 @@
 * GLFW3
 * GLEW - хедер находится в папке [include](https://github.com/Sokolmish/mGame/tree/master/game/include), но необходимо установить исходники
 * GLM - **!!!НЕ УКАЗАН В CMAKE - надо указать!!!**
-* FreeType - `apt install libfreetype6 libfreetype6-dev`
+* FreeType
+
+```bash
+sudo apt install libopengl0 libglfw3 libglfw3-dev libglm-dev libglew-dev libfreetype6 libfreetype6-dev
+```
 
 ## Особенности кода
 
