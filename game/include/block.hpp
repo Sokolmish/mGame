@@ -2,7 +2,7 @@
 #define __BLOCK_H__
 
 #include <stdint.h>
-#include "util.h"
+#include "util.hpp"
 
 class Block {
 private:

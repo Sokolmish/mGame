@@ -1,4 +1,4 @@
-#include "../include/glew.h"
+#include "../include/glew.hpp"
 #include <GLFW/glfw3.h>
 
 #include <iostream>
@@ -9,14 +9,14 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <sstream>
 
-#include "../include/param.h"
-#include "../include/util.h"
-#include "../include/inputEvents.h"
-#include "../include/shader.h"
-#include "../include/player.h"
-#include "../include/chunk.h"
-#include "../include/font.h"
-#include "../include/image.h"
+#include "../include/param.hpp"
+#include "../include/util.hpp"
+#include "../include/inputEvents.hpp"
+#include "../include/shader.hpp"
+#include "../include/player.hpp"
+#include "../include/chunk.hpp"
+#include "../include/font.hpp"
+#include "../include/image.hpp"
 
 void key_callback(GLFWwindow*, int, int, int, int);
 void mouse_button_callback(GLFWwindow*, int, int, int);

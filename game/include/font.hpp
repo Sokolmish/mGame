@@ -1,13 +1,13 @@
 #ifndef __FONT_H__
 #define __FONT_H__
 
-#include "glew.h"
+#include "glew.hpp"
 
 #include <string>
 #include <vector>
 #include <map>
 #include <glm/vec2.hpp>
-#include "shader.h"
+#include "shader.hpp"
 
 class Font {
 private:

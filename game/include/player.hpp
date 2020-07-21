@@ -1,10 +1,10 @@
 #ifndef __PLAYER_H__
 #define __PLAYER_H__
 
-#include "camera.h"
+#include "camera.hpp"
 #include <GLFW/glfw3.h>
 #include <glm/vec3.hpp>
-#include "chunk.h"
+#include "chunk.hpp"
 
 
 class Player {

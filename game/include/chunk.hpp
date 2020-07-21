@@ -5,7 +5,7 @@
 #include <map>
 #include <glm/vec3.hpp>
 
-#include "block.h"
+#include "block.hpp"
 
 class Chunk {
 private:

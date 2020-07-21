@@ -2,7 +2,7 @@
 #define __INPUT_EVENTS_H__
 
 #include <GLFW/glfw3.h>
-#include "player.h"
+#include "player.hpp"
 
 class InputPoller {
 public:
