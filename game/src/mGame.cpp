@@ -17,10 +17,12 @@
 #include "../include/chunk.hpp"
 #include "../include/font.hpp"
 #include "../include/image.hpp"
+#include "../include/debugLayout.hpp"
+#include "../include/guiLayout.hpp"
 
 void key_callback(GLFWwindow*, int, int, int, int);
-void mouse_button_callback(GLFWwindow*, int, int, int);
-void cursor_position_callback(GLFWwindow*, double, double);
+// void mouse_button_callback(GLFWwindow*, int, int, int);
+// void cursor_position_callback(GLFWwindow*, double, double);
 // void window_size_callback(GLFWwindow*, int, int);
 
 Player *tempPlayerRef;
@@ -72,7 +74,6 @@ int main() {
     // Shaders loading
     Shader::shaderDirectory = "./game/shaders/";
     Shader cubeShader = Shader::loadShader("cubeShader");
-    Shader textShader = Shader::loadShader("textShader");
 
     // Texture loading
     Image image("./game/textures/demoTexture.png");
@@ -94,28 +95,24 @@ int main() {
     glClearColor(0.509f, 0.788f, 0.902f, 1.f);
     glfwSwapInterval(0);
 
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
     glfwSetKeyCallback(window, key_callback);
-    glfwSetMouseButtonCallback(window, mouse_button_callback);
-    glfwSetCursorPosCallback(window, cursor_position_callback);
+    // glfwSetMouseButtonCallback(window, mouse_button_callback);
+    // glfwSetCursorPosCallback(window, cursor_position_callback);
     // glfwSetWindowSizeCallback(window, window_size_callback);
 
     Player player;
 
     //! TEMP
     tempPlayerRef = &player;
+
     Chunk chunk;
     chunk.startFilling();
     for (int xx = 0; xx < 16; xx++)
         for (int zz = 0; zz < 16; zz++)
             chunk.setBlock(xx, 2, zz, Block(1));
-
     for (int xx = 7; xx < 10; xx++)
         for (int zz = 7; zz < 10; zz++)
             chunk.setBlock(xx, 5, zz, Block(1));
-
-
     for (int yy = 0; yy < 16; yy++) 
         chunk.setBlock(2, yy, 2, Block(1));
     for (int xx = 3; xx < 5; xx++) 
@@ -136,10 +133,12 @@ int main() {
     player.setPos(5.f, 7, 5.f);
     player.setYaw(M_PI_4);
 
-    Font font("./game/fonts/ConsolaMono-Bold.ttf", 0, 36);
-
-    float nearVal = 0.005f;
     //! END TEMP
+
+    DebugLayout debugLayout;
+    GuiLayout guiLayout;
+
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
     // Main loop
     float oTime = glfwGetTime();
@@ -156,8 +155,6 @@ int main() {
         glfwGetWindowSize(window, &width, &height);
         ratio = (float)width / (float)height;
         glViewport(0, 0, width, height);
-        
-        // glfwSetCursorPos(window, width / 2.f, height / 2.f);
     
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -166,7 +163,7 @@ int main() {
 
         Camera cam = player.getCamera();        
         glm::mat4 m_proj_view =
-            glm::perspective(45.f, ratio, nearVal, 100.f) *
+            glm::perspective(45.f, ratio, 0.005f, 100.f) *
             glm::scale(glm::mat4(1.f), glm::vec3(cam.zoom, cam.zoom, 1.f)) *
             glm::scale(glm::mat4(1.f), glm::vec3(0.3, 0.3, 0.3)) *
             glm::rotate(glm::mat4(1.f), cam.roll, glm::vec3(0, 0, -1)) *
@@ -188,28 +185,19 @@ int main() {
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0);
 
-        // Text shader
+        // Debug layout
 
-        textShader.use();
-        glm::mat4 proj = glm::ortho(0.0f, (float)width, 0.0f, (float)height);
-        textShader.setUniform("projection", proj);
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL_CULL_FACE);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        
-        std::stringstream statusSS;
-        statusSS << "pos=" << player.getPos() << ";";
-        statusSS << "yaw=" << formatFloat("%.2f", glm::degrees(player.getYaw())) << ";";
-        statusSS << "pitch=" << formatFloat("%.2f", glm::degrees(player.getPitch())) << ";";
-        font.RenderText(textShader, statusSS.str(), 10, height - 20, 0.5, glm::vec3(0.f));
-        statusSS = std::stringstream();
-        if (player.isGrounded(chunk))
-            statusSS << "grounded;";
-        if (player.isFlight())
-            statusSS << "flightmod;";
-        font.RenderText(textShader, statusSS.str(), 10, height - 38, 0.5, glm::vec3(0.f));
-        
+        debugLayout.setPos(player.getPos());
+        debugLayout.setView(glm::degrees(player.getYaw()), glm::degrees(player.getPitch()));
+        debugLayout.setGrounded(player.isGrounded(chunk));
+        debugLayout.setFlightmoded(player.isFlight());
+        debugLayout.show(width, height);
+
+        // GUI layout
+
+        guiLayout.show(width, height);
+
+        //
         glfwSwapBuffers(window);
     }
 
@@ -217,10 +205,8 @@ int main() {
     return 0;
 }
 
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-    // if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-    //     glfwGetCursorPos(window, &InputPoller::oldmx, &InputPoller::oldmy);
-}
+// void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+// }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
@@ -228,9 +214,5 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     }
 }
 
-void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
-    // InputPoller::dmx = xpos - InputPoller::oldmx;
-    // InputPoller::dmy = ypos - InputPoller::oldmy;
-    // InputPoller::oldmx = xpos;
-    // InputPoller::oldmy = ypos;
-}
+// void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
+// }

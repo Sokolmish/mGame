@@ -31,7 +31,7 @@ private:
 public:
     Font(const std::string &path, uint32_t width, uint32_t height);
     ~Font();
-    void RenderText(Shader &s, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color) const;
+    void RenderText(const Shader &s, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color) const;
     void ShowAtlas(int x, int y, int width, int height) const;
 };
 

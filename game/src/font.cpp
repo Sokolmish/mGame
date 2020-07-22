@@ -105,7 +105,7 @@ Font::~Font() {
     delete[] atlas;
 }
 
-void Font::RenderText(Shader &s, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color) const {
+void Font::RenderText(const Shader &s, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color) const {
     s.setUniform("textColor", color.x, color.y, color.z);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
