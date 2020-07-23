@@ -65,7 +65,7 @@ bool InputPoller::pollLooking(GLFWwindow *window, Player &player, float dt) {
     bool isUpdated = false;
     // Keyboard
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-        player.setYaw((player.getYaw(), coeffCameraKeyboard * dt));
+        player.setYaw(stepYaw(player.getYaw(), coeffCameraKeyboard * dt));
         isUpdated = true;
     }
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {

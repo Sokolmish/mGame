@@ -33,17 +33,76 @@ void loadChunk(GLuint vao, const Chunk &chunk) {
 
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
+    // TODO: WHYYYYYYY unsigned?!?!?!?!?!?!
     GLuint *buff = (GLuint*)chunk.getBuff();
     glBufferData(GL_ARRAY_BUFFER, chunk.getBuffSize(), buff, GL_DYNAMIC_DRAW);
     size_t stride = 4 * sizeof(uint32_t);
     glVertexAttribPointer(0, 3, GL_UNSIGNED_INT, GL_FALSE, stride, (void*)(0 * sizeof(GLuint)));
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 1, GL_UNSIGNED_INT, GL_FALSE, stride, (void*)(3 * sizeof(GLuint)));
-    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
     
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+}
+
+void loadHighlighter(GLuint vao, GLuint vbo) {
+    GLfloat *buff = new GLfloat[144];
+    for (size_t i = 0; i < 72; i++) {
+        buff[i + 0] = 0;
+        buff[72 + i] = 0; // Black
+    }
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, 24 * 6 * sizeof(GLfloat), buff, GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)(0 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)(72 * sizeof(GLfloat)));
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    delete[] buff;
+}
+
+void higlightBlock(GLuint vao, GLuint vbo, const glm::vec3 &pos) {
+    glLineWidth(3);
+    GLfloat *buff = new GLfloat[72];
+    GLfloat vs[8][3] = {
+        {-0, -0, +1},
+        {+1, -0, +1},
+        {+1, +1, +1},
+        {-0, +1, +1},
+        {-0, -0, -0},
+        {+1, -0, -0},
+        {+1, +1, -0},
+        {-0, +1, -0}
+    };
+    int es[6][4] = {
+        {2, 6, 7, 3},
+        {4, 5, 1, 0},
+        {7, 4, 0, 3},
+        {2, 1, 5, 6},
+        {6, 5, 4, 7},
+        {3, 0, 1, 2}
+    };
+    int ind = 0;
+    float offset = 0.0005f;
+    for (int i = 0; i < 6; i++)
+        for (int j = 0; j < 4; j++)
+            for (int k = 0; k < 3; k++)
+                buff[ind++] = pos[k] - offset + vs[es[i][j]][k] * (1 + offset + offset);
+    // TODO: EBO
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, 72 * sizeof(GLfloat), buff);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    for (int i = 0; i < 6; i++)
+        glDrawArrays(GL_LINE_LOOP, i * 4, 4);
+
+    glBindVertexArray(0);
+
+    delete[] buff;
 }
 
 int main() {
@@ -74,6 +133,7 @@ int main() {
     // Shaders loading
     Shader::shaderDirectory = "./game/shaders/";
     Shader cubeShader = Shader::loadShader("cubeShader");
+    Shader wireShader = Shader::loadShader("wireShader");
 
     // Texture loading
     Image image("./game/textures/demoTexture.png");
@@ -133,6 +193,11 @@ int main() {
     player.setPos(5.f, 7, 5.f);
     player.setYaw(M_PI_4);
 
+    GLuint highlightVao, highlightVbo;
+    glGenVertexArrays(1, &highlightVao);
+    glGenBuffers(1, &highlightVbo);
+    loadHighlighter(highlightVao, highlightVbo);
+
     //! END TEMP
 
     DebugLayout debugLayout;
@@ -176,7 +241,7 @@ int main() {
 
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
-        glEnable(GL_CCW);
+        glFrontFace(GL_CCW);
         glDisable(GL_BLEND);
 
         glBindTexture(GL_TEXTURE_2D, texture);
@@ -184,6 +249,14 @@ int main() {
         glDrawArrays(GL_POINTS, 0, chunk.getBlocksCount());
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0);
+
+        // Highlighting
+        wireShader.use();
+        wireShader.setUniform("m_proj_view", m_proj_view);
+        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
+        glDisable(GL_BLEND);
+        higlightBlock(highlightVao, highlightVbo, {8, 5, 7});
 
         // Debug layout
 

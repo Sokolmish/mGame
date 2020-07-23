@@ -1,3 +1,4 @@
 cubeShader:7
 textShader:5
 guiShader:5
+wireShader:5
