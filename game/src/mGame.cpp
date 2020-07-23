@@ -65,7 +65,7 @@ void loadHighlighter(GLuint vao, GLuint vbo) {
     delete[] buff;
 }
 
-void higlightBlock(GLuint vao, GLuint vbo, const glm::vec3 &pos) {
+void higlightBlock(GLuint vao, GLuint vbo, const glm::ivec3 &pos) {
     glLineWidth(3);
     GLfloat *buff = new GLfloat[72];
     GLfloat vs[8][3] = {
@@ -103,6 +103,28 @@ void higlightBlock(GLuint vao, GLuint vbo, const glm::vec3 &pos) {
     glBindVertexArray(0);
 
     delete[] buff;
+}
+
+bool getSelectedBlock(const Chunk &chunk, const Player &player, glm::ivec3 &block) {
+    const float maxlen = 3;
+    glm::vec3 orig = player.getCamera().pos;
+    glm::vec3 dir = player.getViewDir();
+    RayIntersector ray(orig, dir);
+    int dx = dir.x > 0 ? 1 : -1;
+    int dy = dir.y > 0 ? 1 : -1;
+    int dz = dir.z > 0 ? 1 : -1;
+    for (int xx = 0; xx <= maxlen; xx++) {
+        for (int zz = 0; zz <= maxlen; zz++) {
+            for (int yy = 0; yy <= maxlen; yy++) {
+                glm::ivec3 cur = glm::floor(orig + glm::vec3{ xx * dx, yy * dy, zz * dz });
+                if (chunk.checkBlock(cur) && ray.intersect(cur, cur + glm::ivec3(1.f))) {
+                    block = cur;
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }
 
 int main() {
@@ -251,19 +273,24 @@ int main() {
         glBindVertexArray(0);
 
         // Highlighting
-        wireShader.use();
-        wireShader.setUniform("m_proj_view", m_proj_view);
-        glEnable(GL_DEPTH_TEST);
-        glDisable(GL_CULL_FACE);
-        glDisable(GL_BLEND);
-        higlightBlock(highlightVao, highlightVbo, {8, 5, 7});
+        glm::ivec3 hiblock;
+        bool isBlockSelected = getSelectedBlock(chunk, player, hiblock);
+        if (isBlockSelected) {
+            wireShader.use();
+            wireShader.setUniform("m_proj_view", m_proj_view);
+            glEnable(GL_DEPTH_TEST);
+            glDisable(GL_CULL_FACE);
+            glDisable(GL_BLEND);
+            higlightBlock(highlightVao, highlightVbo, hiblock);
+        }
 
         // Debug layout
 
         debugLayout.setPos(player.getPos());
         debugLayout.setView(glm::degrees(player.getYaw()), glm::degrees(player.getPitch()));
         debugLayout.setGrounded(player.isGrounded(chunk));
-        debugLayout.setFlightmoded(player.isFlight());
+        debugLayout.setFlightmoded(player.isFlight());\
+        debugLayout.setSelectedBlock(hiblock, isBlockSelected);
         debugLayout.show(width, height);
 
         // GUI layout

@@ -7,6 +7,7 @@
 #include <iostream>
 #include <exception>
 #include <map>
+#include <string>
 
 struct RawChar {
     Font::Character ch;
@@ -60,7 +61,7 @@ Font::Font(const std::string &path, uint32_t width, uint32_t height) {
     atlasWidth = tileWidth * 16;
     atlasHeight = tileHeight * 8;
     atlas = new uint8_t[atlasWidth * atlasHeight];
-    memset(atlas, 0, atlasWidth * atlasHeight); // TODO: mark as debug feature
+    std::memset(atlas, 0, atlasWidth * atlasHeight); // TODO: mark as debug feature
 
     for (const auto &ch : rawChars) {
         int ind = 0;

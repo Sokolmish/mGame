@@ -5,8 +5,8 @@
 #include <sstream>
 
 DebugLayout::DebugLayout() :
-    font("./game/fonts/ConsolaMono-Bold.ttf", 0, 36),
-    shader(Shader::loadShader("textShader")) {
+    shader(Shader::loadShader("textShader")),
+    font("./game/fonts/ConsolaMono-Bold.ttf", 0, 36) {
 
 }
 
@@ -24,6 +24,10 @@ void DebugLayout::show(float width, float height) const {
     statusSS << "pos=" << pos << ";";
     statusSS << "yaw=" << formatFloat("%.2f", yaw) << ";";
     statusSS << "pitch=" << formatFloat("%.2f", pitch) << ";";
+    if (isSelectedBlock)
+        statusSS << "sel=" << selectedBlock << ";";
+    else
+        statusSS << "(none);";
     font.RenderText(shader, statusSS.str(), 10, height - 20, 0.5, glm::vec3(0.f));
     statusSS = std::stringstream();
     if (groundFlag)
@@ -52,4 +56,9 @@ void DebugLayout::setGrounded(bool flag) {
 
 void DebugLayout::setFlightmoded(bool flag) {
     flightmodFlag = flag;
+}
+
+void DebugLayout::setSelectedBlock(const glm::ivec3 &block, bool flag) {
+    isSelectedBlock = flag;
+    selectedBlock = block;
 }

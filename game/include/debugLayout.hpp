@@ -14,6 +14,8 @@ private:
     float yaw, pitch;
     bool groundFlag;
     bool flightmodFlag;
+    bool isSelectedBlock;
+    glm::ivec3 selectedBlock;
 
 public:
     DebugLayout();
@@ -24,6 +26,7 @@ public:
     void setView(float yaw, float pitch);
     void setGrounded(bool flag);
     void setFlightmoded(bool flag);
+    void setSelectedBlock(const glm::ivec3 &block, bool flag);
 };
 
 #endif

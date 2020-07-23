@@ -11,6 +11,18 @@ std::string formatFloat(const std::string &format, float num);
 
 std::ostream& operator<<(std::ostream &os, const glm::vec3 &v);
 
+std::ostream& operator<<(std::ostream &os, const glm::ivec3 &v);
+
 float fractf(float x);
+
+class RayIntersector {
+private:
+    glm::vec3 orig, dir;
+    glm::vec3 invdir; 
+    int sign[3]; 
+public:
+    RayIntersector(const glm::vec3 &orig, const glm::vec3 &dir);
+    bool intersect(const glm::vec3 &aa, const glm::vec3 &bb) const;
+};
 
 #endif

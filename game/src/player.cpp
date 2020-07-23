@@ -160,6 +160,7 @@ void Player::doPhysics(GLFWwindow *window, const Chunk &chunk, float dt) {
     }
 
     int dimMoved = -1;
+    // TODO: ...
     while (glm::length(delta) >= 0.15) {
         glm::vec3 curDelta = 0.15f * glm::normalize(delta);
         delta -= curDelta;
@@ -189,3 +190,4 @@ void Player::doPhysics(GLFWwindow *window, const Chunk &chunk, float dt) {
         setPos(pos3);
     }
 }
+
