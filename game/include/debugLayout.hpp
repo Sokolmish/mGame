@@ -18,6 +18,7 @@ private:
     bool isSelectedBlock;
     glm::ivec3 selectedBlock;
     WDir selectedFace;
+    uint fps;
 
 public:
     DebugLayout();
@@ -29,6 +30,7 @@ public:
     void setGrounded(bool flag);
     void setFlightmoded(bool flag);
     void setSelectedBlock(const glm::ivec3 &block, WDir face, bool flag);
+    void setFPS(uint fps);
 };
 
 #endif

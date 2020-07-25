@@ -225,11 +225,20 @@ int main() {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
     // Main loop
-    float oTime = glfwGetTime();
+    float oTime = glfwGetTime(); // Used for physics, updates every frame
+    float ooTime = oTime; // Used for fps counting, updates every second
+    uint framesCounter = 0;
     while (!glfwWindowShouldClose(window)) {
         float nTime = glfwGetTime();
         float dt = nTime - oTime;
         oTime = nTime;
+
+        framesCounter++;
+        if (nTime - ooTime >= 1.0) {
+            debugLayout.setFPS(framesCounter);
+            framesCounter = 0;
+            ooTime = nTime;
+        }
 
         glfwPollEvents();
         bool isCameraUpdated = false;

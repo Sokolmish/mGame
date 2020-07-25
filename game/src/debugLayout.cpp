@@ -19,28 +19,32 @@ void DebugLayout::show(float width, float height) const {
     glDisable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
-    std::stringstream statusSS;
-    statusSS << "pos:" << pos << " ";
-    statusSS << "yaw:" << formatFloat("%.2f", yaw) << " ";
-    statusSS << "pitch:" << formatFloat("%.2f", pitch) << " ";
-    font.RenderText(shader, statusSS.str(), 10, height - 20, 0.5, glm::vec3(0.f));
-
-    statusSS = std::stringstream();
+    // Position and view direction
+    std::stringstream builder;
+    builder << "pos:" << pos << " ";
+    builder << "yaw:" << formatFloat("%.2f", yaw) << " ";
+    builder << "pitch:" << formatFloat("%.2f", pitch) << " ";
+    font.RenderText(shader, builder.str(), 10, height - 20, 0.5, glm::vec3(0.f));
+    // Selected block
+    builder = std::stringstream();
     if (isSelectedBlock) {
-        statusSS << "sel:" << selectedBlock << " ";
-        statusSS << "face: " << WDirToString(selectedFace) << " ";
+        builder << "sel:" << selectedBlock << " ";
+        builder << "face: " << WDirToString(selectedFace) << " ";
     }
     else
-        statusSS << "-";
-    font.RenderText(shader, statusSS.str(), 10, height - 38, 0.5, glm::vec3(0.f));
-
-    statusSS = std::stringstream();
+        builder << "-";
+    font.RenderText(shader, builder.str(), 10, height - 38, 0.5, glm::vec3(0.f));
+    // Player flags
+    builder = std::stringstream();
     if (groundFlag)
-        statusSS << "grounded ";
+        builder << "grounded ";
     if (flightmodFlag)
-        statusSS << "flightmod ";
-    font.RenderText(shader, statusSS.str(), 10, height - 56, 0.5, glm::vec3(0.f));
+        builder << "flightmod ";
+    font.RenderText(shader, builder.str(), 10, height - 56, 0.5, glm::vec3(0.f));
+    // Perfomance
+    builder = std::stringstream();
+    builder << "fps: " << fps << " ftime: " << formatFloat("%.3f", 1.f / fps) << "ms ";
+    font.RenderText(shader, builder.str(), width - 280, height - 20, 0.5, glm::vec3(0.f));
 }
 
 void DebugLayout::setPos(const glm::vec3 &pos) {
@@ -68,4 +72,8 @@ void DebugLayout::setSelectedBlock(const glm::ivec3 &block, WDir face, bool flag
     isSelectedBlock = flag;
     selectedBlock = block;
     selectedFace = face;
+}
+
+void DebugLayout::setFPS(uint fps) {
+    this->fps = fps;
 }
