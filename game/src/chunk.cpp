@@ -16,7 +16,7 @@ void parseIndex(size_t index, char &x, char &y, char &z) {
 Chunk::Chunk() {
     data = std::map<short int, Block>();
     realBuffSize = 4;
-    buff = new uint32_t[realBuffSize * 4];
+    buff = new float[realBuffSize * 5];
 }
 
 Chunk::~Chunk() {
@@ -60,46 +60,32 @@ void Chunk::updateBuff() {
     if (realBuffSize < data.size()) {
         delete[] buff;
         realBuffSize = data.size() + 16;
-        buff = new uint32_t[realBuffSize * 4];
+        buff = new float[realBuffSize * 5];
     }
     else if (realBuffSize - data.size() > 32) {
         delete[] buff;
         realBuffSize = data.size() + 8;
-        buff = new uint32_t[realBuffSize * 4];
+        buff = new float[realBuffSize * 5];
     }
 
     int ind = 0;
-    for (const auto &e : data) {
-        uint32_t val = e.second.getData();
-        // TODO: event-based lighting sysytem
-        if (checkBlock(e.first + 1)) // x+1
-            val |= (1 << 21);
-        if (checkBlock(e.first - 1)) // x-1
-            val |= (1 << 22);
-        if (checkBlock(e.first + 16)) // z+1
-            val |= (1 << 23);
-        if (checkBlock(e.first - 16)) // z-1
-            val |= (1 << 24);
-        if (checkBlock(e.first + 256)) // y+1
-            val |= (1 << 25);
-        if (checkBlock(e.first - 256)) // y-1
-            val |= (1 << 26);
-        
+    for (const auto &e : data) {        
         char x, y, z;
         parseIndex(e.first, x, y, z);
-        buff[ind++] = x;
-        buff[ind++] = y;
-        buff[ind++] = z;
-        buff[ind++] = val;
+        buff[ind++] = (float)x;
+        buff[ind++] = (float)y;
+        buff[ind++] = (float)z;
+        buff[ind++] = (float)e.second.getTex().x;
+        buff[ind++] = (float)e.second.getTex().y;
     }
 }
 
-const uint32_t* Chunk::getBuff() const {
+const float* Chunk::getBuff() const {
     return buff;
 }
 
 size_t Chunk::getBuffSize() const {
-    return data.size() * 4 * sizeof(uint32_t);
+    return data.size() * 5 * sizeof(float);
 }
 
 size_t Chunk::getBlocksCount() const {

@@ -33,14 +33,14 @@ void loadChunk(GLuint vao, const Chunk &chunk) {
 
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    // TODO: WHYYYYYYY unsigned?!?!?!?!?!?!
-    GLuint *buff = (GLuint*)chunk.getBuff();
+
+    GLfloat *buff = (GLfloat*)chunk.getBuff();
     glBufferData(GL_ARRAY_BUFFER, chunk.getBuffSize(), buff, GL_DYNAMIC_DRAW);
-    size_t stride = 4 * sizeof(uint32_t);
-    glVertexAttribPointer(0, 3, GL_UNSIGNED_INT, GL_FALSE, stride, (void*)(0 * sizeof(GLuint)));
+    size_t stride = 5 * sizeof(GLfloat);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 1, GL_UNSIGNED_INT, GL_FALSE, stride, (void*)(3 * sizeof(GLuint)));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)(0 * sizeof(GLuint)));
     glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(GLuint)));
     
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -156,6 +156,8 @@ int main() {
 
     // Texture loading
     Image image("./game/textures/demoTexture.png");
+    Block::atlasWidth = image.getW();
+    Block::atlasHeight = image.getH();
     GLuint texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -163,7 +165,7 @@ int main() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 16, 16, 0, GL_RGB, GL_UNSIGNED_BYTE, image.getData());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.getW(), image.getH(), 0, GL_RGB, GL_UNSIGNED_BYTE, image.getData());
     glGenerateMipmap(GL_TEXTURE_2D);
     image.release();
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -188,22 +190,22 @@ int main() {
     chunk.startFilling();
     for (int xx = 0; xx < 16; xx++)
         for (int zz = 0; zz < 16; zz++)
-            chunk.setBlock(xx, 2, zz, Block(1));
+            chunk.setBlock(xx, 2, zz, BLOCK_DGRASS);
     for (int xx = 7; xx < 10; xx++)
         for (int zz = 7; zz < 10; zz++)
-            chunk.setBlock(xx, 5, zz, Block(1));
+            chunk.setBlock(xx, 5, zz, BLOCK_DSTONE);
     for (int yy = 0; yy < 16; yy++) 
-        chunk.setBlock(2, yy, 2, Block(1));
+        chunk.setBlock(2, yy, 2, BLOCK_DWOOD);
     for (int xx = 3; xx < 5; xx++) 
         for (int yy = 3; yy < 8; yy++) 
-            chunk.setBlock(xx, yy, 2, Block(1));
+            chunk.setBlock(xx, yy, 2, BLOCK_DWOOD);
     for (int zz = 5; zz < 9; zz++)
-        chunk.setBlock(5, 3, zz, Block(1));
+        chunk.setBlock(5, 3, zz, BLOCK_DSTONE);
     for (int zz = 9; zz < 13; zz++)
-        chunk.setBlock(5, 4, zz, Block(1));
-    chunk.setBlock(7, 6, 4, Block(1));
-    chunk.setBlock(7, 6, 3, Block(1));
-    chunk.setBlock(8, 6, 3, Block(1));
+        chunk.setBlock(5, 4, zz, BLOCK_DSTONE);
+    chunk.setBlock(7, 6, 4, BLOCK_DSTONE);
+    chunk.setBlock(7, 6, 3, BLOCK_DSTONE);
+    chunk.setBlock(8, 6, 3, BLOCK_DSTONE);
     chunk.stopFilling();
 
     GLuint vao;
@@ -266,6 +268,8 @@ int main() {
 
         cubeShader.setUniform("m_proj_view", m_proj_view);
         cubeShader.setUniform("cubeHalfSize", 1.f);
+        cubeShader.setUniform("textureW", Block::texSize / static_cast<float>(Block::atlasWidth));
+        cubeShader.setUniform("textureH", Block::texSize / static_cast<float>(Block::atlasHeight));
 
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);

@@ -10,7 +10,7 @@
 class Chunk {
 private:
     std::map<short int, Block> data;
-    uint32_t *buff;
+    float *buff;
     size_t realBuffSize;
 
     bool noBuffUpdateFlag = false;
@@ -25,7 +25,7 @@ public:
     bool checkBlock(const glm::ivec3 &vec) const;
 
     void updateBuff();
-    const uint32_t *getBuff() const;
+    const float *getBuff() const;
     size_t getBuffSize() const;
     size_t getBlocksCount() const;
 

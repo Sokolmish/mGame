@@ -3,48 +3,26 @@
 
 #include <stdint.h>
 #include "util.hpp"
+#include <glm/vec2.hpp>
 
 class Block {
 private:
-    uint32_t data;
-    // data:
-    // 0-15 bits    Id
-    // 16-18        Rotation about Y
-    // 19-20        Rotation about X
-    // 21-26        Lit (locked)
+    uint16_t id;
+    glm::vec2 tex;
 public:
-    Block() {
-        data = 0;
-    }
-    Block(short int Id) {
-        data = Id;
-    }
+    static uint atlasWidth, atlasHeight;
+    static uint texSize;
 
-    void rotateY(WDir dir) {
-        // data |= (dir & 0b11) << 16;
-        throw "NotImplemented";
-    }
-    void rotateX(int dir) {
-        // data |= (dir & 0b11) << 18;
-        throw "NotImplemented";
-    }
+    Block();
+    Block(short int id, const glm::vec2 &tex);
 
-    WDir getYRotation() const {
-        // return WDir(data & (0b11 << 16));
-        throw "NotImplemented";
-    }
-    int getXRotation() const {
-        // return WDir(data & (0b11 << 18));
-        throw "NotImplemented";
-    }
 
-    uint16_t getId() const {
-        return data & 0b1111111111111111; // 16 bit
-    }
-
-    uint32_t getData() const {
-        return data;
-    }
+    uint16_t getId() const;
+    glm::vec2 getTex() const;
 };
+
+#define BLOCK_DGRASS    Block(1, { 0, 0 })
+#define BLOCK_DSTONE    Block(1, { 1, 0 })
+#define BLOCK_DWOOD     Block(1, { 2, 0 })
 
 #endif

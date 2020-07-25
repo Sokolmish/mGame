@@ -2,9 +2,13 @@
 
 uniform mat4 m_proj_view;
 uniform float cubeHalfSize;
+uniform float textureW;
+uniform float textureH;
 
 layout (points) in;
 layout (triangle_strip, max_vertices = 24) out; // TODO: triangles_strip
+
+in vec2 vtex[];
 
 out vec2 texCoord;
 flat out int faceNum;
@@ -23,16 +27,16 @@ void emitQuad(int v1, int v2, int v3, int v4) {
     );
 
     gl_Position = vertices[v1];
-    texCoord = vec2(0, 0);
+    texCoord = vec2(vtex[0].x, vtex[0].y);
     EmitVertex();
     gl_Position = vertices[v2];
-    texCoord = vec2(0, 1);
+    texCoord = vec2(vtex[0].x, vtex[0].y + textureH);
     EmitVertex();
     gl_Position = vertices[v3];
-    texCoord = vec2(1, 0);
+    texCoord = vec2(vtex[0].x + textureW, vtex[0].y);
     EmitVertex();
     gl_Position = vertices[v4];
-    texCoord = vec2(1, 1);
+    texCoord = vec2(vtex[0].x + textureW, vtex[0].y + textureH);
     EmitVertex();
 
     EndPrimitive();
