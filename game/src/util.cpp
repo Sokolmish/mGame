@@ -3,6 +3,16 @@
 #include <array>
 
 
+std::string WDirToString(WDir dir) {
+    if (dir == NORTH) return "north";
+    else if (dir == SOUTH) return "south";
+    else if (dir == EAST) return "east";
+    else if (dir == WEST) return "west";
+    else if (dir == UP) return "up";
+    else if (dir == DOWN) return "down";
+    else return "error_WDir";
+}
+
 std::string formatFloat(const std::string &format, float num) {
     char str[16];
     snprintf(str, 16, format.c_str(), num);
@@ -31,14 +41,54 @@ RayIntersector::RayIntersector(const glm::vec3 &orig, const glm::vec3 &dir) : or
     sign[2] = (invdir.z < 0) ? 1 : 0;
 }
 
-bool RayIntersector::intersect(const glm::vec3 &aa, const glm::vec3 &bb) const {
-    float tmin, tmax, tymin, tymax, tzmin, tzmax;
+inline WDir getIntersectionFace(const glm::vec3 point, const glm::vec3 &aa, const glm::vec3 &bb) {
+    // TODO: optimization
+    float temp;
+
+    float min = fabsf(point.x - bb.x);
+    WDir face = EAST;
+
+    temp = fabsf(point.x - aa.x);
+    if (min > temp) {
+        min = temp;
+        face = WEST;
+    }
+
+    temp = fabsf(point.z - bb.z);
+    if (min > temp) {
+        min = temp;
+        face = SOUTH;
+    }
+
+    temp = fabsf(point.z - aa.z);
+    if (min > temp) {
+        min = temp;
+        face = NORTH;
+    }
+
+    temp = fabsf(point.y - bb.y);
+    if (min > temp) {
+        min = temp;
+        face = UP;
+    }
+
+    temp = fabsf(point.y - aa.y);
+    if (min > temp) {
+        min = temp;
+        face = DOWN;
+    }
+
+    return face;
+}
+
+bool RayIntersector::intersect(const glm::vec3 &aa, const glm::vec3 &bb, WDir &face) const {
+    float tmin, tmax, tymin, tymax, tzmin, tzmax, t;
     auto bounds = std::array{ aa, bb };
 
     tmin = (bounds[sign[0]].x - orig.x) * invdir.x;
-    tmax = (bounds[1-sign[0]].x - orig.x) * invdir.x;
+    tmax = (bounds[1 - sign[0]].x - orig.x) * invdir.x;
     tymin = (bounds[sign[1]].y - orig.y) * invdir.y;
-    tymax = (bounds[1-sign[1]].y - orig.y) * invdir.y;
+    tymax = (bounds[1 - sign[1]].y - orig.y) * invdir.y;
 
     if ((tmin > tymax) || (tymin > tmax))
         return false;
@@ -57,5 +107,13 @@ bool RayIntersector::intersect(const glm::vec3 &aa, const glm::vec3 &bb) const {
     if (tzmax < tmax)
         tmax = tzmax;
 
+    t = tmin; 
+    if (t < 0) { 
+        t = tmax; 
+        if (t < 0) 
+            return false; 
+    }
+
+    face = getIntersectionFace(orig + t * dir, aa, bb);
     return true;
 }

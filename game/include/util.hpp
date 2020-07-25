@@ -6,6 +6,7 @@
 
 enum WDir { NORTH = 1, EAST = 2, SOUTH = 4, WEST = 8, UP = 16, DOWN = 32 };
 typedef uint32_t WMultiDir;
+std::string WDirToString(WDir dir);
 
 std::string formatFloat(const std::string &format, float num);
 
@@ -22,7 +23,7 @@ private:
     int sign[3]; 
 public:
     RayIntersector(const glm::vec3 &orig, const glm::vec3 &dir);
-    bool intersect(const glm::vec3 &aa, const glm::vec3 &bb) const;
+    bool intersect(const glm::vec3 &aa, const glm::vec3 &bb, WDir &face) const;
 };
 
 #endif

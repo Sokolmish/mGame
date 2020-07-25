@@ -21,20 +21,26 @@ void DebugLayout::show(float width, float height) const {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
     std::stringstream statusSS;
-    statusSS << "pos=" << pos << ";";
-    statusSS << "yaw=" << formatFloat("%.2f", yaw) << ";";
-    statusSS << "pitch=" << formatFloat("%.2f", pitch) << ";";
-    if (isSelectedBlock)
-        statusSS << "sel=" << selectedBlock << ";";
-    else
-        statusSS << "(none);";
+    statusSS << "pos:" << pos << " ";
+    statusSS << "yaw:" << formatFloat("%.2f", yaw) << " ";
+    statusSS << "pitch:" << formatFloat("%.2f", pitch) << " ";
     font.RenderText(shader, statusSS.str(), 10, height - 20, 0.5, glm::vec3(0.f));
+
+    statusSS = std::stringstream();
+    if (isSelectedBlock) {
+        statusSS << "sel:" << selectedBlock << " ";
+        statusSS << "face: " << WDirToString(selectedFace) << " ";
+    }
+    else
+        statusSS << "-";
+    font.RenderText(shader, statusSS.str(), 10, height - 38, 0.5, glm::vec3(0.f));
+
     statusSS = std::stringstream();
     if (groundFlag)
-        statusSS << "grounded;";
+        statusSS << "grounded ";
     if (flightmodFlag)
-        statusSS << "flightmod;";
-    font.RenderText(shader, statusSS.str(), 10, height - 38, 0.5, glm::vec3(0.f));
+        statusSS << "flightmod ";
+    font.RenderText(shader, statusSS.str(), 10, height - 56, 0.5, glm::vec3(0.f));
 }
 
 void DebugLayout::setPos(const glm::vec3 &pos) {
@@ -58,7 +64,8 @@ void DebugLayout::setFlightmoded(bool flag) {
     flightmodFlag = flag;
 }
 
-void DebugLayout::setSelectedBlock(const glm::ivec3 &block, bool flag) {
+void DebugLayout::setSelectedBlock(const glm::ivec3 &block, WDir face, bool flag) {
     isSelectedBlock = flag;
     selectedBlock = block;
+    selectedFace = face;
 }

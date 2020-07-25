@@ -4,6 +4,7 @@
 #include <glm/vec3.hpp>
 #include "shader.hpp"
 #include "font.hpp"
+#include "util.hpp"
 
 class DebugLayout {
 private:
@@ -16,6 +17,7 @@ private:
     bool flightmodFlag;
     bool isSelectedBlock;
     glm::ivec3 selectedBlock;
+    WDir selectedFace;
 
 public:
     DebugLayout();
@@ -26,7 +28,7 @@ public:
     void setView(float yaw, float pitch);
     void setGrounded(bool flag);
     void setFlightmoded(bool flag);
-    void setSelectedBlock(const glm::ivec3 &block, bool flag);
+    void setSelectedBlock(const glm::ivec3 &block, WDir face, bool flag);
 };
 
 #endif

@@ -99,13 +99,10 @@ void higlightBlock(GLuint vao, GLuint vbo, const glm::ivec3 &pos) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     for (int i = 0; i < 6; i++)
         glDrawArrays(GL_LINE_LOOP, i * 4, 4);
-
-    glBindVertexArray(0);
-
     delete[] buff;
 }
 
-bool getSelectedBlock(const Chunk &chunk, const Player &player, glm::ivec3 &block) {
+bool getSelectedBlock(const Chunk &chunk, const Player &player, glm::ivec3 &block, WDir &face) {
     const float maxlen = 3;
     glm::vec3 orig = player.getCamera().pos;
     glm::vec3 dir = player.getViewDir();
@@ -117,7 +114,7 @@ bool getSelectedBlock(const Chunk &chunk, const Player &player, glm::ivec3 &bloc
         for (int zz = 0; zz <= maxlen; zz++) {
             for (int yy = 0; yy <= maxlen; yy++) {
                 glm::ivec3 cur = glm::floor(orig + glm::vec3{ xx * dx, yy * dy, zz * dz });
-                if (chunk.checkBlock(cur) && ray.intersect(cur, cur + glm::ivec3(1.f))) {
+                if (chunk.checkBlock(cur) && ray.intersect(cur, cur + glm::ivec3(1.f), face)) {
                     block = cur;
                     return true;
                 }
@@ -274,7 +271,8 @@ int main() {
 
         // Highlighting
         glm::ivec3 hiblock;
-        bool isBlockSelected = getSelectedBlock(chunk, player, hiblock);
+        WDir hiface;
+        bool isBlockSelected = getSelectedBlock(chunk, player, hiblock, hiface);
         if (isBlockSelected) {
             wireShader.use();
             wireShader.setUniform("m_proj_view", m_proj_view);
@@ -289,8 +287,8 @@ int main() {
         debugLayout.setPos(player.getPos());
         debugLayout.setView(glm::degrees(player.getYaw()), glm::degrees(player.getPitch()));
         debugLayout.setGrounded(player.isGrounded(chunk));
-        debugLayout.setFlightmoded(player.isFlight());\
-        debugLayout.setSelectedBlock(hiblock, isBlockSelected);
+        debugLayout.setFlightmoded(player.isFlight());
+        debugLayout.setSelectedBlock(hiblock, hiface, isBlockSelected);
         debugLayout.show(width, height);
 
         // GUI layout
