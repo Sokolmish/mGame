@@ -13,24 +13,18 @@ private:
     float *buff;
     size_t realBuffSize;
 
-    bool noBuffUpdateFlag = false;
+    bool noBuffUpdateFlag = false; // mutable?
+
+    static size_t getIndex(char x, char y, char z);
+    static void parseIndex(size_t index, char &x, char &y, char &z);
+
+    friend class GameWorld;
 public:
     Chunk();
     ~Chunk();
 
     void setBlock(char x, char y, char z, const Block &block);
     Block getBlock(char x, char y, char z) const;
-    bool checkBlock(int index) const;
-    bool checkBlock(char x, char y, char z) const;
-    bool checkBlock(const glm::ivec3 &vec) const;
-
-    void updateBuff();
-    const float *getBuff() const;
-    size_t getBuffSize() const;
-    size_t getBlocksCount() const;
-
-    void startFilling();
-    void stopFilling();
 };
 
 #endif

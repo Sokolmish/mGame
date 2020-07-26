@@ -91,28 +91,7 @@ void Player::setFlight(bool flight) {
     flightMode = flight;
 }
 
-bool Player::isGrounded(const Chunk &chunk) const {
-    if ((_cached & 0b01) != 0)
-        return (_cached & 0b10) != 0;
-
-    glm::vec3 pos = getPos();
-    for (int xx = pos.x - halfSize; xx <= pos.x + halfSize; xx++) {
-        for (int zz = pos.z - halfSize; zz <= pos.z + halfSize; zz++) {
-            if (fractf(pos.y) < 5e-3f && chunk.checkBlock(xx, pos.y - 1, zz)) {
-                _cached = 0b11;
-                return true;
-            }
-            else if (fractf(pos.y) > 1.f - 2e-3f && chunk.checkBlock(xx, pos.y, zz)) {
-                _cached = 0b11;
-                return true;
-            }
-        }
-    }
-    _cached = 0b01;
-    return false;
-}
-
-bool Player::checkNewPos(const Chunk &chunk, const glm::vec3 &pos) const {
+bool Player::checkNewPos(const GameWorld &world, const glm::vec3 &pos) const {
     if (pos.x - halfSize < 0 || pos.x + halfSize > 16)
         return false;
     if (pos.z - halfSize < 0 || pos.z + halfSize > 16)
@@ -120,7 +99,7 @@ bool Player::checkNewPos(const Chunk &chunk, const glm::vec3 &pos) const {
     for (int yy = pos.y; yy <= pos.y + height; yy++) {
         for (int xx = pos.x - halfSize; xx <= pos.x + halfSize; xx++) {
             for (int zz = pos.z - halfSize; zz <= pos.z + halfSize; zz++) {
-                if (chunk.checkBlock(xx, yy, zz))
+                if (world.checkBlock(xx, yy, zz))
                     return false;
             }
         }
@@ -128,11 +107,11 @@ bool Player::checkNewPos(const Chunk &chunk, const glm::vec3 &pos) const {
     return true;
 }
 
-void Player::doPhysics(GLFWwindow *window, const Chunk &chunk, float dt) {
+void Player::doPhysics(GLFWwindow *window, const GameWorld &world, float dt) {
     glm::vec3 delta = InputPoller::pollMovement(window, *this, dt);
     glm::vec3 lastPos = getPos();
 
-    bool grounded = isGrounded(chunk);
+    bool grounded = isGrounded(world);
     
     if (!isFlight()) {
         if (!grounded) {
@@ -169,7 +148,7 @@ void Player::doPhysics(GLFWwindow *window, const Chunk &chunk, float dt) {
         for (int i = 0; i < 3; i++) {
             glm::vec3 td(0.f);
             td[i] = curDelta[i];
-            if (checkNewPos(chunk, pos3 + td)) {
+            if (checkNewPos(world, pos3 + td)) {
                 pos3 += td;
                 dimMoved++;
             }
@@ -184,10 +163,45 @@ void Player::doPhysics(GLFWwindow *window, const Chunk &chunk, float dt) {
         for (int i = 0; i < 3; i++) {
             glm::vec3 td(0.f);
             td[i] = delta[i];
-            if (checkNewPos(chunk, pos3 + td))
+            if (checkNewPos(world, pos3 + td))
                 pos3 += td;
         }
         setPos(pos3);
     }
 }
 
+bool Player::getSelectedBlock(const GameWorld &world, glm::ivec3 &block, WDir &face) {
+    const float maxlen = 3;
+    glm::vec3 orig = getCamera().pos;
+    glm::vec3 dir = getViewDir();
+    RayIntersector ray(orig, dir);
+    int dx = dir.x > 0 ? 1 : -1;
+    int dy = dir.y > 0 ? 1 : -1;
+    int dz = dir.z > 0 ? 1 : -1;
+    for (int xx = 0; xx <= maxlen; xx++) {
+        for (int zz = 0; zz <= maxlen; zz++) {
+            for (int yy = 0; yy <= maxlen; yy++) {
+                glm::ivec3 cur = glm::floor(orig + glm::vec3{ xx * dx, yy * dy, zz * dz });
+                if (world.checkBlock(cur) && ray.intersect(cur, cur + glm::ivec3(1.f), face)) {
+                    block = cur;
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+
+bool Player::isGrounded(const GameWorld &world) const {
+    glm::vec3 pos = getPos();
+    for (int xx = pos.x - halfSize; xx <= pos.x + halfSize; xx++) {
+        for (int zz = pos.z - halfSize; zz <= pos.z + halfSize; zz++) {
+            if (fractf(pos.y) < 5e-3f && world.checkBlock(xx, pos.y - 1, zz))
+                return true;
+            else if (fractf(pos.y) > 1.f - 2e-3f && world.checkBlock(xx, pos.y, zz))
+                return true;
+        }
+    }
+    return false;
+}

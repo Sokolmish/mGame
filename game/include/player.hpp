@@ -1,11 +1,12 @@
 #ifndef __PLAYER_H__
 #define __PLAYER_H__
 
-#include "camera.hpp"
+#include "../include/glew.hpp"
 #include <GLFW/glfw3.h>
 #include <glm/vec3.hpp>
+#include "camera.hpp"
 #include "chunk.hpp"
-
+#include "gameWorld.hpp"
 
 class Player {
 private:
@@ -15,7 +16,7 @@ private:
     glm::vec3 acceleration;
     bool flightMode;
 
-    bool checkNewPos(const Chunk &chunk, const glm::vec3 &pos) const;
+    bool checkNewPos(const GameWorld &world, const glm::vec3 &pos) const;
 
     mutable char _cached = 0;
 
@@ -46,9 +47,10 @@ public:
 
     bool isFlight() const;
     void setFlight(bool flight);
-    bool isGrounded(const Chunk &chunk) const;
 
-    void doPhysics(GLFWwindow *window, const Chunk &chunk, float dt);
+    void doPhysics(GLFWwindow *window, const GameWorld &world, float dt);
+    bool isGrounded(const GameWorld &world) const;
+    bool getSelectedBlock(const GameWorld &world, glm::ivec3 &block, WDir &face);
 };
 
 #endif
