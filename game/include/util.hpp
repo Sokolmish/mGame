@@ -1,8 +1,18 @@
 #ifndef __UTIL_H__
 #define __UTIL_H__
 
-#include <iostream>
+#include "glew.hpp"
+#include "GLFW/glfw3.h"
+
+#include "param.hpp"
+
+#include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include <iostream>
 
 enum WDir { NORTH = 1, EAST = 2, SOUTH = 4, WEST = 8, UP = 16, DOWN = 32 };
 typedef uint32_t WMultiDir;
@@ -25,5 +35,8 @@ public:
     RayIntersector(const glm::vec3 &orig, const glm::vec3 &dir);
     bool intersect(const glm::vec3 &aa, const glm::vec3 &bb, WDir &face) const;
 };
+
+bool initGLFW(GLFWwindow *&window);
+bool initGLEW();
 
 #endif

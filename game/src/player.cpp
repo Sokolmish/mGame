@@ -1,6 +1,6 @@
 #include "../include/player.hpp"
-#include <cmath>
 #include "../include/inputEvents.hpp"
+#include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
 
 Player::Player() {

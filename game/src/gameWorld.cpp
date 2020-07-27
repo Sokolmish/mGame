@@ -87,8 +87,8 @@ void GameWorld::show(const glm::mat4 &m_proj_view) const {
         glDrawArrays(GL_POINTS, 0, count);
     }
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 

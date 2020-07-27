@@ -2,7 +2,6 @@
 #include <cmath>
 #include <array>
 
-
 std::string WDirToString(WDir dir) {
     if (dir == NORTH) return "north";
     else if (dir == SOUTH) return "south";
@@ -115,5 +114,32 @@ bool RayIntersector::intersect(const glm::vec3 &aa, const glm::vec3 &bb, WDir &f
     }
 
     face = getIntersectionFace(orig + t * dir, aa, bb);
+    return true;
+}
+
+bool initGLFW(GLFWwindow *&window) {
+    if (!glfwInit()) {
+        std::cout << "Failed to initialize GLFW" << std::endl;
+        return false;
+    }
+    std::string title = std::string(WINDOW_TITLE) + " | v" + std::string(VERSION);
+    window = glfwCreateWindow(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, title.c_str(), NULL, NULL);
+    if (!window) {
+        std::cout << "Failed to initialize window" << std::endl;
+        glfwTerminate();
+        return false;
+    }
+    glfwMakeContextCurrent(window);
+    return true;
+}
+
+bool initGLEW() {
+    glewExperimental = GL_TRUE;
+    GLenum glewStatus = glewInit();
+    if (glewStatus != GLEW_OK || !GLEW_VERSION_2_1) {
+        std::cout << "Failed to initialize GLEW" << std::endl;
+        glfwTerminate();
+        return false;
+    }
     return true;
 }

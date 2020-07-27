@@ -1,7 +1,4 @@
 #include "../include/debugLayout.hpp"
-#include "../include/util.hpp"
-#include <GL/gl.h>
-#include <glm/gtc/matrix_transform.hpp>
 #include <sstream>
 
 DebugLayout::DebugLayout() :
@@ -10,11 +7,10 @@ DebugLayout::DebugLayout() :
 
 }
 
-void DebugLayout::show(float width, float height) const {
+void DebugLayout::show(const glm::mat4 &m_ortho, float width, float height) const {
     shader.use();
 
-    glm::mat4 proj = glm::ortho(0.0f, width, 0.0f, height);
-    shader.setUniform("projection", proj);
+    shader.setUniform("projection", m_ortho);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
     glEnable(GL_BLEND);

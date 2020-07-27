@@ -1,6 +1,4 @@
 #include "../include/guiLayout.hpp"
-#include <GL/gl.h>
-#include <glm/gtc/matrix_transform.hpp>
 
 GuiLayout::GuiLayout() :
         shader(Shader::loadShader("guiShader")) {
@@ -31,16 +29,13 @@ GuiLayout::GuiLayout() :
     delete[] buff;
 }
 
-void GuiLayout::show(float width, float height) const {
+void GuiLayout::show(const glm::mat4 &m_ortho, float width, float height) const {
     shader.use();
-    glm::mat4 proj = glm::ortho(0.0f, (float)width, 0.0f, (float)height);
-    shader.setUniform("projection", proj);
+    shader.setUniform("projection", m_ortho);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    glBindVertexArray(VAO);
 
     GLfloat cx = width / 2.f;
     GLfloat cy = height / 2.f;
@@ -63,7 +58,8 @@ void GuiLayout::show(float width, float height) const {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 12);
-
     glBindVertexArray(0);
 }

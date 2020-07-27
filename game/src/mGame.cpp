@@ -4,9 +4,6 @@
 #include <iostream>
 #include <string>
 #include <cmath>
-#include <glm/vec3.hpp>
-#include <glm/mat4x4.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <sstream>
 
 #include "../include/param.hpp"
@@ -20,6 +17,7 @@
 #include "../include/debugLayout.hpp"
 #include "../include/guiLayout.hpp"
 #include "../include/gameWorld.hpp"
+#include "../include/blocksHighlighter.hpp"
 
 void key_callback(GLFWwindow*, int, int, int, int);
 void mouse_button_callback(GLFWwindow*, int, int, int);
@@ -31,107 +29,7 @@ bool mouseLeftFlag = false;
 
 Player *tempPlayerRef;
 
-void loadHighlighter(GLuint vao, GLuint vbo) {
-    GLfloat *buff = new GLfloat[144];
-    for (size_t i = 0; i < 72; i++) {
-        buff[i + 0] = 0;
-        buff[72 + i] = 0; // Black
-    }
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, 24 * 6 * sizeof(GLfloat), buff, GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)(0 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)(72 * sizeof(GLfloat)));
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
-    delete[] buff;
-}
-
-void higlightBlock(GLuint vao, GLuint vbo, const glm::ivec3 &pos) {
-    glLineWidth(3);
-    GLfloat *buff = new GLfloat[72];
-    GLfloat vs[8][3] = {
-        {-0, -0, +1},
-        {+1, -0, +1},
-        {+1, +1, +1},
-        {-0, +1, +1},
-        {-0, -0, -0},
-        {+1, -0, -0},
-        {+1, +1, -0},
-        {-0, +1, -0}
-    };
-    int es[6][4] = {
-        {2, 6, 7, 3},
-        {4, 5, 1, 0},
-        {7, 4, 0, 3},
-        {2, 1, 5, 6},
-        {6, 5, 4, 7},
-        {3, 0, 1, 2}
-    };
-    int ind = 0;
-    float offset = 0.0005f;
-    for (int i = 0; i < 6; i++)
-        for (int j = 0; j < 4; j++)
-            for (int k = 0; k < 3; k++)
-                buff[ind++] = pos[k] - offset + vs[es[i][j]][k] * (1 + offset + offset);
-    // TODO: EBO
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, 72 * sizeof(GLfloat), buff);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    for (int i = 0; i < 6; i++)
-        glDrawArrays(GL_LINE_LOOP, i * 4, 4);
-    glBindVertexArray(0);
-    delete[] buff;
-}
-
-int main() {
-    // Window init
-    GLFWwindow* window;
-    if (!glfwInit()) {
-        std::cout << "Failed to initialize GLFW" << std::endl;
-        return -1;
-    }
-    std::string title = std::string(WINDOW_TITLE) + " | v" + std::string(VERSION);
-    window = glfwCreateWindow(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, title.c_str(), NULL, NULL);
-    if (!window) {
-        std::cout << "Failed to initialize window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(window);
-
-    // GLEW init
-    glewExperimental = GL_TRUE;
-    GLenum glewStatus = glewInit();
-    if (glewStatus != GLEW_OK || !GLEW_VERSION_2_1) {
-        std::cout << "Failed to initialize GLEW" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-
-    // Shaders loading
-    Shader::shaderDirectory = "./game/shaders/";
-    Shader wireShader = Shader::loadShader("wireShader");
-
-    int width, height;
-    glfwGetWindowSize(window, &width, &height);
-    float ratio = (float)width / (float)height;
-    glClearColor(0.509f, 0.788f, 0.902f, 1.f);
-    glfwSwapInterval(0);
-
-    glfwSetKeyCallback(window, key_callback);
-    glfwSetMouseButtonCallback(window, mouse_button_callback);
-    // glfwSetCursorPosCallback(window, cursor_position_callback);
-    // glfwSetWindowSizeCallback(window, window_size_callback);
-
-    Player player;
-    GameWorld world;
-
-    //! TEMP
+void tempInit(GameWorld &world, Player &player) {
     tempPlayerRef = &player;
 
     for (int xx = 0; xx < 16; xx++)
@@ -155,16 +53,34 @@ int main() {
 
     player.setPos(5.f, 7, 5.f);
     player.setYaw(M_PI_4);
+}
 
-    GLuint highlightVao, highlightVbo;
-    glGenVertexArrays(1, &highlightVao);
-    glGenBuffers(1, &highlightVbo);
-    loadHighlighter(highlightVao, highlightVbo);
+int main() {
+    GLFWwindow* window;
+    if (!initGLFW(window) || !initGLEW())
+        return -1;
 
-    //! END TEMP
+    Shader::shaderDirectory = "./game/shaders/";
+
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
+    // glfwSetCursorPosCallback(window, cursor_position_callback);
+    // glfwSetWindowSizeCallback(window, window_size_callback);
+
+    int width, height;
+    glfwGetWindowSize(window, &width, &height);
+    float ratio = (float)width / (float)height;
+    glClearColor(0.509f, 0.788f, 0.902f, 1.f);
+    glfwSwapInterval(0);
+
+    Player player;
+    GameWorld world;
+
+    tempInit(world, player);
 
     DebugLayout debugLayout;
     GuiLayout guiLayout;
+    BlocksHighlighter blocksSelectLayout;    
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
@@ -195,31 +111,27 @@ int main() {
     
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Cube shader
+        // Matrices
         Camera cam = player.getCamera();        
         glm::mat4 m_proj_view =
             glm::perspective(45.f, ratio, 0.005f, 100.f) *
-            glm::scale(glm::mat4(1.f), glm::vec3(cam.zoom, cam.zoom, 1.f)) *
             glm::scale(glm::mat4(1.f), glm::vec3(0.3, 0.3, 0.3)) *
+            glm::scale(glm::mat4(1.f), glm::vec3(cam.zoom, cam.zoom, 1.f)) *
             glm::rotate(glm::mat4(1.f), cam.roll, glm::vec3(0, 0, -1)) *
             glm::rotate(glm::mat4(1.f), cam.pitch, glm::vec3(-1, 0, 0)) *
             glm::rotate(glm::mat4(1.f), cam.yaw, glm::vec3(0, 1, 0)) *
             glm::translate(glm::mat4(1.f), -cam.pos);
+        glm::mat4 m_ortho = glm::ortho(0.0f, (float)width, 0.0f, (float)height);
         
+        // Cube shader
         world.show(m_proj_view);
 
         // Highlighting
         glm::ivec3 hiblock;
         WDir hiface;
         bool isBlockSelected = player.getSelectedBlock(world, hiblock, hiface);
-        if (isBlockSelected) {
-            wireShader.use();
-            wireShader.setUniform("m_proj_view", m_proj_view);
-            glEnable(GL_DEPTH_TEST);
-            glDisable(GL_CULL_FACE);
-            glDisable(GL_BLEND);
-            higlightBlock(highlightVao, highlightVbo, hiblock);
-        }
+        if (isBlockSelected)
+            blocksSelectLayout.show(m_proj_view, hiblock);
 
         // Setting/destroying blocks
         if (mouseLeftFlag && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) != GLFW_PRESS)
@@ -265,10 +177,10 @@ int main() {
         debugLayout.setGrounded(player.isGrounded(world));
         debugLayout.setFlightmoded(player.isFlight());
         debugLayout.setSelectedBlock(hiblock, hiface, isBlockSelected);
-        debugLayout.show(width, height);
+        debugLayout.show(m_ortho, width, height);
 
         // GUI layout
-        guiLayout.show(width, height);
+        guiLayout.show(m_ortho, width, height);
 
         // Swap buffers
         glfwSwapBuffers(window);
