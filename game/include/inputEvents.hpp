@@ -1,7 +1,7 @@
 #ifndef __INPUT_EVENTS_H__
 #define __INPUT_EVENTS_H__
 
-#include "../include/glew.hpp"
+#include "glew.hpp"
 #include <GLFW/glfw3.h>
 #include "player.hpp"
 

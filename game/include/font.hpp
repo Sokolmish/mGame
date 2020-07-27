@@ -2,7 +2,6 @@
 #define __FONT_H__
 
 #include "glew.hpp"
-
 #include <string>
 #include <vector>
 #include <map>

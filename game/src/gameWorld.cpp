@@ -1,10 +1,8 @@
+#include "../include/util.hpp"
 #include "../include/gameWorld.hpp"
 #include "../include/image.hpp"
 #include "../include/block.hpp"
 #include "../include/camera.hpp"
-#include "../include/util.hpp"
-#include <glm/vec3.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
 GameWorld::GameWorld() : cubeShader(Shader::loadShader("cubeShader")) {
     glGenVertexArrays(1, &cubeVAO);

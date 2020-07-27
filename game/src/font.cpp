@@ -6,8 +6,6 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <exception>
-#include <map>
-#include <string>
 
 struct RawChar {
     Font::Character ch;

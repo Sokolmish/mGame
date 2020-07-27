@@ -2,7 +2,6 @@
 #define __SHADER_H__
 
 #include "glew.hpp"
-#include <GL/gl.h>
 
 #include <string>
 #include <exception>

@@ -1,11 +1,8 @@
 #ifndef __PLAYER_H__
 #define __PLAYER_H__
 
-#include "../include/glew.hpp"
-#include <GLFW/glfw3.h>
-#include <glm/vec3.hpp>
+#include "util.hpp"
 #include "camera.hpp"
-#include "chunk.hpp"
 #include "gameWorld.hpp"
 
 class Player {

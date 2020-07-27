@@ -1,10 +1,9 @@
 #ifndef __GAME_WORLD_H__
 #define __GAME_WORLD_H__
 
+#include "util.hpp"
 #include "chunk.hpp"
 #include "shader.hpp"
-#include "../include/glew.hpp"
-#include <glm/mat4x4.hpp>
 
 class GameWorld {
 private:

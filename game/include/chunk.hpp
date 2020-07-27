@@ -4,7 +4,6 @@
 #include <vector>
 #include <map>
 #include <glm/vec3.hpp>
-
 #include "block.hpp"
 
 class Chunk {

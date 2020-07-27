@@ -1,7 +1,6 @@
 #include "../include/player.hpp"
 #include "../include/inputEvents.hpp"
 #include <cmath>
-#include <glm/gtc/matrix_transform.hpp>
 
 Player::Player() {
     halfSize = 0.3f;
