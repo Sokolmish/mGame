@@ -222,9 +222,12 @@ int main() {
         }
 
         // Setting/destroying blocks
-        if (mouseRightFlag) {
+        if (mouseLeftFlag && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) != GLFW_PRESS)
+            mouseLeftFlag = false;
+        if (mouseRightFlag && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) != GLFW_PRESS)
             mouseRightFlag = false;
-            
+
+        if (mouseRightFlag) {
             glm::ivec3 setPos = hiblock;
             if (hiface == NORTH)
                 setPos.z--;
@@ -239,13 +242,21 @@ int main() {
             else
                 setPos.y--;
 
-            if (!world.checkBlock(setPos))
+            glm::vec3 pos = player.getPos();
+            bool noInPlayer = (int)pos.y > setPos.y || setPos.y > (int)(pos.y + player.height) ||
+                (int)(pos.x - player.halfSize) > setPos.x || setPos.x > (int)(pos.x + player.halfSize) ||
+                (int)(pos.z - player.halfSize) > setPos.z || setPos.z > (int)(pos.z + player.halfSize);
+
+            if (noInPlayer && !world.checkBlock(setPos)) {
                 world.setBlock(setPos, BLOCK_DSTONE);
+                mouseRightFlag = false;
+            }
         }
         else if (mouseLeftFlag) {
-            mouseLeftFlag = false;
-            if (world.checkBlock(hiblock))
+            if (world.checkBlock(hiblock)) {
                 world.setBlock(hiblock, Block(0, { 0, 0 }));
+                mouseLeftFlag = false;
+            }
         }
 
         // Debug layout
