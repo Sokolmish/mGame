@@ -139,7 +139,7 @@ void Player::doPhysics(GLFWwindow *window, const GameWorld &world, float dt) {
 
     int dimMoved = -1;
     // TODO: ...
-    while (glm::length(delta) >= 0.15) {
+    while (glm::length(delta) >= 0.1) {
         glm::vec3 curDelta = 0.15f * glm::normalize(delta);
         delta -= curDelta;
         glm::vec3 pos3 = getPos();

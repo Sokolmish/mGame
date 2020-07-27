@@ -3,13 +3,13 @@
 #include <array>
 
 std::string WDirToString(WDir dir) {
-    if (dir == NORTH) return "north";
-    else if (dir == SOUTH) return "south";
-    else if (dir == EAST) return "east";
-    else if (dir == WEST) return "west";
-    else if (dir == UP) return "up";
-    else if (dir == DOWN) return "down";
-    else return "error_WDir";
+    if (dir == NORTH)       return "north";
+    else if (dir == SOUTH)  return "south";
+    else if (dir == EAST)   return "east";
+    else if (dir == WEST)   return "west";
+    else if (dir == UP)     return "up";
+    else if (dir == DOWN)   return "down";
+    else                    return "error_WDir";
 }
 
 std::string formatFloat(const std::string &format, float num) {

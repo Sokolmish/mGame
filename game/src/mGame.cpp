@@ -6,7 +6,6 @@
 #include <cmath>
 #include <sstream>
 
-#include "../include/param.hpp"
 #include "../include/util.hpp"
 #include "../include/inputEvents.hpp"
 #include "../include/shader.hpp"
