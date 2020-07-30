@@ -19,6 +19,8 @@ enum WDir { NORTH = 1, EAST = 2, SOUTH = 4, WEST = 8, UP = 16, DOWN = 32 };
 typedef uint32_t WMultiDir;
 std::string WDirToString(WDir dir);
 
+enum MouseButton { MOUSE_NONE, MOUSE_RIGHT, MOUSE_LEFT, MOUSE_MIDDLE };
+
 std::string formatFloat(const std::string &format, float num);
 
 std::ostream& operator<<(std::ostream &os, const glm::vec3 &v);
