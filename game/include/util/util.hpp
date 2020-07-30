@@ -42,4 +42,8 @@ public:
 bool initGLFW(GLFWwindow *&window);
 bool initGLEW();
 
+int nfloor(float a);
+int ndiv(int a, int b);
+int nmod(int a, int b);
+
 #endif

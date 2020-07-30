@@ -13,15 +13,13 @@ void Chunk::parseIndex(size_t index, char &x, char &y, char &z) {
 } 
 
 
-Chunk::Chunk() {
+Chunk::Chunk(int offx, int offz) {
     data = std::map<short int, Block>();
-    realBuffSize = 4;
-    buff = new float[realBuffSize * 5];
+    offset = { offx, 0, offz };
 }
 
 Chunk::~Chunk() {
-    if (realBuffSize != 0)
-        delete[] buff;
+    
 }
 
 void Chunk::setBlock(char x, char y, char z, const Block &block) {

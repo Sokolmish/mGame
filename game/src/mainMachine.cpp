@@ -5,9 +5,13 @@ float MainMachine::delayUse = 0.2;
 
 MainMachine::MainMachine(GLFWwindow *window) {
     this->window = window;
-    globalState = GlobalGameState::LOADING_SCREEN;
+    setState(GlobalGameState::LOADING_SCREEN);
+
+    player = new Player();
+    world = new GameWorld(3, 3);
     
-    hideCursor = true;
+    // hideCursor = true;
+    hideCursor = false;
     if (hideCursor)
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     else
@@ -23,27 +27,27 @@ MainMachine::MainMachine(GLFWwindow *window) {
     //! TEMP
     for (int xx = 0; xx < 16; xx++)
         for (int zz = 0; zz < 16; zz++)
-            world.setBlock(xx, 2, zz, BLOCK_DGRASS);
+            world->setBlock(xx, 2, zz, BLOCK_DGRASS);
     for (int xx = 7; xx < 10; xx++)
         for (int zz = 7; zz < 10; zz++)
-            world.setBlock(xx, 5, zz, BLOCK_DSTONE);
+            world->setBlock(xx, 5, zz, BLOCK_DSTONE);
     for (int yy = 0; yy < 16; yy++) 
-        world.setBlock(2, yy, 2, BLOCK_DWOOD);
+        world->setBlock(2, yy, 2, BLOCK_DWOOD);
     for (int xx = 3; xx < 5; xx++) 
         for (int yy = 3; yy < 8; yy++) 
-            world.setBlock(xx, yy, 2, BLOCK_DWOOD);
+            world->setBlock(xx, yy, 2, BLOCK_DWOOD);
     for (int zz = 5; zz < 9; zz++)
-        world.setBlock(5, 3, zz, BLOCK_DSTONE);
+        world->setBlock(5, 3, zz, BLOCK_DSTONE);
     for (int zz = 9; zz < 13; zz++)
-        world.setBlock(5, 4, zz, BLOCK_DSTONE);
-    world.setBlock(7, 6, 4, BLOCK_DSTONE);
-    world.setBlock(7, 6, 3, BLOCK_DSTONE);
-    world.setBlock(8, 6, 3, BLOCK_DSTONE);
+        world->setBlock(5, 4, zz, BLOCK_DSTONE);
+    world->setBlock(7, 6, 4, BLOCK_DSTONE);
+    world->setBlock(7, 6, 3, BLOCK_DSTONE);
+    world->setBlock(8, 6, 3, BLOCK_DSTONE);
     //! TEMP
-    player.setPos(5.f, 7, 5.f);
-    player.setYaw(M_PI_4);
+    player->setPos(5.f, 7, 5.f);
+    player->setYaw(M_PI_4);
 
-    globalState = GlobalGameState::SINGLE_GAME;
+    setState(GlobalGameState::SINGLE_GAME);
 }
 
 void MainMachine::enterMainLoop() {
@@ -71,23 +75,23 @@ void MainMachine::enterMainLoop() {
         glViewport(0, 0, width, height);
     
         if (globalState == GlobalGameState::LOADING_SCREEN) {
-
+            // TODO
         }
         else if (globalState == GlobalGameState::START_MENU) {
-
+            // TODO
         }
         else if (globalState == GlobalGameState::SINGLE_PAUSE) {
-
+            // TODO
         }
         else if (globalState == GlobalGameState::SINGLE_GAME) {
             glClearColor(0.509f, 0.788f, 0.902f, 1.f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            InputPoller::pollLooking(window, player, dt);
-            player.doPhysics(window, world, dt);
+            InputPoller::pollLooking(window, *player, dt);
+            player->doPhysics(window, *world, dt);
 
             // Matrices
-            Camera cam = player.getCamera();        
+            Camera cam = player->getCamera();        
             glm::mat4 m_proj_view =
                 glm::perspective(45.f, ratio, 0.005f, 100.f) *
                 glm::scale(glm::mat4(1.f), glm::vec3(0.3, 0.3, 0.3)) *
@@ -99,12 +103,12 @@ void MainMachine::enterMainLoop() {
             glm::mat4 m_ortho = glm::ortho(0.0f, (float)width, 0.0f, (float)height);
             
             // Cube shader
-            world.show(m_proj_view);
+            world->show(m_proj_view);
 
             // Highlighting
             glm::ivec3 hiblock;
             WDir hiface;
-            bool isBlockSelected = player.getSelectedBlock(world, hiblock, hiface);
+            bool isBlockSelected = player->getSelectedBlock(*world, hiblock, hiface);
             if (isBlockSelected)
                 blocksSelectLayout.show(m_proj_view, hiblock);
 
@@ -123,29 +127,29 @@ void MainMachine::enterMainLoop() {
                 else if (hiface == DOWN)
                     setPos.y--;
 
-                glm::vec3 pos = player.getPos();
-                bool noInPlayer = (int)pos.y > setPos.y || setPos.y > (int)(pos.y + player.height) ||
-                    (int)(pos.x - player.halfSize) > setPos.x || setPos.x > (int)(pos.x + player.halfSize) ||
-                    (int)(pos.z - player.halfSize) > setPos.z || setPos.z > (int)(pos.z + player.halfSize);
+                glm::vec3 pos = player->getPos();
+                bool noInPlayer = nfloor(pos.y) > setPos.y || setPos.y > nfloor(pos.y + player->height) ||
+                    nfloor(pos.x - player->halfSize) > setPos.x || setPos.x > nfloor(pos.x + player->halfSize) ||
+                    nfloor(pos.z - player->halfSize) > setPos.z || setPos.z > nfloor(pos.z + player->halfSize);
 
-                if (noInPlayer && !world.checkBlock(setPos)) {
-                    world.setBlock(setPos, BLOCK_DSTONE);
+                if (noInPlayer && !world->checkBlock(setPos)) {
+                    world->setBlock(setPos, BLOCK_DSTONE);
                     lastIntercationTime = glfwGetTime();
                 }
             }
             
             if (canAttack()) {
-                if (world.checkBlock(hiblock)) {
-                    world.setBlock(hiblock, Block(0, { 0, 0 }));
+                if (world->checkBlock(hiblock)) {
+                    world->setBlock(hiblock, Block(0, { 0, 0 }));
                     lastAttackTime = glfwGetTime();
                 }
             }
 
             // Debug layout
-            debugLayout.setPos(player.getPos());
-            debugLayout.setView(glm::degrees(player.getYaw()), glm::degrees(player.getPitch()));
-            debugLayout.setGrounded(player.isGrounded(world));
-            debugLayout.setFlightmoded(player.isFlight());
+            debugLayout.setPos(player->getPos());
+            debugLayout.setView(glm::degrees(player->getYaw()), glm::degrees(player->getPitch()));
+            debugLayout.setGrounded(player->isGrounded(*world));
+            debugLayout.setFlightmoded(player->isFlight());
             debugLayout.setSelectedBlock(hiblock, hiface, isBlockSelected);
             debugLayout.setFPS(this->fps);
             debugLayout.show(m_ortho, width, height);
@@ -213,7 +217,7 @@ void MainMachine::clickKeyboard(int key, int action) {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
     else if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
-        player.setFlight(!player.isFlight());
+        player->setFlight(!player->isFlight());
     }
 }
 
@@ -221,4 +225,9 @@ void MainMachine::resize(int width, int height) {
     this->width = width;
     this->height = height;
     this->ratio = (float)width / (float)height;
+}
+
+MainMachine::~MainMachine() {
+    delete player;
+    delete world;
 }

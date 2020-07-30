@@ -1,10 +1,16 @@
-#include "../include/util/util.hpp"
-#include "../include/util/image.hpp"
 #include "../include/gameWorld.hpp"
-#include "../include/block.hpp"
-#include "../include/camera.hpp"
+#include "../include/util/image.hpp"
 
-GameWorld::GameWorld() : cubeShader(Shader::loadShader("cubeShader")) {
+GameWorld::GameWorld(int cwidth, int cheight) : cubeShader(Shader::loadShader("cubeShader")) {
+    this->cwidth = cwidth;
+    this->cheight = cheight;
+
+    int offx = -cwidth / 2;
+    int offy = -cheight / 2;
+    for (int i = 0; i < cwidth; i++)
+        for (int j = 0; j < cheight; j++)
+            chunks.insert({ { offx + i, offy + j }, Chunk((offx + i) * 16, (offy + j) * 16) });
+
     glGenVertexArrays(1, &cubeVAO);
     glGenBuffers(1, &cubeVBO);
     size_t buffSize = 4096 * 5;
@@ -34,30 +40,16 @@ GameWorld::GameWorld() : cubeShader(Shader::loadShader("cubeShader")) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.getW(), image.getH(), 0, GL_RGB, GL_UNSIGNED_BYTE, image.getData());
     glGenerateMipmap(GL_TEXTURE_2D);
-    image.release();
     glBindTexture(GL_TEXTURE_2D, 0);
+    image.release();
 }
 
 GameWorld::~GameWorld() {
     delete[] buff;
 }
 
-void GameWorld::show(const glm::mat4 &m_proj_view) const {
-    cubeShader.use();
-
-    cubeShader.setUniform("m_proj_view", m_proj_view);
-    cubeShader.setUniform("cubeHalfSize", 1.f);
-    cubeShader.setUniform("textureW", Block::texSize / static_cast<float>(Block::atlasWidth));
-    cubeShader.setUniform("textureH", Block::texSize / static_cast<float>(Block::atlasHeight));
-
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CCW);
-    glDisable(GL_BLEND);
-
-    glBindVertexArray(cubeVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-    glBindTexture(GL_TEXTURE_2D, texture);
+void GameWorld::showChunk(const Chunk &chunk, const glm::mat4 &m_proj_view) const {
+    cubeShader.setUniform("chunkOffset", chunk.offset);
 
     uint count = 0;
     uint ind = 0;
@@ -77,6 +69,7 @@ void GameWorld::show(const glm::mat4 &m_proj_view) const {
         if (count == 4096) {
             glBufferSubData(GL_ARRAY_BUFFER, 0, 4096 * 5 * sizeof(GLfloat), buff);
             glDrawArrays(GL_POINTS, 0, 4096);
+            ind = 0;
             count = 0;
         }
     }
@@ -84,6 +77,27 @@ void GameWorld::show(const glm::mat4 &m_proj_view) const {
         glBufferSubData(GL_ARRAY_BUFFER, 0, count * 5 * sizeof(GLfloat), buff);
         glDrawArrays(GL_POINTS, 0, count);
     }
+}
+
+void GameWorld::show(const glm::mat4 &m_proj_view) const {
+    cubeShader.use();
+
+    cubeShader.setUniform("m_proj_view", m_proj_view);
+    cubeShader.setUniform("cubeHalfSize", 1.f);
+    cubeShader.setUniform("textureW", Block::texSize / static_cast<float>(Block::atlasWidth));
+    cubeShader.setUniform("textureH", Block::texSize / static_cast<float>(Block::atlasHeight));
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CCW);
+    glDisable(GL_BLEND);
+
+    glBindVertexArray(cubeVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    for (const auto &chunk : chunks)
+        showChunk(chunk.second, m_proj_view);
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -92,11 +106,17 @@ void GameWorld::show(const glm::mat4 &m_proj_view) const {
 
 
 void GameWorld::setBlock(int x, int y, int z, const Block &block) {
-    chunk.setBlock(x, y, z, block);
+    auto chunk = chunks.find({ ndiv(x, 16), ndiv(z, 16) });
+    if (chunk != chunks.end())
+        chunk->second.setBlock(nmod(x, 16), y, nmod(z, 16), block);
 }
 
 Block GameWorld::getBlock(int x, int y, int z) const {
-    return chunk.getBlock(x, y, z);
+    auto chunk = chunks.find({ ndiv(x, 16), ndiv(z, 16) });
+    if (chunk != chunks.end())
+        return chunk->second.getBlock(nmod(x, 16), y, nmod(z, 16));
+    else
+        return BLOCK_DAIR;
 }
 
 void GameWorld::setBlock(const glm::ivec3 &pos, const Block &block) {
@@ -108,14 +128,18 @@ Block GameWorld::getBlock(const glm::ivec3 &pos) const {
 }
 
 
-
 bool GameWorld::checkBlock(int index) const {
-    auto it = chunk.data.find(index);
-    return it != chunk.data.end() && it->second.getId() != 0;
+    throw "Not implemented";
+    // auto it2 = chunk.data.find(index);
+    // return it2 != chunk.data.end() && it2->second.getId() != 0;
 }
 
 bool GameWorld::checkBlock(char x, char y, char z) const {
-    return checkBlock(Chunk::getIndex(x, y, z));
+    auto chunk = chunks.find({ ndiv(x, 16), ndiv(z, 16) });
+    if (chunk == chunks.end())
+        return false;
+    auto it2 = chunk->second.data.find(Chunk::getIndex(nmod(x, 16), y, nmod(z, 16)));
+    return it2 != chunk->second.data.end() && it2->second.getId() != 0;
 }
 
 bool GameWorld::checkBlock(const glm::ivec3 &vec) const {

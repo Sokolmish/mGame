@@ -1,5 +1,3 @@
-#include "../include/util/glew.hpp"
-#include <GLFW/glfw3.h>
 #include "../include/util/util.hpp"
 #include "../include/util/shader.hpp"
 #include "../include/mainMachine.hpp"

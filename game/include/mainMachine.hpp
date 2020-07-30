@@ -29,8 +29,9 @@ private:
     // bool isRightClick;
     // bool isLeftClick;
 
-    Player player;
-    GameWorld world;
+    Player *player;
+    GameWorld *world;
+
     DebugLayout debugLayout;
     GuiLayout guiLayout;
     BlocksHighlighter blocksSelectLayout;
@@ -48,6 +49,8 @@ private:
     
 public:
     MainMachine(GLFWwindow *window);
+    ~MainMachine();
+
     void enterMainLoop();
 
     void setState(GlobalGameState state);

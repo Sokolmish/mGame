@@ -92,13 +92,9 @@ void Player::setFlight(bool flight) {
 }
 
 bool Player::checkNewPos(const GameWorld &world, const glm::vec3 &pos) const {
-    if (pos.x - halfSize < 0 || pos.x + halfSize > 16)
-        return false;
-    if (pos.z - halfSize < 0 || pos.z + halfSize > 16)
-        return false;
-    for (int yy = pos.y; yy <= pos.y + height; yy++) {
-        for (int xx = pos.x - halfSize; xx <= pos.x + halfSize; xx++) {
-            for (int zz = pos.z - halfSize; zz <= pos.z + halfSize; zz++) {
+    for (int yy = nfloor(pos.y); yy <= pos.y + height; yy++) {
+        for (int xx = nfloor(pos.x - halfSize); xx <= pos.x + halfSize; xx++) {
+            for (int zz = nfloor(pos.z - halfSize); zz <= pos.z + halfSize; zz++) {
                 if (world.checkBlock(xx, yy, zz))
                     return false;
             }

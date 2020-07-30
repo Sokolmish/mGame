@@ -143,3 +143,17 @@ bool initGLEW() {
     }
     return true;
 }
+
+int nfloor(float a) {
+    if (a < 0) return (int)(a - 1);
+    else return (int)a;
+}
+
+int ndiv(int a, int b) {
+    if (a >= 0) return a / b; 
+    else return (a - b + 1) / b;
+}
+
+int nmod(int a, int b) {
+    return (b + (a % b)) % b;
+}

@@ -19,8 +19,9 @@ public:
     glm::vec2 getTex() const;
 };
 
+#define BLOCK_DAIR      Block(0, { 0, 0 })
 #define BLOCK_DGRASS    Block(1, { 0, 0 })
-#define BLOCK_DSTONE    Block(1, { 1, 0 })
-#define BLOCK_DWOOD     Block(1, { 2, 0 })
+#define BLOCK_DSTONE    Block(2, { 1, 0 })
+#define BLOCK_DWOOD     Block(3, { 2, 0 })
 
 #endif
