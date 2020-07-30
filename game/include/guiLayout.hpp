@@ -1,8 +1,8 @@
 #ifndef __GUI_LAYOUT_H__
 #define __GUI_LAYOUT_H__
 
-#include "util.hpp"
-#include "shader.hpp"
+#include "util/util.hpp"
+#include "util/shader.hpp"
 
 class GuiLayout {
 private:

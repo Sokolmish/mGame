@@ -1,9 +1,9 @@
 #ifndef __GAME_WORLD_H__
 #define __GAME_WORLD_H__
 
-#include "util.hpp"
+#include "util/util.hpp"
+#include "util/shader.hpp"
 #include "chunk.hpp"
-#include "shader.hpp"
 
 class GameWorld {
 private:

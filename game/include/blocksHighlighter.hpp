@@ -1,8 +1,8 @@
 #ifndef __BLOCKS_HIGHLIGHTER_H__
 #define __BLOCKS_HIGHLIGHTER_H__
 
-#include "glew.hpp"
-#include "shader.hpp"
+#include "util/glew.hpp"
+#include "util/shader.hpp"
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 

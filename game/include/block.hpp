@@ -1,8 +1,7 @@
 #ifndef __BLOCK_H__
 #define __BLOCK_H__
 
-#include "util.hpp"
-#include <glm/vec2.hpp>
+#include "util/util.hpp"
 
 class Block {
 private:

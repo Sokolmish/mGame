@@ -30,6 +30,11 @@ file(GLOB all_SRCS
     "${PROJECT_SOURCE_DIR}/game/include/*.hpp"
     "${PROJECT_SOURCE_DIR}/game/src/*.cpp"
     "${PROJECT_SOURCE_DIR}/game/src/*.c"
+
+    "${PROJECT_SOURCE_DIR}/game/include/*/*.h"
+    "${PROJECT_SOURCE_DIR}/game/include/*/*.hpp"
+    "${PROJECT_SOURCE_DIR}/game/src/*/*.cpp"
+    "${PROJECT_SOURCE_DIR}/game/src/*/*.c"
 )
 
 include_directories(

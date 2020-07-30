@@ -1,4 +1,4 @@
-#include "../include/glew.hpp"
+#include "../include/util/glew.hpp"
 #include <GLFW/glfw3.h>
 
 #include <iostream>
@@ -6,13 +6,14 @@
 #include <cmath>
 #include <sstream>
 
-#include "../include/util.hpp"
+#include "../include/util/util.hpp"
+#include "../include/util/shader.hpp"
+#include "../include/util/font.hpp"
+#include "../include/util/image.hpp"
+
 #include "../include/inputEvents.hpp"
-#include "../include/shader.hpp"
 #include "../include/player.hpp"
 #include "../include/chunk.hpp"
-#include "../include/font.hpp"
-#include "../include/image.hpp"
 #include "../include/debugLayout.hpp"
 #include "../include/guiLayout.hpp"
 #include "../include/gameWorld.hpp"

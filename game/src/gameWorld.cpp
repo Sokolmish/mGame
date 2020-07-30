@@ -1,6 +1,6 @@
-#include "../include/util.hpp"
+#include "../include/util/util.hpp"
+#include "../include/util/image.hpp"
 #include "../include/gameWorld.hpp"
-#include "../include/image.hpp"
 #include "../include/block.hpp"
 #include "../include/camera.hpp"
 
