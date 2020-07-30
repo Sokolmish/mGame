@@ -15,81 +15,7 @@ Player::Player() {
     flightMode = false;
 }
 
-Camera Player::getCamera() const {
-    return Camera(
-        glm::vec3(pos.x, pos.y + camHeight, pos.z),
-        yaw, pitch   
-    );
-}
-
-glm::vec3 Player::getViewDir() const {
-    return glm::vec3(cosf(pitch) * sinf(yaw), sinf(pitch), -cosf(pitch) * cosf(yaw));
-}
-
-glm::vec3 Player::getMoveDir() const {
-    return glm::vec3(-sinf(yaw), 0, cosf(yaw));
-}
-
-glm::vec3 Player::getPos() const {
-    return pos;
-}
-
-void Player::setPos(const glm::vec3 &np) {
-    pos = np;
-    _cached = 0b00;
-}
-
-void Player::setPos(float x, float y, float z) {
-    setPos(glm::vec3(x, y, z));
-}
-
-void Player::move(float dx, float dy, float dz) {
-    move(glm::vec3(dx, dy, dz));
-}
-
-void Player::move(const glm::vec3 &delta) {
-    setPos(pos + delta);
-}
-
-void Player::setYaw(float yaw) {
-    this->yaw = yaw;
-}
-
-void Player::setPitch(float pitch) {
-    this->pitch = pitch;
-}
-
-float Player::getYaw() const {
-    return yaw;
-}
-
-float Player::getPitch() const {
-    return pitch;
-}
-
-glm::vec3 Player::getVelocity() const {
-    return velocity;
-}
-
-glm::vec3 Player::getAcceleration() const {
-    return acceleration;
-}
-
-void Player::setVelocity(const glm::vec3 &v) {
-    velocity = v;
-}
-
-void Player::setAcceleration(const glm::vec3 &a) {
-    acceleration = a;
-}
-
-bool Player::isFlight() const {
-    return flightMode;
-}
-
-void Player::setFlight(bool flight) {
-    flightMode = flight;
-}
+// ...
 
 bool Player::checkNewPos(const GameWorld &world, const glm::vec3 &pos) const {
     for (int yy = nfloor(pos.y); yy <= pos.y + height; yy++) {
@@ -191,8 +117,8 @@ bool Player::getSelectedBlock(const GameWorld &world, glm::ivec3 &block, WDir &f
 
 bool Player::isGrounded(const GameWorld &world) const {
     glm::vec3 pos = getPos();
-    for (int xx = pos.x - halfSize; xx <= pos.x + halfSize; xx++) {
-        for (int zz = pos.z - halfSize; zz <= pos.z + halfSize; zz++) {
+    for (int xx = nfloor(pos.x - halfSize); xx <= pos.x + halfSize; xx++) {
+        for (int zz = nfloor(pos.z - halfSize); zz <= pos.z + halfSize; zz++) {
             if (fractf(pos.y) < 5e-3f && world.checkBlock(xx, pos.y - 1, zz))
                 return true;
             else if (fractf(pos.y) > 1.f - 2e-3f && world.checkBlock(xx, pos.y, zz))
@@ -200,4 +126,81 @@ bool Player::isGrounded(const GameWorld &world) const {
         }
     }
     return false;
+}
+
+// ...
+
+Camera Player::getCamera() const {
+    return Camera(
+        glm::vec3(pos.x, pos.y + camHeight, pos.z),
+        yaw, pitch   
+    );
+}
+
+glm::vec3 Player::getViewDir() const {
+    return glm::vec3(cosf(pitch) * sinf(yaw), sinf(pitch), -cosf(pitch) * cosf(yaw));
+}
+
+glm::vec3 Player::getMoveDir() const {
+    return glm::vec3(-sinf(yaw), 0, cosf(yaw));
+}
+
+glm::vec3 Player::getPos() const {
+    return pos;
+}
+
+void Player::setPos(const glm::vec3 &np) {
+    pos = np;
+}
+
+void Player::setPos(float x, float y, float z) {
+    setPos(glm::vec3(x, y, z));
+}
+
+void Player::move(float dx, float dy, float dz) {
+    move(glm::vec3(dx, dy, dz));
+}
+
+void Player::move(const glm::vec3 &delta) {
+    setPos(pos + delta);
+}
+
+void Player::setYaw(float yaw) {
+    this->yaw = yaw;
+}
+
+void Player::setPitch(float pitch) {
+    this->pitch = pitch;
+}
+
+float Player::getYaw() const {
+    return yaw;
+}
+
+float Player::getPitch() const {
+    return pitch;
+}
+
+glm::vec3 Player::getVelocity() const {
+    return velocity;
+}
+
+glm::vec3 Player::getAcceleration() const {
+    return acceleration;
+}
+
+void Player::setVelocity(const glm::vec3 &v) {
+    velocity = v;
+}
+
+void Player::setAcceleration(const glm::vec3 &a) {
+    acceleration = a;
+}
+
+bool Player::isFlight() const {
+    return flightMode;
+}
+
+void Player::setFlight(bool flight) {
+    flightMode = flight;
 }
