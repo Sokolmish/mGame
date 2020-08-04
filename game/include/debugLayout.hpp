@@ -8,7 +8,7 @@
 class DebugLayout {
 private:
     Shader shader;
-    Font font;
+    Font *font;
     
     glm::vec3 pos;
     float yaw, pitch;
@@ -21,6 +21,8 @@ private:
 
 public:
     DebugLayout();
+    ~DebugLayout();
+
     void show(const glm::mat4 &m_ortho, float width, float height) const;
 
     void setPos(const glm::vec3 &pos);

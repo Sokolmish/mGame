@@ -20,6 +20,10 @@ int main() {
     glfwSetWindowSizeCallback(window, window_size_callback);
 
     Shader::shaderDirectory = "./game/shaders/";
+    Shader::loadShader("cubeShader");
+    Shader::loadShader("guiShader");
+    Shader::loadShader("textShader");
+    Shader::loadShader("wireShader");
     
     mainMachine = new MainMachine(window);
     mainMachine->enterMainLoop(); // Infinity loop

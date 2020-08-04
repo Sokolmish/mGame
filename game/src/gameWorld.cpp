@@ -1,7 +1,9 @@
 #include "../include/gameWorld.hpp"
 #include "../include/util/image.hpp"
 
-GameWorld::GameWorld(int cwidth, int cheight) : cubeShader(Shader::loadShader("cubeShader")) {
+GameWorld::GameWorld(int cwidth, int cheight) {
+    cubeShader = Shader::getShader("cubeShader");
+
     this->cwidth = cwidth;
     this->cheight = cheight;
 

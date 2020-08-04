@@ -1,7 +1,8 @@
 #include "../include/guiLayout.hpp"
 
-GuiLayout::GuiLayout() :
-        shader(Shader::loadShader("guiShader")) {
+GuiLayout::GuiLayout() {
+    shader = Shader::getShader("guiShader");
+
     const int trigsCount = 4;
     GLfloat *buff = new GLfloat[6 * 3 * trigsCount];
     glm::vec4 col( 1.f, 1.f, 1.f, 1.f);

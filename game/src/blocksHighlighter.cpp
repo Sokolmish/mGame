@@ -1,6 +1,8 @@
 #include "../include/blocksHighlighter.hpp"
 
-BlocksHighlighter::BlocksHighlighter() : shader(Shader::loadShader("wireShader")) {
+BlocksHighlighter::BlocksHighlighter() {
+    shader = Shader::getShader("wireShader");
+
     GLfloat *buff = new GLfloat[48];
     for (size_t i = 24; i < 48; i++)
         buff[i] = 0.f;

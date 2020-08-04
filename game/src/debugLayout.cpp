@@ -1,10 +1,13 @@
 #include "../include/debugLayout.hpp"
 #include <sstream>
 
-DebugLayout::DebugLayout() :
-    shader(Shader::loadShader("textShader")),
-    font("./game/fonts/ConsolaMono-Bold.ttf", 0, 36) {
+DebugLayout::DebugLayout() {
+    shader = Shader::getShader("textShader");
+    font = new Font("./game/fonts/ConsolaMono-Bold.ttf", 0, 36);
+}
 
+DebugLayout::~DebugLayout() {
+    delete font;
 }
 
 void DebugLayout::show(const glm::mat4 &m_ortho, float width, float height) const {
@@ -20,7 +23,7 @@ void DebugLayout::show(const glm::mat4 &m_ortho, float width, float height) cons
     builder << "pos:" << pos << " ";
     builder << "yaw:" << formatFloat("%.2f", yaw) << " ";
     builder << "pitch:" << formatFloat("%.2f", pitch) << " ";
-    font.RenderText(shader, builder.str(), 10, height - 20, 0.5, glm::vec3(0.f));
+    font->RenderText(shader, builder.str(), 10, height - 20, 0.5, glm::vec3(0.f));
     // Selected block
     builder = std::stringstream();
     if (isSelectedBlock) {
@@ -29,18 +32,18 @@ void DebugLayout::show(const glm::mat4 &m_ortho, float width, float height) cons
     }
     else
         builder << "-";
-    font.RenderText(shader, builder.str(), 10, height - 38, 0.5, glm::vec3(0.f));
+    font->RenderText(shader, builder.str(), 10, height - 38, 0.5, glm::vec3(0.f));
     // Player flags
     builder = std::stringstream();
     if (groundFlag)
         builder << "grounded ";
     if (flightmodFlag)
         builder << "flightmod ";
-    font.RenderText(shader, builder.str(), 10, height - 56, 0.5, glm::vec3(0.f));
+    font->RenderText(shader, builder.str(), 10, height - 56, 0.5, glm::vec3(0.f));
     // Perfomance
     builder = std::stringstream();
     builder << "fps: " << fps << " ftime: " << formatFloat("%.3f", 1.f / fps) << "ms ";
-    font.RenderText(shader, builder.str(), width - 280, height - 20, 0.5, glm::vec3(0.f));
+    font->RenderText(shader, builder.str(), width - 280, height - 20, 0.5, glm::vec3(0.f));
 }
 
 void DebugLayout::setPos(const glm::vec3 &pos) {
