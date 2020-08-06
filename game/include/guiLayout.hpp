@@ -3,13 +3,15 @@
 
 #include "util/util.hpp"
 #include "util/shader.hpp"
+#include "interface.hpp"
 
 class GuiLayout {
 private:
     Shader shader;
     GLuint VAO, VBO;
+    Interface *layout;
 public:
-    GuiLayout();
+    GuiLayout(Interface *layout);
     void show(const glm::mat4 &m_ortho, float width, float height) const;
 };
 

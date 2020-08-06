@@ -33,8 +33,8 @@ private:
     GameWorld *world;
 
     DebugLayout debugLayout;
-    GuiLayout guiLayout;
     BlocksHighlighter blocksSelectLayout;
+    GameOverlay _gameOverlay;
 
     uint fps;
     bool hideCursor;

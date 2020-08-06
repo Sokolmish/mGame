@@ -56,6 +56,8 @@ void MainMachine::enterMainLoop() {
     float timePhys = glfwGetTime();  // Used for physics, updates every frame
     float timeFPS = timePhys;        // Used for fps counting, updates every second
     uint framesCounter = 0;
+    
+    GuiLayout gameOverlay(&_gameOverlay);
 
     while (!glfwWindowShouldClose(window)) {
         // Time deltas
@@ -155,7 +157,7 @@ void MainMachine::enterMainLoop() {
             debugLayout.show(m_ortho, width, height);
 
             // GUI layout
-            guiLayout.show(m_ortho, width, height);
+            gameOverlay.show(m_ortho, width, height);
         }
 
         glfwSwapBuffers(window);
@@ -209,6 +211,14 @@ void MainMachine::clickMouse(int key, int action) {
 }
 
 void MainMachine::clickKeyboard(int key, int action) {
+    for (int i = 0; i < 9; i++) {
+        if (key == GLFW_KEY_1 + i && action == GLFW_PRESS) {
+            // int numPressed = i + 1;
+            _gameOverlay.selectSidebarCell(i);
+            return;
+        }
+    }
+
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         hideCursor = !hideCursor;
         if (hideCursor)
