@@ -9,9 +9,11 @@
 
 #include "../../include/util/stb_image.hpp"
 
+std::map<std::string, GLuint> Image::staticStorage;
+
 Image::Image(const std::string &path) {
     int n;
-    data = stbi_load(path.c_str(), &width, &height, &n, 3);
+    data = stbi_load(path.c_str(), &width, &height, &n, 4);
 }
 
 Image::~Image() {
@@ -28,14 +30,26 @@ void Image::release() {
     }
 }
 
-uint8_t* Image::getData() {
+uint8_t* Image::getData() const {
     return data;
 }
 
-int Image::getW() {
+int Image::getW() const {
     return width;
 }
 
-int Image::getH() {
+int Image::getH() const {
     return height;
+}
+
+void Image::saveImage(const std::string &name, GLuint id) {
+    staticStorage.insert_or_assign(name, id);
+}
+
+GLuint Image::loadImage(const std::string &name) {
+    auto it = staticStorage.find(name);
+    if (it == staticStorage.end())
+        throw;
+    else
+        return it->second;
 }

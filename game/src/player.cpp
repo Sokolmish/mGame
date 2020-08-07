@@ -13,6 +13,10 @@ Player::Player() {
 
     velocity = acceleration = glm::vec3(0);
     flightMode = false;
+
+    selectedItem = 0;
+    sidebar = std::vector<Item>(9);
+    inventory = std::vector<Item>(27);
 }
 
 // ...
@@ -203,4 +207,16 @@ bool Player::isFlight() const {
 
 void Player::setFlight(bool flight) {
     flightMode = flight;
+}
+
+void Player::selectItem(int item) {
+    this->selectedItem = item;
+}
+
+int Player::getSelectedCell() const {
+    return selectedItem;
+}
+
+Item Player::getSelectedItem() const {
+    return sidebar[selectedItem];
 }

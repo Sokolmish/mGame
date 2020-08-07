@@ -46,6 +46,10 @@ MainMachine::MainMachine(GLFWwindow *window) {
     //! TEMP
     player->setPos(5.f, 7, 5.f);
     player->setYaw(M_PI_4);
+    player->sidebar[0] = Item(1, true, 0, 0);
+    player->sidebar[1] = Item(4, true, 1, 0);
+    player->sidebar[2] = Item(2, true, 2, 0);
+    player->sidebar[6] = Item(3, false, 2, 0);
 
     setState(GlobalGameState::SINGLE_GAME);
 }
@@ -56,9 +60,6 @@ void MainMachine::enterMainLoop() {
     float timePhys = glfwGetTime();  // Used for physics, updates every frame
     float timeFPS = timePhys;        // Used for fps counting, updates every second
     uint framesCounter = 0;
-    
-    GuiLayout gameOverlay(&_gameOverlay);
-
     while (!glfwWindowShouldClose(window)) {
         // Time deltas
         float nTime = glfwGetTime();
@@ -115,28 +116,30 @@ void MainMachine::enterMainLoop() {
                 blocksSelectLayout.show(m_proj_view, hiblock);
 
             if (canInteract()) {
-                glm::ivec3 setPos = hiblock;
-                if (hiface == NORTH)
-                    setPos.z--;
-                else if (hiface == SOUTH)
-                    setPos.z++;
-                else if (hiface == EAST)
-                    setPos.x++;
-                else if (hiface == WEST)
-                    setPos.x--;
-                else if (hiface == UP)
-                    setPos.y++;
-                else if (hiface == DOWN)
-                    setPos.y--;
+                if (player->getSelectedItem().isBlock()) {
+                    glm::ivec3 setPos = hiblock;
+                    if (hiface == NORTH)
+                        setPos.z--;
+                    else if (hiface == SOUTH)
+                        setPos.z++;
+                    else if (hiface == EAST)
+                        setPos.x++;
+                    else if (hiface == WEST)
+                        setPos.x--;
+                    else if (hiface == UP)
+                        setPos.y++;
+                    else if (hiface == DOWN)
+                        setPos.y--;
 
-                glm::vec3 pos = player->getPos();
-                bool noInPlayer = nfloor(pos.y) > setPos.y || setPos.y > nfloor(pos.y + player->height) ||
-                    nfloor(pos.x - player->halfSize) > setPos.x || setPos.x > nfloor(pos.x + player->halfSize) ||
-                    nfloor(pos.z - player->halfSize) > setPos.z || setPos.z > nfloor(pos.z + player->halfSize);
+                    glm::vec3 pos = player->getPos();
+                    bool noInPlayer = nfloor(pos.y) > setPos.y || setPos.y > nfloor(pos.y + player->height) ||
+                        nfloor(pos.x - player->halfSize) > setPos.x || setPos.x > nfloor(pos.x + player->halfSize) ||
+                        nfloor(pos.z - player->halfSize) > setPos.z || setPos.z > nfloor(pos.z + player->halfSize);
 
-                if (noInPlayer && !world->checkBlock(setPos)) {
-                    world->setBlock(setPos, BLOCK_DSTONE);
-                    lastIntercationTime = glfwGetTime();
+                    if (noInPlayer && !world->checkBlock(setPos)) {
+                        world->setBlock(setPos, player->getSelectedItem().toBlock());
+                        lastIntercationTime = glfwGetTime();
+                    }
                 }
             }
             
@@ -157,7 +160,9 @@ void MainMachine::enterMainLoop() {
             debugLayout.show(m_ortho, width, height);
 
             // GUI layout
-            gameOverlay.show(m_ortho, width, height);
+            interfaceLayout.updateSidebarItems(player->sidebar);
+            interfaceLayout.selectSidebarCell(player->getSelectedCell());
+            interfaceLayout.show(m_ortho, width, height);
         }
 
         glfwSwapBuffers(window);
@@ -188,7 +193,7 @@ bool MainMachine::isMousePressed(MouseButton code) const {
         return false;
 }
 
-bool MainMachine::canInteract() {
+bool MainMachine::canInteract() const {
     float curTime = glfwGetTime();
     if (isMousePressed(MOUSE_RIGHT) && curTime - lastIntercationTime > delayUse)
         return true;
@@ -196,7 +201,7 @@ bool MainMachine::canInteract() {
         return false;
 }
 
-bool MainMachine::canAttack() {
+bool MainMachine::canAttack() const {
     float curTime = glfwGetTime();
     if (isMousePressed(MOUSE_LEFT) && curTime - lastAttackTime > delayUse)
         return true;
@@ -214,7 +219,7 @@ void MainMachine::clickKeyboard(int key, int action) {
     for (int i = 0; i < 9; i++) {
         if (key == GLFW_KEY_1 + i && action == GLFW_PRESS) {
             // int numPressed = i + 1;
-            _gameOverlay.selectSidebarCell(i);
+            player->selectItem(i);
             return;
         }
     }

@@ -8,8 +8,8 @@
 #include "gameWorld.hpp"
 
 #include "debugLayout.hpp"
-#include "guiLayout.hpp"
 #include "blocksHighlighter.hpp"
+#include "interfaceLayout.hpp"
 
 #include <set>
 
@@ -34,7 +34,7 @@ private:
 
     DebugLayout debugLayout;
     BlocksHighlighter blocksSelectLayout;
-    GameOverlay _gameOverlay;
+    InterfaceLayout interfaceLayout;
 
     uint fps;
     bool hideCursor;
@@ -43,9 +43,9 @@ private:
     bool isMousePressed(MouseButton code) const;
     
     float lastIntercationTime;
-    bool canInteract();
     float lastAttackTime;
-    bool canAttack();
+    bool canInteract() const;
+    bool canAttack() const;
     
 public:
     MainMachine(GLFWwindow *window);

@@ -10,9 +10,17 @@ Block::Block() {
 
 Block::Block(short int id, const glm::vec2 &tex) {
     this->id = id;
-    this->tex = glm::vec2(tex.x * texSize / (float)atlasWidth, tex.y * texSize / (float)atlasHeight);
+    this->tex = glm::vec2(
+        tex.x * texSize / (float)atlasWidth, 
+        tex.y * texSize / (float)atlasHeight
+    );
+    txi = tex.x;
+    tyi = tex.y;
 }
 
+Item Block::toItem() const {
+    return Item(id, true, txi, tyi);
+}
 
 uint16_t Block::getId() const {
     return id;

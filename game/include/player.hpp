@@ -4,6 +4,9 @@
 #include "util/util.hpp"
 #include "camera.hpp"
 #include "gameWorld.hpp"
+// #include "inventory.hpp"
+#include "item.hpp"
+#include <vector>
 
 class Player {
 private:
@@ -14,10 +17,11 @@ private:
     bool flightMode;
 
     bool checkNewPos(const GameWorld &world, const glm::vec3 &pos) const;
-
-    mutable char _cached = 0;
-
 public:
+    int selectedItem;
+    std::vector<Item> sidebar;
+    std::vector<Item> inventory;
+
     float halfSize;
     float height, camHeight;
 
@@ -48,6 +52,10 @@ public:
     void doPhysics(GLFWwindow *window, const GameWorld &world, float dt);
     bool isGrounded(const GameWorld &world) const;
     bool getSelectedBlock(const GameWorld &world, glm::ivec3 &block, WDir &face);
+
+    void selectItem(int item);
+    int getSelectedCell() const;
+    Item getSelectedItem() const;
 };
 
 #endif
