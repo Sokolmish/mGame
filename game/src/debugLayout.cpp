@@ -23,6 +23,14 @@ void DebugLayout::show(const glm::mat4 &m_ortho, float width, float height) cons
     builder << "pos:" << pos << " ";
     builder << "yaw:" << formatFloat("%.2f", yaw) << " ";
     builder << "pitch:" << formatFloat("%.2f", pitch) << " ";
+    if (315 <= yaw || yaw <= 45)
+        builder << "face: North ";
+    else if (45 <= yaw && yaw <= 135)
+        builder << "face: East";
+    else if (135 <= yaw && yaw <= 225)
+        builder << "face: South";
+    else
+        builder << "face: West";
     font->RenderText(shader, builder.str(), 10, height - 20, 0.5, glm::vec3(0.f));
     // Selected block
     builder = std::stringstream();

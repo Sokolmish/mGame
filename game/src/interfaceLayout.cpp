@@ -19,7 +19,7 @@ void fillColors(float *collb) {
     for (uint i = 0; i < 6; i++) { // Sidebar selection
         collb[(18 + i) * 4 + 0] = 0.85f;
         collb[(18 + i) * 4 + 1] = 0.85f;
-        collb[(18 + i)* 4 + 2] = 0.85f;
+        collb[(18 + i) * 4 + 2] = 0.85f;
         collb[(18 + i) * 4 + 3] = 1.0f;
     }
     for (uint i = 0; i < 54; i++) { // Sidebar cells
@@ -106,8 +106,8 @@ size_t InterfaceLayout::fillCrosshair(float *buff, uint width, uint height) cons
 
 size_t InterfaceLayout::fillSidebar(float *buff, uint width, uint height) const {
     float cy = height / 2.f;            // Vertical center
-    float csz = 40;                     // Sidebar cell size
-    float cmg = 6;                      // Sidebar cell margin
+    float csz = 50;                     // Sidebar cell size
+    float cmg = 7;                      // Sidebar cell margin
     float sw = csz + cmg + cmg;         // Sidebar total width
     float sh = (csz + cmg) * 9 + cmg;   // Sidebar total height
     float sbot = cy - sh / 2.f;         // Sidebar bottom pos

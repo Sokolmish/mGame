@@ -28,6 +28,8 @@ int main() {
     if (!initGLFW(window) || !initGLEW())
         return -1;
 
+    glfwSetWindowSizeLimits(window, 1200, 800, GLFW_DONT_CARE, GLFW_DONT_CARE);
+
     glfwSetKeyCallback(window, key_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetWindowSizeCallback(window, window_size_callback);

@@ -3,12 +3,12 @@
 #include <array>
 
 std::string WDirToString(WDir dir) {
-    if (dir == NORTH)       return "north";
-    else if (dir == SOUTH)  return "south";
-    else if (dir == EAST)   return "east";
-    else if (dir == WEST)   return "west";
-    else if (dir == UP)     return "up";
-    else if (dir == DOWN)   return "down";
+    if (dir == NORTH)       return "North";
+    else if (dir == SOUTH)  return "South";
+    else if (dir == EAST)   return "East";
+    else if (dir == WEST)   return "West";
+    else if (dir == UP)     return "Up";
+    else if (dir == DOWN)   return "Down";
     else                    return "error_WDir";
 }
 
