@@ -25,17 +25,36 @@ void loadTexture(GLuint Id, const Image &img) {
 int main() {
     // Graphics initialization
     GLFWwindow* window;
-    if (!initGLFW(window) || !initGLEW())
+    if (!glfwInit()) {
+        std::cerr << "Failed to initialize GLFW" << std::endl;
         return -1;
+    }
 
-    glfwSetWindowSizeLimits(window, 1200, 800, GLFW_DONT_CARE, GLFW_DONT_CARE);
+    std::string title = std::string(WINDOW_TITLE) + " | v" + std::string(VERSION);
+    window = glfwCreateWindow(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, title.c_str(), nullptr, nullptr);
+    if (!window) {
+        std::cerr << "Failed to initialize window" << std::endl;
+        glfwTerminate();
+        return -1;
+    }
+
+    glfwMakeContextCurrent(window);
+    glfwSetWindowSizeLimits(window, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, GLFW_DONT_CARE, GLFW_DONT_CARE);
+
+    glewExperimental = GL_TRUE;
+    GLenum glewStatus = glewInit();
+    if (glewStatus != GLEW_OK || !GLEW_VERSION_2_1) {
+        std::cerr << "Failed to initialize GLEW" << std::endl;
+        glfwTerminate();
+        return -1;
+    }
 
     glfwSetKeyCallback(window, key_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetWindowSizeCallback(window, window_size_callback);
 
     // Shaders loading
-    Shader::shaderDirectory = "./game/shaders/";
+    Shader::shaderDirectory = DEFAULT_SHADER_DIRECTORY;
     Shader::loadShader("cubeShader");
     Shader::loadShader("flatCShader");
     Shader::loadShader("flatTShader");
@@ -49,12 +68,14 @@ int main() {
     Image::saveImage("items", textures[1]);
     
     Image img1("./game/textures/blocks.png");
+    Block::texSize = BLOCK_TEXTURE_SIZE;
     Block::atlasWidth = img1.getW();
     Block::atlasHeight = img1.getH();
     loadTexture(textures[0], img1);
     img1.release();
 
     Image img2("./game/textures/items.png");
+    Item::texSize = ITEM_TEXTURE_SIZE;
     Item::atlasWidth = img2.getW();
     Item::atlasHeight = img2.getH();
     loadTexture(textures[1], img2);

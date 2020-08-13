@@ -2,6 +2,10 @@
 #include <cmath>
 #include <array>
 
+//
+// Enums
+//
+
 std::string WDirToString(WDir dir) {
     if (dir == NORTH)       return "North";
     else if (dir == SOUTH)  return "South";
@@ -12,14 +16,39 @@ std::string WDirToString(WDir dir) {
     else                    return "error_WDir";
 }
 
+//
+// Formatters
+//
+
 std::string formatFloat(const std::string &format, float num) {
     char str[16];
     snprintf(str, 16, format.c_str(), num);
     return std::string(str);
 }
 
+//
+// Printers
+//
+
+std::ostream& operator<<(std::ostream &os, const glm::vec2 &v) {
+    os << "(" << formatFloat("%.2f", v.x) << ";" << formatFloat("%.2f", v.y) << ")";
+    return os;
+}
+
 std::ostream& operator<<(std::ostream &os, const glm::vec3 &v) {
     os << "(" << formatFloat("%.2f", v.x) << ";" << formatFloat("%.2f", v.y) << ";" << formatFloat("%.2f", v.z) << ")";
+    return os;
+}
+
+std::ostream& operator<<(std::ostream &os, const glm::vec4 &v) {
+    os << "(" << formatFloat("%.2f", v.x) << ";" << formatFloat("%.2f", v.y) << ";" 
+        << formatFloat("%.2f", v.z) << ";" << formatFloat("%.2f", v.w) << ")";
+    return os;
+}
+
+
+std::ostream& operator<<(std::ostream &os, const glm::ivec2 &v) {
+    os << "(" << (int)v.x << ";" << (int)v.y << ")";
     return os;
 }
 
@@ -28,10 +57,37 @@ std::ostream& operator<<(std::ostream &os, const glm::ivec3 &v) {
     return os;
 }
 
+std::ostream& operator<<(std::ostream &os, const glm::ivec4 &v) {
+    os << "(" << (int)v.x << ";" << (int)v.y << ";" << (int)v.z << ";" << (int)v.w << ")";
+    return os;
+}
+
+//
+// Special math
+//
+
 float fractf(float x) {
     float wh;
     return modff(x, &wh);
 }
+
+int nfloor(float a) {
+    if (a < 0) return (int)(a - 1);
+    else return (int)a;
+}
+
+int ndiv(int a, int b) {
+    if (a >= 0) return a / b; 
+    else return (a - b + 1) / b;
+}
+
+int nmod(int a, int b) {
+    return (b + (a % b)) % b;
+}
+
+//
+// Ray intersector
+//
 
 RayIntersector::RayIntersector(const glm::vec3 &orig, const glm::vec3 &dir) : orig(orig), dir(dir) {
     invdir = 1.f / dir;
@@ -115,45 +171,4 @@ bool RayIntersector::intersect(const glm::vec3 &aa, const glm::vec3 &bb, WDir &f
 
     face = getIntersectionFace(orig + t * dir, aa, bb);
     return true;
-}
-
-bool initGLFW(GLFWwindow *&window) {
-    if (!glfwInit()) {
-        std::cout << "Failed to initialize GLFW" << std::endl;
-        return false;
-    }
-    std::string title = std::string(WINDOW_TITLE) + " | v" + std::string(VERSION);
-    window = glfwCreateWindow(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, title.c_str(), NULL, NULL);
-    if (!window) {
-        std::cout << "Failed to initialize window" << std::endl;
-        glfwTerminate();
-        return false;
-    }
-    glfwMakeContextCurrent(window);
-    return true;
-}
-
-bool initGLEW() {
-    glewExperimental = GL_TRUE;
-    GLenum glewStatus = glewInit();
-    if (glewStatus != GLEW_OK || !GLEW_VERSION_2_1) {
-        std::cout << "Failed to initialize GLEW" << std::endl;
-        glfwTerminate();
-        return false;
-    }
-    return true;
-}
-
-int nfloor(float a) {
-    if (a < 0) return (int)(a - 1);
-    else return (int)a;
-}
-
-int ndiv(int a, int b) {
-    if (a >= 0) return a / b; 
-    else return (a - b + 1) / b;
-}
-
-int nmod(int a, int b) {
-    return (b + (a % b)) % b;
 }

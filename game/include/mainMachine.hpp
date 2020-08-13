@@ -17,8 +17,6 @@ enum class GlobalGameState { LOADING_SCREEN, START_MENU, SINGLE_GAME, SINGLE_PAU
 
 class MainMachine {
 private:
-    static float delayUse;
-
     GLFWwindow *window;
     int width, height;
     float ratio;

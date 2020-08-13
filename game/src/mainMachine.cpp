@@ -1,8 +1,6 @@
 #include "../include/mainMachine.hpp"
 #include "../include/inputEvents.hpp"
 
-float MainMachine::delayUse = 0.2;
-
 MainMachine::MainMachine(GLFWwindow *window) {
     this->window = window;
     setState(GlobalGameState::LOADING_SCREEN);
@@ -195,7 +193,7 @@ bool MainMachine::isMousePressed(MouseButton code) const {
 
 bool MainMachine::canInteract() const {
     float curTime = glfwGetTime();
-    if (isMousePressed(MOUSE_RIGHT) && curTime - lastIntercationTime > delayUse)
+    if (isMousePressed(MOUSE_RIGHT) && curTime - lastIntercationTime > DELAY_AFTER_USE)
         return true;
     else
         return false;
@@ -203,7 +201,7 @@ bool MainMachine::canInteract() const {
 
 bool MainMachine::canAttack() const {
     float curTime = glfwGetTime();
-    if (isMousePressed(MOUSE_LEFT) && curTime - lastAttackTime > delayUse)
+    if (isMousePressed(MOUSE_LEFT) && curTime - lastAttackTime > DELAY_AFTER_DESTROY)
         return true;
     else
         return false;
