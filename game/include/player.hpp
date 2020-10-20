@@ -4,7 +4,6 @@
 #include "util/util.hpp"
 #include "camera.hpp"
 #include "gameWorld.hpp"
-// #include "inventory.hpp"
 #include "item.hpp"
 #include <vector>
 

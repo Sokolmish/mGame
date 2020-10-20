@@ -10,6 +10,7 @@
 #include "debugLayout.hpp"
 #include "blocksHighlighter.hpp"
 #include "interfaceLayout.hpp"
+#include "inventoryLayout.hpp"
 
 #include <set>
 
@@ -22,10 +23,6 @@ private:
     float ratio;
 
     GlobalGameState globalState;
-    
-    // std::set<int> pressedKeys;
-    // bool isRightClick;
-    // bool isLeftClick;
 
     Player *player;
     GameWorld *world;
@@ -33,6 +30,7 @@ private:
     DebugLayout debugLayout;
     BlocksHighlighter blocksSelectLayout;
     InterfaceLayout interfaceLayout;
+    InventoryLayout inventoryLayout;
 
     uint fps;
     bool hideCursor;
@@ -44,6 +42,8 @@ private:
     float lastAttackTime;
     bool canInteract() const;
     bool canAttack() const;
+
+    bool interfaceOpened;
     
 public:
     MainMachine(GLFWwindow *window);

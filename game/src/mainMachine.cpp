@@ -7,6 +7,8 @@ MainMachine::MainMachine(GLFWwindow *window) {
 
     player = new Player();
     world = new GameWorld(3, 3);
+
+    interfaceOpened = false;
     
     // hideCursor = true;
     hideCursor = false;
@@ -47,7 +49,12 @@ MainMachine::MainMachine(GLFWwindow *window) {
     player->sidebar[0] = Item(1, true, 0, 0);
     player->sidebar[1] = Item(4, true, 1, 0);
     player->sidebar[2] = Item(2, true, 2, 0);
+    player->sidebar[7] = Item(1, true, 0, 0);
     player->sidebar[6] = Item(3, false, 2, 0);
+    player->inventory[0] = Item(5, false, 1, 1);
+    player->inventory[2] = Item(5, true, 2, 0);
+    player->inventory[8] = Item(5, false, 2, 1);
+    player->inventory[14] = Item(5, false, 1, 1);
 
     setState(GlobalGameState::SINGLE_GAME);
 }
@@ -157,10 +164,17 @@ void MainMachine::enterMainLoop() {
             debugLayout.setFPS(this->fps);
             debugLayout.show(m_ortho, width, height);
 
-            // GUI layout
-            interfaceLayout.updateSidebarItems(player->sidebar);
-            interfaceLayout.selectSidebarCell(player->getSelectedCell());
-            interfaceLayout.show(m_ortho, width, height);
+            // Interface
+            if (!interfaceOpened) {
+                interfaceLayout.updateSidebarItems(player->sidebar);
+                interfaceLayout.selectSidebarCell(player->getSelectedCell());
+                interfaceLayout.show(m_ortho, width, height);
+            }
+            else {
+                inventoryLayout.updateSidebar(player->sidebar);
+                inventoryLayout.updateInventory(player->inventory);
+                inventoryLayout.show(m_ortho, width, height);
+            }
         }
 
         glfwSwapBuffers(window);
@@ -231,6 +245,9 @@ void MainMachine::clickKeyboard(int key, int action) {
     }
     else if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
         player->setFlight(!player->isFlight());
+    }
+    else if (key == GLFW_KEY_E && action == GLFW_PRESS) {
+        interfaceOpened = !interfaceOpened;
     }
 }
 

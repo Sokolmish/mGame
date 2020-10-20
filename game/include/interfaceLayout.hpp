@@ -18,6 +18,7 @@ private:
 
     size_t fillCrosshair(float *buff, uint width, uint height) const;
     size_t fillSidebar(float *buff, uint width, uint height) const;
+    // size_t fillCells(float *buff, uint width, uint height) const;
 public:
     InterfaceLayout();
     ~InterfaceLayout();
