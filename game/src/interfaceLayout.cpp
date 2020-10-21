@@ -106,7 +106,7 @@ size_t InterfaceLayout::fillCrosshair(float *buff, uint width, uint height) cons
 
 size_t InterfaceLayout::fillSidebar(float *buff, uint width, uint height) const {
     float cy = height / 2.f;            // Vertical center
-    float csz = 50;                     // Sidebar cell size
+    float csz = 60;                     // Sidebar cell size
     float cmg = 7;                      // Sidebar cell margin
     float sw = csz + cmg + cmg;         // Sidebar total width
     float sh = (csz + cmg) * 9 + cmg;   // Sidebar total height
@@ -189,17 +189,17 @@ void InterfaceLayout::show(const glm::mat4 &m_ortho, float width, float height) 
     for (uint i = 0; i < 9; i++) {
         if (sidebar[i].Id != 0) {
             tbuff[ind++] = sidebar[i].tx;
-            tbuff[ind++] = sidebar[i].ty;
-            tbuff[ind++] = sidebar[i].tx + Item::texSize / static_cast<float>(Item::atlasWidth);
-            tbuff[ind++] = sidebar[i].ty;
+            tbuff[ind++] = sidebar[i].ty + Item::texSize / static_cast<float>(Item::atlasHeight);
             tbuff[ind++] = sidebar[i].tx + Item::texSize / static_cast<float>(Item::atlasWidth);
             tbuff[ind++] = sidebar[i].ty + Item::texSize / static_cast<float>(Item::atlasHeight);
-            tbuff[ind++] = sidebar[i].tx;
-            tbuff[ind++] = sidebar[i].ty;
             tbuff[ind++] = sidebar[i].tx + Item::texSize / static_cast<float>(Item::atlasWidth);
-            tbuff[ind++] = sidebar[i].ty + Item::texSize / static_cast<float>(Item::atlasHeight);
+            tbuff[ind++] = sidebar[i].ty;
             tbuff[ind++] = sidebar[i].tx;
             tbuff[ind++] = sidebar[i].ty + Item::texSize / static_cast<float>(Item::atlasHeight);
+            tbuff[ind++] = sidebar[i].tx + Item::texSize / static_cast<float>(Item::atlasWidth);
+            tbuff[ind++] = sidebar[i].ty;
+            tbuff[ind++] = sidebar[i].tx;
+            tbuff[ind++] = sidebar[i].ty;
         }
         else {
             ind += 12;

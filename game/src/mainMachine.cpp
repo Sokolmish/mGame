@@ -10,12 +10,7 @@ MainMachine::MainMachine(GLFWwindow *window) {
 
     interfaceOpened = false;
     
-    // hideCursor = true;
-    hideCursor = false;
-    if (hideCursor)
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    else
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    setCursorHiding(false);
 
     glfwGetWindowSize(window, &this->width, &this->height);
     this->ratio = (float)width / (float)height;
@@ -50,11 +45,12 @@ MainMachine::MainMachine(GLFWwindow *window) {
     player->sidebar[1] = Item(4, true, 1, 0);
     player->sidebar[2] = Item(2, true, 2, 0);
     player->sidebar[7] = Item(1, true, 0, 0);
-    player->sidebar[6] = Item(3, false, 2, 0);
+    player->sidebar[6] = Item(3, false, 2, 1);
     player->inventory[0] = Item(5, false, 1, 1);
     player->inventory[2] = Item(5, true, 2, 0);
     player->inventory[8] = Item(5, false, 2, 1);
     player->inventory[14] = Item(5, false, 1, 1);
+    player->inventory[20] = Item(5, true, 1, 0);
 
     setState(GlobalGameState::SINGLE_GAME);
 }
@@ -95,8 +91,21 @@ void MainMachine::enterMainLoop() {
             glClearColor(0.509f, 0.788f, 0.902f, 1.f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            InputPoller::pollLooking(window, *player, dt);
-            player->doPhysics(window, *world, dt);
+            glm::vec3 delta(0.f);
+            if (!interfaceOpened) {
+                InputPoller::pollLooking(window, *player, dt);
+                delta = InputPoller::pollMovement(window, *player, dt);
+            }
+            // TODO: Alternative input scheme when interface opened
+            if (!interfaceOpened && !player->isFlight() && player->isGrounded(*world)) {
+                player->setAcceleration(glm::vec3(0));
+                player->setVelocity(glm::vec3(0));
+                // TODO: make jump method
+                if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+                    player->setVelocity(glm::vec3(0, 4.85, 0));
+            }
+            player->doPhysics(window, *world, dt, delta);
+            
 
             // Matrices
             Camera cam = player->getCamera();        
@@ -117,41 +126,43 @@ void MainMachine::enterMainLoop() {
             glm::ivec3 hiblock;
             WDir hiface;
             bool isBlockSelected = player->getSelectedBlock(*world, hiblock, hiface);
-            if (isBlockSelected)
-                blocksSelectLayout.show(m_proj_view, hiblock);
+            if (!interfaceOpened) {
+                if (isBlockSelected)
+                    blocksSelectLayout.show(m_proj_view, hiblock);
 
-            if (canInteract()) {
-                if (player->getSelectedItem().isBlock()) {
-                    glm::ivec3 setPos = hiblock;
-                    if (hiface == NORTH)
-                        setPos.z--;
-                    else if (hiface == SOUTH)
-                        setPos.z++;
-                    else if (hiface == EAST)
-                        setPos.x++;
-                    else if (hiface == WEST)
-                        setPos.x--;
-                    else if (hiface == UP)
-                        setPos.y++;
-                    else if (hiface == DOWN)
-                        setPos.y--;
+                if (canInteract()) {
+                    if (player->getSelectedItem().isBlock()) {
+                        glm::ivec3 setPos = hiblock;
+                        if (hiface == NORTH)
+                            setPos.z--;
+                        else if (hiface == SOUTH)
+                            setPos.z++;
+                        else if (hiface == EAST)
+                            setPos.x++;
+                        else if (hiface == WEST)
+                            setPos.x--;
+                        else if (hiface == UP)
+                            setPos.y++;
+                        else if (hiface == DOWN)
+                            setPos.y--;
 
-                    glm::vec3 pos = player->getPos();
-                    bool noInPlayer = nfloor(pos.y) > setPos.y || setPos.y > nfloor(pos.y + player->height) ||
-                        nfloor(pos.x - player->halfSize) > setPos.x || setPos.x > nfloor(pos.x + player->halfSize) ||
-                        nfloor(pos.z - player->halfSize) > setPos.z || setPos.z > nfloor(pos.z + player->halfSize);
+                        glm::vec3 pos = player->getPos();
+                        bool noInPlayer = nfloor(pos.y) > setPos.y || setPos.y > nfloor(pos.y + player->height) ||
+                            nfloor(pos.x - player->halfSize) > setPos.x || setPos.x > nfloor(pos.x + player->halfSize) ||
+                            nfloor(pos.z - player->halfSize) > setPos.z || setPos.z > nfloor(pos.z + player->halfSize);
 
-                    if (noInPlayer && !world->checkBlock(setPos)) {
-                        world->setBlock(setPos, player->getSelectedItem().toBlock());
-                        lastIntercationTime = glfwGetTime();
+                        if (noInPlayer && !world->checkBlock(setPos)) {
+                            world->setBlock(setPos, player->getSelectedItem().toBlock());
+                            lastIntercationTime = glfwGetTime();
+                        }
                     }
                 }
-            }
-            
-            if (canAttack()) {
-                if (world->checkBlock(hiblock)) {
-                    world->setBlock(hiblock, Block(0, { 0, 0 }));
-                    lastAttackTime = glfwGetTime();
+                
+                if (canAttack()) {
+                    if (world->checkBlock(hiblock)) {
+                        world->setBlock(hiblock, Block(0, { 0, 0 }));
+                        lastAttackTime = glfwGetTime();
+                    }
                 }
             }
 
@@ -221,6 +232,20 @@ bool MainMachine::canAttack() const {
         return false;
 }
 
+void MainMachine::setCursorHiding(bool isHide) {
+    hideCursor = isHide;
+    if (hideCursor)
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    else {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+
+    double mx, my;
+    glfwGetCursorPos(window, &mx, &my);
+    InputPoller::oldmx = mx;
+    InputPoller::oldmy = my;
+}
+
 // Input
 
 void MainMachine::clickMouse(int key, int action) {
@@ -237,17 +262,14 @@ void MainMachine::clickKeyboard(int key, int action) {
     }
 
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-        hideCursor = !hideCursor;
-        if (hideCursor)
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        else
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        setCursorHiding(!hideCursor);
     }
     else if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
         player->setFlight(!player->isFlight());
     }
     else if (key == GLFW_KEY_E && action == GLFW_PRESS) {
         interfaceOpened = !interfaceOpened;
+        setCursorHiding(!interfaceOpened);
     }
 }
 

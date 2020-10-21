@@ -27,7 +27,7 @@ inline float stepPitch(float pitch, float d) {
         return pitch;
 }
 
-glm::vec3 InputPoller::pollMovement(GLFWwindow *window, Player &player, float dt) {
+glm::vec3 InputPoller::pollMovement(GLFWwindow *window, const Player &player, float dt) {
     // bool isUpdated = false;
     glm::vec3 moveDir = player.getMoveDir();                 // (-sinf(yaw), 0, cosf(yaw));
     glm::vec3 leftDir = glm::vec3(moveDir.z, 0, -moveDir.x); // (cosf(yaw), 0, sinf(yaw));  

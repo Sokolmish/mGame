@@ -52,6 +52,7 @@ public:
     void enterMainLoop();
 
     void setState(GlobalGameState state);
+    void setCursorHiding(bool isHide);
 
     void clickMouse(int key, int action);
     void clickKeyboard(int key, int action);

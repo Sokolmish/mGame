@@ -33,8 +33,8 @@ bool Player::checkNewPos(const GameWorld &world, const glm::vec3 &pos) const {
     return true;
 }
 
-void Player::doPhysics(GLFWwindow *window, const GameWorld &world, float dt) {
-    glm::vec3 delta = InputPoller::pollMovement(window, *this, dt);
+void Player::doPhysics(GLFWwindow *window, const GameWorld &world, float dt, glm::vec3 delta) {
+    // glm::vec3 delta = InputPoller::pollMovement(window, *this, dt);
     glm::vec3 lastPos = getPos();
 
     bool grounded = isGrounded(world);
@@ -43,12 +43,13 @@ void Player::doPhysics(GLFWwindow *window, const GameWorld &world, float dt) {
         if (!grounded) {
             setAcceleration(glm::vec3(0, -9.81f, 0));
         }
-        else {  
-            setAcceleration(glm::vec3(0));
-            setVelocity(glm::vec3(0));
-            if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-                setVelocity(glm::vec3(0, 4.85, 0));
-        }
+        // else {  
+        //     setAcceleration(glm::vec3(0));
+        //     setVelocity(glm::vec3(0));
+        //     // TODO: make jump method
+        //     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        //         setVelocity(glm::vec3(0, 4.85, 0));
+        // }
     }
     else {
         setAcceleration(glm::vec3(0));

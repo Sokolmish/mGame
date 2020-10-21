@@ -32,10 +32,10 @@ void fillColors1(float *collb) {
 std::vector<InventoryLayout::Cell> InventoryLayout::calcCells(uint width, uint height) const {
     std::vector<InventoryLayout::Cell> cells = std::vector<InventoryLayout::Cell>(0);
 
-    float cy = height / 2.f;            // Vertical center
-    float csz = 50;                     // Cell size
-    float cmg = 7;                      // Cell margin
-    float slef = csz + cmg + cmg + 20;  // Left pos
+    float cy = height / 2.f;             // Vertical center
+    float csz = 60;                      // Cell size
+    float cmg = 7;                       // Cell margin
+    float slef = csz + cmg + cmg + 45.f; // Left pos
 
     // Sidebar
     float sh = (csz + cmg) * 9 + cmg;   // Sidebar total height
@@ -110,7 +110,7 @@ InventoryLayout::~InventoryLayout() {
 
 size_t InventoryLayout::fillSidebar(float *buff, uint width, uint height) const {
     float cy = height / 2.f;            // Vertical center
-    float csz = 50;                     // Sidebar cell size
+    float csz = 60;                     // Sidebar cell size
     float cmg = 7;                      // Sidebar cell margin
     float sw = csz + cmg + cmg;         // Sidebar total width
     float sh = (csz + cmg) * 9 + cmg;   // Sidebar total height
@@ -150,13 +150,13 @@ size_t InventoryLayout::fillSidebar(float *buff, uint width, uint height) const 
 }
 
 size_t InventoryLayout::fillInventory(float *buff, uint width, uint height) const {
-    float cy = height / 2.f;            // Vertical center
-    float csz = 50;                     // Cell size
-    float cmg = 7;                      // Cell margin
-    float sw = (csz + cmg) * 3 + cmg;   // Total width
-    float sh = (csz + cmg) * 9 + cmg;   // Total height
-    float sbot = cy - sh / 2.f;         // Bottom pos
-    float slef = csz + cmg + cmg + 20;  // Left pos
+    float cy = height / 2.f;             // Vertical center
+    float csz = 60;                      // Cell size
+    float cmg = 7;                       // Cell margin
+    float sw = (csz + cmg) * 3 + cmg;    // Total width
+    float sh = (csz + cmg) * 9 + cmg;    // Total height
+    float sbot = cy - sh / 2.f;          // Bottom pos
+    float slef = csz + cmg + cmg + 45.f; // Left pos
 
     // Background
     float vert1[12] = {
@@ -241,18 +241,18 @@ void InventoryLayout::show(const glm::mat4 &m_ortho, float width, float height) 
 
     for (size_t i = 0; i < cells.size(); i++) {
         tbuff[i * 12 + 0]  = cells[i].item->tx;
-        tbuff[i * 12 + 1]  = cells[i].item->ty;
+        tbuff[i * 12 + 1]  = cells[i].item->ty + Item::texSize / static_cast<float>(Item::atlasHeight);
         tbuff[i * 12 + 2]  = cells[i].item->tx + Item::texSize / static_cast<float>(Item::atlasWidth);
-        tbuff[i * 12 + 3]  = cells[i].item->ty;
+        tbuff[i * 12 + 3]  = cells[i].item->ty + Item::texSize / static_cast<float>(Item::atlasHeight);
         tbuff[i * 12 + 4]  = cells[i].item->tx + Item::texSize / static_cast<float>(Item::atlasWidth);
-        tbuff[i * 12 + 5]  = cells[i].item->ty + Item::texSize / static_cast<float>(Item::atlasHeight);
+        tbuff[i * 12 + 5]  = cells[i].item->ty;
 
         tbuff[i * 12 + 6]  = cells[i].item->tx;
-        tbuff[i * 12 + 7]  = cells[i].item->ty;
+        tbuff[i * 12 + 7]  = cells[i].item->ty + Item::texSize / static_cast<float>(Item::atlasHeight);
         tbuff[i * 12 + 8]  = cells[i].item->tx + Item::texSize / static_cast<float>(Item::atlasWidth);
-        tbuff[i * 12 + 9]  = cells[i].item->ty + Item::texSize / static_cast<float>(Item::atlasHeight);
+        tbuff[i * 12 + 9]  = cells[i].item->ty;
         tbuff[i * 12 + 10] = cells[i].item->tx;
-        tbuff[i * 12 + 11] = cells[i].item->ty + Item::texSize / static_cast<float>(Item::atlasHeight);
+        tbuff[i * 12 + 11] = cells[i].item->ty;
     }
     glBufferSubData(GL_ARRAY_BUFFER, 2 * 216 * SZ_FLT, 2 * 216 * SZ_FLT, tbuff);
     glBindBuffer(GL_ARRAY_BUFFER, 0);

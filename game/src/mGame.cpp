@@ -1,6 +1,7 @@
 #include "../include/util/util.hpp"
 #include "../include/util/shader.hpp"
 #include "../include/util/image.hpp"
+#include "../include/util/cursor.hpp"
 #include "../include/mainMachine.hpp"
 #include <iostream>
 #include <string>
@@ -24,7 +25,7 @@ void loadTexture(GLuint Id, const Image &img) {
 
 int main() {
     // Graphics initialization
-    GLFWwindow* window;
+    GLFWwindow *window;
     if (!glfwInit()) {
         std::cerr << "Failed to initialize GLFW" << std::endl;
         return -1;
@@ -80,6 +81,10 @@ int main() {
     Item::atlasHeight = img2.getH();
     loadTexture(textures[1], img2);
     img2.release();
+
+    // Cursors loading
+    Cursor expCursor("./game/textures/experimentalCursor1.png");
+    expCursor.use(window);
     
     // Main infinity loop
     mainMachine = new MainMachine(window);
