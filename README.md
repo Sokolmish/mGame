@@ -21,7 +21,7 @@
 * OpenGL
 * GLFW3
 * GLEW - хедер находится в папке [include](https://github.com/Sokolmish/mGame/tree/master/game/include), но необходимо установить исходники
-* GLM - **!!!НЕ УКАЗАН В CMAKE - надо указать!!!**
+* GLM
 * FreeType
 
 ```bash
