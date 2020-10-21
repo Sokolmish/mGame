@@ -6,7 +6,8 @@
 
 ## Структура кода
 
-* [mGame.cpp](https://github.com/Sokolmish/mGame/blob/master/game/src/mGame.cpp) - точка входа, главный цикл
+* [mGame.cpp](https://github.com/Sokolmish/mGame/blob/master/game/src/mGame.cpp) - точка входа
+* [MaimMachine](https://github.com/Sokolmish/mGame/blob/master/game/include/mainMachine.hpp) - главный цикл
 * [font](https://github.com/Sokolmish/mGame/blob/master/game/include/font.h) - отрисовка текста, инициализируется файлом *.ttf (класть в [fonts](https://github.com/Sokolmish/mGame/tree/master/game/fonts)) и жалаемым размером глифа (если параметр равен нулю - значение будет вычислено на основе известного параметра)
 * [image](https://github.com/Sokolmish/mGame/blob/master/game/include/image.h) - загружает изображения используя библиотеку [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h)
 * [inputEvents](https://github.com/Sokolmish/mGame/blob/master/game/include/inputEvents.h) - обработка пользовательского ввода
