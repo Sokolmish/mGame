@@ -4,6 +4,7 @@
 #include "util/util.hpp"
 #include "util/shader.hpp"
 #include "item.hpp"
+#include "configurations.hpp"
 #include <vector>
 
 class InterfaceLayout {
@@ -19,6 +20,9 @@ private:
     size_t fillCrosshair(float *buff, uint width, uint height) const;
     size_t fillSidebar(float *buff, uint width, uint height) const;
     // size_t fillCells(float *buff, uint width, uint height) const;
+
+    mutable iventory_config::Config cfg;
+
 public:
     InterfaceLayout();
     ~InterfaceLayout();

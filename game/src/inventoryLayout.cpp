@@ -1,61 +1,7 @@
 #include "../include/inventoryLayout.hpp"
 #include "../include/util/image.hpp"
 
-#define SZ_FLT sizeof(float)
-
-void fillColors1(float *collb) {
-    glm::vec4 gray_back = { 0.6f, 0.6f, 0.6f, 1.0f };
-    glm::vec4 gray_cell = { 0.35f, 0.35f, 0.35f, 1.0f };
-    // glm::vec4 gray_highlight = { 0.85f, 0.85f, 0.85f, 1.0f };
-
-    // Sidebar background
-    for (uint i = 0; i < 6; i++)
-        for (uint j = 0; j < 4; j++)
-            collb[(0 + i) * 4 + j] = gray_back[j];
-
-    // Sidebar cells
-    for (uint i = 0; i < 54; i++) // 54 = 6 * 9
-        for (uint j = 0; j < 4; j++)
-            collb[(6 + i) * 4 + j] = gray_cell[j];
-
-    // Inventory background
-    for (uint i = 0; i < 6; i++)
-        for (uint j = 0; j < 4; j++)
-            collb[(60 + i) * 4 + j] = gray_back[j];
-
-    // Inventory cells
-    for (uint i = 0; i < 162; i++) // 162 = 6 * 9 * 3
-        for (uint j = 0; j < 4; j++)
-            collb[(66 + i) * 4 + j] = gray_cell[j];
-}
-
-std::vector<InventoryLayout::Cell> InventoryLayout::calcCells(uint width, uint height) const {
-    std::vector<InventoryLayout::Cell> cells = std::vector<InventoryLayout::Cell>(0);
-
-    float cy = height / 2.f;             // Vertical center
-    float csz = 60;                      // Cell size
-    float cmg = 7;                       // Cell margin
-    float slef = csz + cmg + cmg + 45.f; // Left pos
-
-    // Sidebar
-    float sh = (csz + cmg) * 9 + cmg;   // Sidebar total height
-    float sbot = cy - sh / 2.f;         // Sidebar bottom pos
-    for (int j = 8; j >= 0; j--) {
-        float yoff = sbot + cmg + j * (csz + cmg);
-        cells.push_back({ cmg, yoff, cmg + csz, yoff + csz, &sidebar[8 - j] });
-    }
-
-    // Inventory
-    for (int xx = 0; xx < 3; xx++) {
-        float xoff = slef + cmg + xx * (csz + cmg);
-        for (int yy = 8; yy >= 0; yy--) {
-            float yoff = sbot + cmg + yy * (csz + cmg);
-            cells.push_back({ xoff, yoff, xoff + csz, yoff + csz, &inventory[xx * 9 + (8 - yy)] });
-        }
-    }
-
-    return cells;
-}
+#define SZ_FLT sizeof(GLfloat)
 
 InventoryLayout::InventoryLayout() {
     cshader = Shader::getShader("flatCShader");
@@ -64,11 +10,8 @@ InventoryLayout::InventoryLayout() {
     // 6 * 9 * 4 = 216 // vertices in cells
     // 216 + 12 = 228 // vertices in structures
 
-    cbuff = new float[228 * 6];
-    tbuff = new float[216 * 2];
-
-    float *collb = cbuff + (228 * 2);
-    fillColors1(collb);
+    cbuff = new GLfloat[228 * 2];
+    tbuff = new GLfloat[216 * 2];
 
     glGenVertexArrays(sizeof(vao) / sizeof(GLuint), vao);
     glGenBuffers(sizeof(vbo) / sizeof(GLuint), vbo);
@@ -77,7 +20,24 @@ InventoryLayout::InventoryLayout() {
     glBindVertexArray(vao[0]);
     glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
     glBufferData(GL_ARRAY_BUFFER, 228 * 6 * SZ_FLT, nullptr, GL_DYNAMIC_DRAW);
+    // Fill colors
+    GLfloat *collb = new float[228 * 4];
+
+    for (uint i = 0; i < 6; i++) // Sidebar background
+        for (uint j = 0; j < 4; j++)
+            collb[(0 + i) * 4 + j] = cfg.inv_back_color[j];
+    for (uint i = 0; i < 54; i++) // Sidebar cells 54 = 6 * 9
+        for (uint j = 0; j < 4; j++)
+            collb[(6 + i) * 4 + j] = cfg.inv_cell_color[j];
+    for (uint i = 0; i < 6; i++) // Inventory background
+        for (uint j = 0; j < 4; j++)
+            collb[(60 + i) * 4 + j] = cfg.inv_back_color[j];
+    for (uint i = 0; i < 162; i++) // Inventory cells 162 = 6 * 9 * 3
+        for (uint j = 0; j < 4; j++)
+            collb[(66 + i) * 4 + j] = cfg.inv_cell_color[j];
+
     glBufferSubData(GL_ARRAY_BUFFER, 2 * 228 * SZ_FLT, 4 * 228 * SZ_FLT, collb);
+    delete collb;
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * SZ_FLT, (void*)(0 * SZ_FLT));
@@ -108,22 +68,43 @@ InventoryLayout::~InventoryLayout() {
     delete[] tbuff;
 }
 
-size_t InventoryLayout::fillSidebar(float *buff, uint width, uint height) const {
-    float cy = height / 2.f;            // Vertical center
-    float csz = 60;                     // Sidebar cell size
-    float cmg = 7;                      // Sidebar cell margin
-    float sw = csz + cmg + cmg;         // Sidebar total width
-    float sh = (csz + cmg) * 9 + cmg;   // Sidebar total height
-    float sbot = cy - sh / 2.f;         // Sidebar bottom pos
+std::vector<InventoryLayout::Cell> InventoryLayout::calcCells(uint width, uint height) const {
+    std::vector<InventoryLayout::Cell> cells = std::vector<InventoryLayout::Cell>(0);
 
+    for (int j = 8; j >= 0; j--) {
+        float yoff = cfg.int_bot_pos + cfg.cell_margin + j * (cfg.cell_size + cfg.cell_margin);
+        cells.push_back({
+            cfg.cell_margin, yoff,
+            cfg.cell_margin + cfg.cell_size, yoff + cfg.cell_size,
+            &sidebar[8 - j]
+        });
+    }
+
+    // Inventory
+    for (int xx = 0; xx < 3; xx++) {
+        float xoff = cfg.inv_left_pos + cfg.cell_margin + xx * (cfg.cell_size + cfg.cell_margin);
+        for (int yy = 8; yy >= 0; yy--) {
+            float yoff = cfg.int_bot_pos + cfg.cell_margin + yy * (cfg.cell_size + cfg.cell_margin);
+            cells.push_back({
+                xoff, yoff, xoff + cfg.cell_size,
+                yoff + cfg.cell_size,
+                &inventory[xx * 9 + (8 - yy)]
+            });
+        }
+    }
+
+    return cells;
+}
+
+size_t InventoryLayout::fillSidebar(float *buff, uint width, uint height) const {
     // Sidebar background
     float vert1[12] = {
-        0, sbot,
-        sw, sbot,
-        sw, sbot + sh,
-        0, sbot,
-        sw, sbot + sh,
-        0, sbot + sh,
+        0,              cfg.int_bot_pos,
+        cfg.side_width, cfg.int_bot_pos,
+        cfg.side_width, cfg.int_bot_pos + cfg.int_height,
+        0,              cfg.int_bot_pos,
+        cfg.side_width, cfg.int_bot_pos + cfg.int_height,
+        0,              cfg.int_bot_pos + cfg.int_height,
     };
     for (int i = 0; i < 12; i++)
         buff[i] = vert1[i];
@@ -132,17 +113,17 @@ size_t InventoryLayout::fillSidebar(float *buff, uint width, uint height) const 
     // Sidebar cells
     float vert3[6][2] = {
         { 0, 0 },
-        { csz, 0 },
-        { csz, csz },
+        { cfg.cell_size, 0 },
+        { cfg.cell_size, cfg.cell_size },
         { 0, 0 },
-        { csz, csz },
-        { 0, csz },
+        { cfg.cell_size, cfg.cell_size },
+        { 0, cfg.cell_size },
     };
     int ind = 0;
     for (int j = 8; j >= 0; j--) {
-        float yoff = sbot + cmg + j * (csz + cmg);
+        float yoff = cfg.int_bot_pos + cfg.cell_margin + j * (cfg.cell_size + cfg.cell_margin);
         for (int i = 0; i < 6; i++) {
-            buff[ind++] = cmg + vert3[i][0];
+            buff[ind++] = cfg.cell_margin + vert3[i][0];
             buff[ind++] = yoff + vert3[i][1];
         }
     }
@@ -150,22 +131,14 @@ size_t InventoryLayout::fillSidebar(float *buff, uint width, uint height) const 
 }
 
 size_t InventoryLayout::fillInventory(float *buff, uint width, uint height) const {
-    float cy = height / 2.f;             // Vertical center
-    float csz = 60;                      // Cell size
-    float cmg = 7;                       // Cell margin
-    float sw = (csz + cmg) * 3 + cmg;    // Total width
-    float sh = (csz + cmg) * 9 + cmg;    // Total height
-    float sbot = cy - sh / 2.f;          // Bottom pos
-    float slef = csz + cmg + cmg + 45.f; // Left pos
-
     // Background
     float vert1[12] = {
-        slef,       sbot,
-        slef + sw,  sbot,
-        slef + sw,  sbot + sh,
-        slef,       sbot,
-        slef + sw,  sbot + sh,
-        slef,       sbot + sh,
+        cfg.inv_left_pos,                 cfg.int_bot_pos,
+        cfg.inv_left_pos + cfg.inv_width, cfg.int_bot_pos,
+        cfg.inv_left_pos + cfg.inv_width, cfg.int_bot_pos + cfg.int_height,
+        cfg.inv_left_pos,                 cfg.int_bot_pos,
+        cfg.inv_left_pos + cfg.inv_width, cfg.int_bot_pos + cfg.int_height,
+        cfg.inv_left_pos,                 cfg.int_bot_pos + cfg.int_height,
     };
     for (int i = 0; i < 12; i++)
         buff[i] = vert1[i];
@@ -174,17 +147,17 @@ size_t InventoryLayout::fillInventory(float *buff, uint width, uint height) cons
     // Cells
     float vert3[6][2] = {
         { 0, 0 },
-        { csz, 0 },
-        { csz, csz },
+        { cfg.cell_size, 0 },
+        { cfg.cell_size, cfg.cell_size },
         { 0, 0 },
-        { csz, csz },
-        { 0, csz },
+        { cfg.cell_size, cfg.cell_size },
+        { 0, cfg.cell_size },
     };
     int ind = 0;
     for (int xx = 0; xx < 3; xx++) {
-        float xoff = slef + cmg + xx * (csz + cmg);
+        float xoff = cfg.inv_left_pos + cfg.cell_margin + xx * (cfg.cell_size + cfg.cell_margin);
         for (int yy = 8; yy >= 0; yy--) {
-            float yoff = sbot + cmg + yy * (csz + cmg);
+            float yoff = cfg.int_bot_pos + cfg.cell_margin + yy * (cfg.cell_size + cfg.cell_margin);
             for (int i = 0; i < 6; i++) {
                 buff[ind++] = xoff + vert3[i][0];
                 buff[ind++] = yoff + vert3[i][1];
@@ -196,6 +169,8 @@ size_t InventoryLayout::fillInventory(float *buff, uint width, uint height) cons
 }
 
 void InventoryLayout::show(const glm::mat4 &m_ortho, float width, float height) const {
+    cfg = iventory_config::Config(width, height);
+
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
     glEnable(GL_BLEND);
@@ -219,7 +194,7 @@ void InventoryLayout::show(const glm::mat4 &m_ortho, float width, float height) 
 
     tshader.use();
     tshader.setUniform("projection", m_ortho);
-    
+
     glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
     auto cells = calcCells(width, height);
     for (size_t i = 0; i < cells.size(); i++) {

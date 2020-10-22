@@ -3,33 +3,6 @@
 
 #define SZ_FLT sizeof(float)
 
-void fillColors(float *collb) {
-    for (uint i = 0; i < 12; i++) { // Crosshair
-        collb[i * 4 + 0] = 1.0f;
-        collb[i * 4 + 1] = 1.0f;
-        collb[i * 4 + 2] = 1.0f;
-        collb[i * 4 + 3] = 1.0f;
-    }
-    for (uint i = 0; i < 6; i++) { // Sidebar background
-        collb[(12 + i) * 4 + 0] = 0.6f;
-        collb[(12 + i) * 4 + 1] = 0.6f;
-        collb[(12 + i) * 4 + 2] = 0.6f;
-        collb[(12 + i) * 4 + 3] = 1.0f;
-    }
-    for (uint i = 0; i < 6; i++) { // Sidebar selection
-        collb[(18 + i) * 4 + 0] = 0.85f;
-        collb[(18 + i) * 4 + 1] = 0.85f;
-        collb[(18 + i) * 4 + 2] = 0.85f;
-        collb[(18 + i) * 4 + 3] = 1.0f;
-    }
-    for (uint i = 0; i < 54; i++) { // Sidebar cells
-        collb[(24 + i) * 4 + 0] = 0.35f;
-        collb[(24 + i) * 4 + 1] = 0.35f;
-        collb[(24 + i) * 4 + 2] = 0.35f;
-        collb[(24 + i) * 4 + 3] = 1.0f;
-    }
-}
-
 InterfaceLayout::InterfaceLayout() {
     cshader = Shader::getShader("flatCShader");
     tshader = Shader::getShader("flatTShader");
@@ -41,8 +14,6 @@ InterfaceLayout::InterfaceLayout() {
     vertexCount = 78;
 
     buff = new float[vertexCount * 6]; // cbuff
-    float *collb = buff + (vertexCount * 2);
-    fillColors(collb);
 
     glGenVertexArrays(sizeof(vao) / sizeof(GLuint), vao);
     glGenBuffers(sizeof(vbo) / sizeof(GLuint), vbo);
@@ -51,7 +22,22 @@ InterfaceLayout::InterfaceLayout() {
     glBindVertexArray(vao[0]);
     glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
     glBufferData(GL_ARRAY_BUFFER, vertexCount * 6 * SZ_FLT, nullptr, GL_DYNAMIC_DRAW);
+    // Fill colors
+    GLfloat *collb = new float[4 * vertexCount];
+    for (uint i = 0; i < 12; i++) // Crosshair
+        for (uint j = 0; j < 4; j++)
+            collb[(i + 0) * 4 + j] = cfg.crosshair_color[j];
+    for (uint i = 0; i < 6; i++) // Sidebar background
+        for (uint j = 0; j < 4; j++)
+            collb[(i + 12) * 4 + j] = cfg.inv_back_color[j];
+    for (uint i = 0; i < 6; i++) // Sidebar selection
+        for (uint j = 0; j < 4; j++)
+            collb[(i + 18) * 4 + j] = cfg.inv_select_color[j];
+    for (uint i = 0; i < 54; i++) // Sidebar cells
+        for (uint j = 0; j < 4; j++)
+            collb[(i + 24) * 4 + j] = cfg.inv_cell_color[j];
     glBufferSubData(GL_ARRAY_BUFFER, 2 * vertexCount * SZ_FLT, 4 * vertexCount * SZ_FLT, collb);
+    delete[] collb;
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * SZ_FLT, (void*)(0 * SZ_FLT));
@@ -73,7 +59,7 @@ InterfaceLayout::InterfaceLayout() {
     glBindVertexArray(0);
 
     // Other
-    selectedCell = 1; 
+    selectedCell = 1;
 }
 
 InterfaceLayout::~InterfaceLayout() {
@@ -81,23 +67,19 @@ InterfaceLayout::~InterfaceLayout() {
 }
 
 size_t InterfaceLayout::fillCrosshair(float *buff, uint width, uint height) const {
-    float cx = width / 2.f;     // Horizontal center
-    float cy = height / 2.f;    // Vertical center
-    float crw = 2.f;            // Crosshair width
-    float cro = 10.f;           // Crosshair offset
     float vertices[24] = {
-        cx - crw, cy + cro,
-        cx - crw, cy - cro,
-        cx + crw, cy - cro,
-        cx - crw, cy + cro,
-        cx + crw, cy - cro,
-        cx + crw, cy + cro,
-        cx - cro, cy + crw,
-        cx - cro, cy - crw,
-        cx + cro, cy - crw,
-        cx - cro, cy + crw,
-        cx + cro, cy - crw,
-        cx + cro, cy + crw,
+        cfg.hor_center - cfg.cross_width, cfg.vert_center + cfg.cross_offse,
+        cfg.hor_center - cfg.cross_width, cfg.vert_center - cfg.cross_offse,
+        cfg.hor_center + cfg.cross_width, cfg.vert_center - cfg.cross_offse,
+        cfg.hor_center - cfg.cross_width, cfg.vert_center + cfg.cross_offse,
+        cfg.hor_center + cfg.cross_width, cfg.vert_center - cfg.cross_offse,
+        cfg.hor_center + cfg.cross_width, cfg.vert_center + cfg.cross_offse,
+        cfg.hor_center - cfg.cross_offse, cfg.vert_center + cfg.cross_width,
+        cfg.hor_center - cfg.cross_offse, cfg.vert_center - cfg.cross_width,
+        cfg.hor_center + cfg.cross_offse, cfg.vert_center - cfg.cross_width,
+        cfg.hor_center - cfg.cross_offse, cfg.vert_center + cfg.cross_width,
+        cfg.hor_center + cfg.cross_offse, cfg.vert_center - cfg.cross_width,
+        cfg.hor_center + cfg.cross_offse, cfg.vert_center + cfg.cross_width,
     };
     for (int i = 0; i < 24; i++)
         buff[i] = vertices[i];
@@ -105,20 +87,14 @@ size_t InterfaceLayout::fillCrosshair(float *buff, uint width, uint height) cons
 }
 
 size_t InterfaceLayout::fillSidebar(float *buff, uint width, uint height) const {
-    float cy = height / 2.f;            // Vertical center
-    float csz = 60;                     // Sidebar cell size
-    float cmg = 7;                      // Sidebar cell margin
-    float sw = csz + cmg + cmg;         // Sidebar total width
-    float sh = (csz + cmg) * 9 + cmg;   // Sidebar total height
-    float sbot = cy - sh / 2.f;         // Sidebar bottom pos
     // Sidebar
     float vert1[12] = {
-        0, sbot,
-        sw, sbot,
-        sw, sbot + sh,
-        0, sbot,
-        sw, sbot + sh,
-        0, sbot + sh,
+        0,              cfg.int_bot_pos,
+        cfg.side_width, cfg.int_bot_pos,
+        cfg.side_width, cfg.int_bot_pos + cfg.int_height,
+        0,              cfg.int_bot_pos,
+        cfg.side_width, cfg.int_bot_pos + cfg.int_height,
+        0,              cfg.int_bot_pos + cfg.int_height,
     };
     for (int i = 0; i < 12; i++)
         buff[i] = vert1[i];
@@ -126,7 +102,7 @@ size_t InterfaceLayout::fillSidebar(float *buff, uint width, uint height) const 
 
     // Selection
     int tselected = 8 - selectedCell;
-    float ssz = cmg + csz + cmg;
+    float ssz = cfg.cell_margin + cfg.cell_size + cfg.cell_margin;
     float vert2[6][2] = {
         { 0, 0 },
         { ssz, 0 },
@@ -137,7 +113,7 @@ size_t InterfaceLayout::fillSidebar(float *buff, uint width, uint height) const 
     };
     int ind = 0;
     for (int i = 0; i < 6; i++) {
-        float yoff = sbot + tselected * (cmg + csz);
+        float yoff = cfg.int_bot_pos + tselected * (cfg.cell_margin + cfg.cell_size);
         buff[ind++] = vert2[i][0];
         buff[ind++] = yoff + vert2[i][1];
     }
@@ -146,17 +122,17 @@ size_t InterfaceLayout::fillSidebar(float *buff, uint width, uint height) const 
     // Cells
     float vert3[6][2] = {
         { 0, 0 },
-        { csz, 0 },
-        { csz, csz },
+        { cfg.cell_size, 0 },
+        { cfg.cell_size, cfg.cell_size },
         { 0, 0 },
-        { csz, csz },
-        { 0, csz },
+        { cfg.cell_size, cfg.cell_size },
+        { 0, cfg.cell_size },
     };
     ind = 0;
     for (int j = 8; j >= 0; j--) {
-        float yoff = sbot + cmg + j * (csz + cmg);
+        float yoff = cfg.int_bot_pos + cfg.cell_margin + j * (cfg.cell_size + cfg.cell_margin);
         for (int i = 0; i < 6; i++) {
-            buff[ind++] = cmg + vert3[i][0];
+            buff[ind++] = cfg.cell_margin + vert3[i][0];
             buff[ind++] = yoff + vert3[i][1];
         }
     }
@@ -164,6 +140,8 @@ size_t InterfaceLayout::fillSidebar(float *buff, uint width, uint height) const 
 }
 
 void InterfaceLayout::show(const glm::mat4 &m_ortho, float width, float height) const {
+    cfg = iventory_config::Config(width, height);
+
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
     glEnable(GL_BLEND);
@@ -179,7 +157,7 @@ void InterfaceLayout::show(const glm::mat4 &m_ortho, float width, float height) 
     glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
     glBufferSubData(GL_ARRAY_BUFFER, 0, vertexCount * 2 * SZ_FLT, buff);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    
+
     glBindVertexArray(vao[0]);
     glDrawArrays(GL_TRIANGLES, 0, vertexCount);
     glBindVertexArray(0);
@@ -213,7 +191,7 @@ void InterfaceLayout::show(const glm::mat4 &m_ortho, float width, float height) 
     glBufferSubData(GL_ARRAY_BUFFER, 0, 54 * 2 * SZ_FLT, buff + 48);
     glBufferSubData(GL_ARRAY_BUFFER, 54 * 2 * SZ_FLT, 54 * 2 * SZ_FLT, tbuff);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    
+
     bool isBlockTexure = false;
     glBindTexture(GL_TEXTURE_2D, Image::loadImage("items"));
     glBindVertexArray(vao[1]);

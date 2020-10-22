@@ -4,6 +4,7 @@
 #include "util/util.hpp"
 #include "util/shader.hpp"
 #include "item.hpp"
+#include "configurations.hpp"
 #include <vector>
 
 class InventoryLayout {
@@ -15,7 +16,7 @@ private:
 
     Shader cshader, tshader;
     GLuint vao[2], vbo[2];
-    float *cbuff, *tbuff;
+    GLfloat *cbuff, *tbuff;
 
     std::vector<Item> sidebar;
     std::vector<Item> inventory;
@@ -24,6 +25,8 @@ private:
     size_t fillInventory(float *buff, uint width, uint height) const;
 
     std::vector<InventoryLayout::Cell> calcCells(uint width, uint height) const;
+
+    mutable iventory_config::Config cfg;
 
 public:
     InventoryLayout();
