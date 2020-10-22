@@ -2,8 +2,6 @@
 
 **[README_EN](https://github.com/Sokolmish/mGame/README_EN.md)** - Unfortunately - currently not finished :(
 
-Приветствуется любое участие в проекте, будь то реализация существующих issue, доработка кода, а также реализация всевозможных интересных вам фич в отдельных ветках с их вероятным включением в основной код.
-
 ## Структура кода
 
 * [mGame.cpp](https://github.com/Sokolmish/mGame/blob/master/game/src/mGame.cpp) - точка входа
