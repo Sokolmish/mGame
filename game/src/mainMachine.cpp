@@ -56,7 +56,7 @@ MainMachine::MainMachine(GLFWwindow *window) {
 }
 
 void MainMachine::enterMainLoop() {
-    glfwSwapInterval(0);
+    // glfwSwapInterval(0);
 
     float timePhys = glfwGetTime();  // Used for physics, updates every frame
     float timeFPS = timePhys;        // Used for fps counting, updates every second
