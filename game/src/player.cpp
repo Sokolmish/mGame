@@ -38,12 +38,12 @@ void Player::doPhysics(GLFWwindow *window, const GameWorld &world, float dt, glm
     glm::vec3 lastPos = getPos();
 
     bool grounded = isGrounded(world);
-    
+
     if (!isFlight()) {
         if (!grounded) {
             setAcceleration(glm::vec3(0, -9.81f, 0));
         }
-        // else {  
+        // else {
         //     setAcceleration(glm::vec3(0));
         //     setVelocity(glm::vec3(0));
         //     // TODO: make jump method
@@ -138,7 +138,7 @@ bool Player::isGrounded(const GameWorld &world) const {
 Camera Player::getCamera() const {
     return Camera(
         glm::vec3(pos.x, pos.y + camHeight, pos.z),
-        yaw, pitch   
+        yaw, pitch
     );
 }
 

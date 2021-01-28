@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <exception>
+#include <cstring>
 
 struct RawChar {
     Font::Character ch;
@@ -26,7 +27,7 @@ Font::Font(const std::string &path, uint32_t width, uint32_t height) {
 
     std::map<uint8_t, RawChar> rawChars;
     uint8_t xi = 0, yi = 0;
-    tileWidth = 0;    
+    tileWidth = 0;
     tileHeight = 0;
     for (uint8_t ch = 0; ch < 128; ch++) {
         if (FT_Load_Char(face, ch, FT_LOAD_RENDER)) {
@@ -55,7 +56,7 @@ Font::Font(const std::string &path, uint32_t width, uint32_t height) {
             yi++;
         }
     }
-    
+
     atlasWidth = tileWidth * 16;
     atlasHeight = tileHeight * 8;
     atlas = new uint8_t[atlasWidth * atlasHeight];
@@ -73,10 +74,10 @@ Font::Font(const std::string &path, uint32_t width, uint32_t height) {
         characters.insert({ ch.first, ch.second.ch });
         delete[] ch.second.buff;
     }
-    
+
     FT_Done_Face(face);
-    FT_Done_FreeType(ft); 
-    
+    FT_Done_FreeType(ft);
+
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -109,7 +110,7 @@ void Font::RenderText(const Shader &s, std::string text, GLfloat x, GLfloat y, G
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
     glBindVertexArray(VAO);
-    
+
     for (auto c = text.cbegin(); c != text.end(); c++) {
         Font::Character ch = characters.find(*c)->second;
 

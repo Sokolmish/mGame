@@ -9,7 +9,7 @@ float InputPoller::coeffMovement = 3.0f;
 float InputPoller::coeffCameraKeyboard = 1.8f;
 float InputPoller::coeffCameraMouse = 3.0f;
 
-inline float stepYaw(float yaw, float d) {
+static float stepYaw(float yaw, float d) {
     yaw = fmodf(yaw - d, 2 * M_PI);
     if (yaw < 0)
         return 2 * M_PI + yaw;
@@ -17,7 +17,7 @@ inline float stepYaw(float yaw, float d) {
         return yaw;
 }
 
-inline float stepPitch(float pitch, float d) {
+static float stepPitch(float pitch, float d) {
     pitch -= d;
     if (pitch > M_PI_2)
         return M_PI_2;
@@ -30,7 +30,7 @@ inline float stepPitch(float pitch, float d) {
 glm::vec3 InputPoller::pollMovement(GLFWwindow *window, const Player &player, float dt) {
     // bool isUpdated = false;
     glm::vec3 moveDir = player.getMoveDir();                 // (-sinf(yaw), 0, cosf(yaw));
-    glm::vec3 leftDir = glm::vec3(moveDir.z, 0, -moveDir.x); // (cosf(yaw), 0, sinf(yaw));  
+    glm::vec3 leftDir = glm::vec3(moveDir.z, 0, -moveDir.x); // (cosf(yaw), 0, sinf(yaw));
     glm::vec3 res(0.f);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         res += glm::vec3(-coeffMovement * dt * moveDir);

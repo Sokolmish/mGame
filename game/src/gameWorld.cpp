@@ -20,7 +20,7 @@ GameWorld::GameWorld(int cwidth, int cheight) {
 
     glBindVertexArray(cubeVAO);
     glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-    
+
     glBufferData(GL_ARRAY_BUFFER, buffSize * sizeof(GLfloat), nullptr, GL_DYNAMIC_DRAW);
     size_t stride = 5 * sizeof(GLfloat);
     glEnableVertexAttribArray(0); // Center's pos
@@ -54,7 +54,7 @@ void GameWorld::showChunk(const Chunk &chunk, const glm::mat4 &m_proj_view) cons
         buff[ind++] = (float)z;
         buff[ind++] = (float)cube.second.getTex().x;
         buff[ind++] = (float)cube.second.getTex().y;
-        
+
         count++;
         if (count == 4096) {
             glBufferSubData(GL_ARRAY_BUFFER, 0, 4096 * 5 * sizeof(GLfloat), buff);

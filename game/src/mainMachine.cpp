@@ -9,7 +9,7 @@ MainMachine::MainMachine(GLFWwindow *window) {
     world = new GameWorld(3, 3);
 
     interfaceOpened = false;
-    
+
     setCursorHiding(false);
 
     glfwGetWindowSize(window, &this->width, &this->height);
@@ -26,10 +26,10 @@ MainMachine::MainMachine(GLFWwindow *window) {
     for (int xx = 7; xx < 10; xx++)
         for (int zz = 7; zz < 10; zz++)
             world->setBlock(xx, 5, zz, BLOCK_DSTONE);
-    for (int yy = 0; yy < 16; yy++) 
+    for (int yy = 0; yy < 16; yy++)
         world->setBlock(2, yy, 2, BLOCK_DWOOD);
-    for (int xx = 3; xx < 5; xx++) 
-        for (int yy = 3; yy < 8; yy++) 
+    for (int xx = 3; xx < 5; xx++)
+        for (int yy = 3; yy < 8; yy++)
             world->setBlock(xx, yy, 2, BLOCK_DWOOD);
     for (int zz = 5; zz < 9; zz++)
         world->setBlock(5, 3, zz, BLOCK_DSTONE);
@@ -66,7 +66,7 @@ void MainMachine::enterMainLoop() {
         float nTime = glfwGetTime();
         float dt = nTime - timePhys;
         timePhys = nTime;
-        
+
         // FPS counting
         framesCounter++;
         if (nTime - timeFPS >= 1.0) {
@@ -77,7 +77,7 @@ void MainMachine::enterMainLoop() {
 
         glfwPollEvents();
         glViewport(0, 0, width, height);
-    
+
         if (globalState == GlobalGameState::LOADING_SCREEN) {
             // TODO
         }
@@ -105,10 +105,10 @@ void MainMachine::enterMainLoop() {
                     player->setVelocity(glm::vec3(0, 4.85, 0));
             }
             player->doPhysics(window, *world, dt, delta);
-            
+
 
             // Matrices
-            Camera cam = player->getCamera();        
+            Camera cam = player->getCamera();
             glm::mat4 m_proj_view =
                 glm::perspective(45.f, ratio, 0.005f, 100.f) *
                 glm::scale(glm::mat4(1.f), glm::vec3(0.3, 0.3, 0.3)) *
@@ -118,7 +118,7 @@ void MainMachine::enterMainLoop() {
                 glm::rotate(glm::mat4(1.f), cam.yaw, glm::vec3(0, 1, 0)) *
                 glm::translate(glm::mat4(1.f), -cam.pos);
             glm::mat4 m_ortho = glm::ortho(0.0f, (float)width, 0.0f, (float)height);
-            
+
             // Cube shader
             world->show(m_proj_view);
 
@@ -157,7 +157,7 @@ void MainMachine::enterMainLoop() {
                         }
                     }
                 }
-                
+
                 if (canAttack()) {
                     if (world->checkBlock(hiblock)) {
                         world->setBlock(hiblock, Block(0, { 0, 0 }));
@@ -249,7 +249,7 @@ void MainMachine::setCursorHiding(bool isHide) {
 // Input
 
 void MainMachine::clickMouse(int key, int action) {
-    
+
 }
 
 void MainMachine::clickKeyboard(int key, int action) {

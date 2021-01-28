@@ -9,7 +9,7 @@ class DebugLayout {
 private:
     Shader shader;
     Font *font;
-    
+
     glm::vec3 pos;
     float yaw, pitch;
     bool groundFlag;

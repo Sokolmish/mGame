@@ -11,7 +11,7 @@ Block::Block() {
 Block::Block(short int id, const glm::vec2 &tex) {
     this->id = id;
     this->tex = glm::vec2(
-        tex.x * texSize / (float)atlasWidth, 
+        tex.x * texSize / (float)atlasWidth,
         tex.y * texSize / (float)atlasHeight
     );
     txi = tex.x;

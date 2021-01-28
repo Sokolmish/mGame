@@ -18,10 +18,10 @@ private:
     };
     friend struct RawChar;
     std::map<GLchar, Font::Character> characters;
-    
+
     GLuint texture;
     GLuint VAO, VBO;
-    
+
     uint32_t atlasWidth;
     uint32_t atlasHeight;
     uint32_t tileWidth;

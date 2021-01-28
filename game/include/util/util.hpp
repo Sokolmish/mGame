@@ -49,8 +49,8 @@ int nmod(int a, int b);
 class RayIntersector {
 private:
     glm::vec3 orig, dir;
-    glm::vec3 invdir; 
-    int sign[3]; 
+    glm::vec3 invdir;
+    int sign[3];
 public:
     RayIntersector(const glm::vec3 &orig, const glm::vec3 &dir);
     bool intersect(const glm::vec3 &aa, const glm::vec3 &bb, WDir &face) const;

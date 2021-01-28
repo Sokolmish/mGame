@@ -10,7 +10,7 @@ void Chunk::parseIndex(size_t index, char &x, char &y, char &z) {
     z = index % 16;
     index /= 16;
     y = index;
-} 
+}
 
 
 Chunk::Chunk(int offx, int offz) {
@@ -19,7 +19,7 @@ Chunk::Chunk(int offx, int offz) {
 }
 
 Chunk::~Chunk() {
-    
+
 }
 
 void Chunk::setBlock(char x, char y, char z, const Block &block) {

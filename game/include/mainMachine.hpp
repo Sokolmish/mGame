@@ -37,14 +37,14 @@ private:
 
     bool isKeyPressed(int code) const;
     bool isMousePressed(MouseButton code) const;
-    
+
     float lastIntercationTime;
     float lastAttackTime;
     bool canInteract() const;
     bool canAttack() const;
 
     bool interfaceOpened;
-    
+
 public:
     MainMachine(GLFWwindow *window);
     ~MainMachine();

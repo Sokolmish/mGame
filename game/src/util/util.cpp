@@ -41,7 +41,7 @@ std::ostream& operator<<(std::ostream &os, const glm::vec3 &v) {
 }
 
 std::ostream& operator<<(std::ostream &os, const glm::vec4 &v) {
-    os << "(" << formatFloat("%.2f", v.x) << ";" << formatFloat("%.2f", v.y) << ";" 
+    os << "(" << formatFloat("%.2f", v.x) << ";" << formatFloat("%.2f", v.y) << ";"
         << formatFloat("%.2f", v.z) << ";" << formatFloat("%.2f", v.w) << ")";
     return os;
 }
@@ -77,7 +77,7 @@ int nfloor(float a) {
 }
 
 int ndiv(int a, int b) {
-    if (a >= 0) return a / b; 
+    if (a >= 0) return a / b;
     else return (a - b + 1) / b;
 }
 
@@ -97,42 +97,34 @@ RayIntersector::RayIntersector(const glm::vec3 &orig, const glm::vec3 &dir) : or
 }
 
 inline WDir getIntersectionFace(const glm::vec3 point, const glm::vec3 &aa, const glm::vec3 &bb) {
-    // TODO: optimization
     float temp;
-
     float min = fabsf(point.x - bb.x);
     WDir face = EAST;
-
     temp = fabsf(point.x - aa.x);
     if (min > temp) {
         min = temp;
         face = WEST;
     }
-
     temp = fabsf(point.z - bb.z);
     if (min > temp) {
         min = temp;
         face = SOUTH;
     }
-
     temp = fabsf(point.z - aa.z);
     if (min > temp) {
         min = temp;
         face = NORTH;
     }
-
     temp = fabsf(point.y - bb.y);
     if (min > temp) {
         min = temp;
         face = UP;
     }
-
     temp = fabsf(point.y - aa.y);
     if (min > temp) {
         min = temp;
         face = DOWN;
     }
-
     return face;
 }
 
@@ -162,11 +154,11 @@ bool RayIntersector::intersect(const glm::vec3 &aa, const glm::vec3 &bb, WDir &f
     if (tzmax < tmax)
         tmax = tzmax;
 
-    t = tmin; 
-    if (t < 0) { 
-        t = tmax; 
-        if (t < 0) 
-            return false; 
+    t = tmin;
+    if (t < 0) {
+        t = tmax;
+        if (t < 0)
+            return false;
     }
 
     face = getIntersectionFace(orig + t * dir, aa, bb);

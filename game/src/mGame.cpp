@@ -6,13 +6,11 @@
 #include <iostream>
 #include <string>
 
-void key_callback(GLFWwindow*, int, int, int, int);
-void mouse_button_callback(GLFWwindow*, int, int, int);
-void window_size_callback(GLFWwindow*, int, int);
+static void key_callback(GLFWwindow*, int, int, int, int);
+static void mouse_button_callback(GLFWwindow*, int, int, int);
+static void window_size_callback(GLFWwindow*, int, int);
 
-MainMachine *mainMachine;
-
-void loadTexture(GLuint Id, const Image &img) {
+static void loadTexture(GLuint Id, const Image &img) {
     glBindTexture(GL_TEXTURE_2D, Id);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -22,6 +20,8 @@ void loadTexture(GLuint Id, const Image &img) {
     glGenerateMipmap(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+static MainMachine *mainMachine;
 
 int main() {
     // Graphics initialization
@@ -67,7 +67,7 @@ int main() {
     glGenTextures(sizeof(textures) / sizeof(GLuint), textures);
     Image::saveImage("blocks", textures[0]);
     Image::saveImage("items", textures[1]);
-    
+
     Image img1("./game/textures/blocks.png");
     Block::texSize = BLOCK_TEXTURE_SIZE;
     Block::atlasWidth = img1.getW();
@@ -85,7 +85,7 @@ int main() {
     // Cursors loading
     Cursor expCursor("./game/textures/experimentalCursor1.png");
     expCursor.use(window);
-    
+
     // Main infinity loop
     mainMachine = new MainMachine(window);
     mainMachine->enterMainLoop();
