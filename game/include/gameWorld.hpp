@@ -29,8 +29,7 @@ public:
     Block getBlock(int x, int y, int z) const;
     Block getBlock(const glm::ivec3 &pos) const;
 
-    bool checkBlock(int index) const;
-    bool checkBlock(char x, char y, char z) const;
+    bool checkBlock(int x, int y, int z) const;
     bool checkBlock(const glm::ivec3 &vec) const;
 };
 

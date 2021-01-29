@@ -1,7 +1,7 @@
 #include "../include/util/util.hpp"
 #include "../include/util/shader.hpp"
 #include "../include/util/image.hpp"
-#include "../include/util/cursor.hpp"
+#include "../include/util/win_icons.hpp"
 #include "../include/mainMachine.hpp"
 #include <iostream>
 #include <string>
@@ -85,6 +85,10 @@ int main() {
     // Cursors loading
     Cursor expCursor("./game/textures/experimentalCursor1.png");
     expCursor.use(window);
+
+    // Icon loading
+    WindowIcon wIcon("./game/textures/experimentalIcon.png");
+    wIcon.use(window);
 
     // Main infinity loop
     mainMachine = new MainMachine(window);

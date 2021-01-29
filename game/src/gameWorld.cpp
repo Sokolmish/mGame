@@ -96,15 +96,15 @@ void GameWorld::show(const glm::mat4 &m_proj_view) const {
 
 
 void GameWorld::setBlock(int x, int y, int z, const Block &block) {
-    auto chunk = chunks.find({ ndiv(x, 16), ndiv(z, 16) });
+    auto chunk = chunks.find({ eucl_div(x, 16), eucl_div(z, 16) });
     if (chunk != chunks.end())
-        chunk->second.setBlock(nmod(x, 16), y, nmod(z, 16), block);
+        chunk->second.setBlock(eucl_mod(x, 16), y, eucl_mod(z, 16), block);
 }
 
 Block GameWorld::getBlock(int x, int y, int z) const {
-    auto chunk = chunks.find({ ndiv(x, 16), ndiv(z, 16) });
+    auto chunk = chunks.find({ eucl_div(x, 16), eucl_div(z, 16) });
     if (chunk != chunks.end())
-        return chunk->second.getBlock(nmod(x, 16), y, nmod(z, 16));
+        return chunk->second.getBlock(eucl_mod(x, 16), y, eucl_mod(z, 16));
     else
         return BLOCK_DAIR;
 }
@@ -117,21 +117,14 @@ Block GameWorld::getBlock(const glm::ivec3 &pos) const {
     return getBlock(pos.x, pos.y, pos.z);
 }
 
-
-bool GameWorld::checkBlock(int index) const {
-    throw "Not implemented";
-    // auto it2 = chunk.data.find(index);
-    // return it2 != chunk.data.end() && it2->second.getId() != 0;
-}
-
-bool GameWorld::checkBlock(char x, char y, char z) const {
-    auto chunk = chunks.find({ ndiv(x, 16), ndiv(z, 16) });
+bool GameWorld::checkBlock(int x, int y, int z) const {
+    auto chunk = chunks.find({ eucl_div(x, 16), eucl_div(z, 16) });
     if (chunk == chunks.end())
         return false;
-    auto it2 = chunk->second.data.find(Chunk::getIndex(nmod(x, 16), y, nmod(z, 16)));
+    auto it2 = chunk->second.data.find(Chunk::getIndex(eucl_mod(x, 16), y, eucl_mod(z, 16)));
     return it2 != chunk->second.data.end() && it2->second.getId() != 0;
 }
 
 bool GameWorld::checkBlock(const glm::ivec3 &vec) const {
-    return checkBlock((char)vec.x, (char)vec.y, (char)vec.z);
+    return checkBlock(vec.x, vec.y, vec.z);
 }

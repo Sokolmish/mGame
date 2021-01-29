@@ -24,9 +24,9 @@ Player::Player() {
 // ...
 
 bool Player::checkNewPos(const GameWorld &world, const glm::vec3 &pos) const {
-    for (int yy = nfloor(pos.y); yy <= pos.y + height; yy++) {
-        for (int xx = nfloor(pos.x - halfSize); xx <= pos.x + halfSize; xx++) {
-            for (int zz = nfloor(pos.z - halfSize); zz <= pos.z + halfSize; zz++) {
+    for (int yy = nfloorf(pos.y); yy <= pos.y + height; yy++) {
+        for (int xx = nfloorf(pos.x - halfSize); xx <= pos.x + halfSize; xx++) {
+            for (int zz = nfloorf(pos.z - halfSize); zz <= pos.z + halfSize; zz++) {
                 if (world.checkBlock(xx, yy, zz)) {
                     return false;
                 }
@@ -112,8 +112,8 @@ bool Player::getSelectedBlock(const GameWorld &world, glm::ivec3 &block, WDir &f
 
 
 bool Player::isGrounded(const GameWorld &world) const {
-    for (int xx = nfloor(pos.x - halfSize); xx <= pos.x + halfSize; xx++) {
-        for (int zz = nfloor(pos.z - halfSize); zz <= pos.z + halfSize; zz++) {
+    for (int xx = nfloorf(pos.x - halfSize); xx <= pos.x + halfSize; xx++) {
+        for (int zz = nfloorf(pos.z - halfSize); zz <= pos.z + halfSize; zz++) {
             if (fractf(pos.y) < 2e-2f && world.checkBlock(xx, pos.y - 1, zz))
                 return true;
             else if (fractf(pos.y) > 1.f - 2e-2f && world.checkBlock(xx, pos.y, zz))

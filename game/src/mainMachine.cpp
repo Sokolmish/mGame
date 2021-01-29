@@ -147,9 +147,9 @@ void MainMachine::enterMainLoop() {
                             setPos.y--;
 
                         glm::vec3 pos = player->getPos();
-                        bool noInPlayer = nfloor(pos.y) > setPos.y || setPos.y > nfloor(pos.y + player->height) ||
-                            nfloor(pos.x - player->halfSize) > setPos.x || setPos.x > nfloor(pos.x + player->halfSize) ||
-                            nfloor(pos.z - player->halfSize) > setPos.z || setPos.z > nfloor(pos.z + player->halfSize);
+                        bool noInPlayer = nfloorf(pos.y) > setPos.y || setPos.y > nfloorf(pos.y + player->height) ||
+                            nfloorf(pos.x - player->halfSize) > setPos.x || setPos.x > nfloorf(pos.x + player->halfSize) ||
+                            nfloorf(pos.z - player->halfSize) > setPos.z || setPos.z > nfloorf(pos.z + player->halfSize);
 
                         if (noInPlayer && !world->checkBlock(setPos)) {
                             world->setBlock(setPos, player->getSelectedItem().toBlock());

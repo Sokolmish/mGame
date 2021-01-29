@@ -17,32 +17,22 @@ std::string WDirToString(WDir dir) {
 }
 
 //
-// Formatters
-//
-
-std::string formatFloat(const std::string &format, float num) {
-    char str[16];
-    snprintf(str, 16, format.c_str(), num);
-    return std::string(str);
-}
-
-//
 // Printers
 //
 
 std::ostream& operator<<(std::ostream &os, const glm::vec2 &v) {
-    os << "(" << formatFloat("%.2f", v.x) << ";" << formatFloat("%.2f", v.y) << ")";
+    os << "(" << str_format("%.2f", v.x) << ";" << str_format("%.2f", v.y) << ")";
     return os;
 }
 
 std::ostream& operator<<(std::ostream &os, const glm::vec3 &v) {
-    os << "(" << formatFloat("%.2f", v.x) << ";" << formatFloat("%.2f", v.y) << ";" << formatFloat("%.2f", v.z) << ")";
+    os << "(" << str_format("%.2f", v.x) << ";" << str_format("%.2f", v.y) << ";" << str_format("%.2f", v.z) << ")";
     return os;
 }
 
 std::ostream& operator<<(std::ostream &os, const glm::vec4 &v) {
-    os << "(" << formatFloat("%.2f", v.x) << ";" << formatFloat("%.2f", v.y) << ";"
-        << formatFloat("%.2f", v.z) << ";" << formatFloat("%.2f", v.w) << ")";
+    os << "(" << str_format("%.2f", v.x) << ";" << str_format("%.2f", v.y) << ";"
+        << str_format("%.2f", v.z) << ";" << str_format("%.2f", v.w) << ")";
     return os;
 }
 
@@ -71,17 +61,17 @@ float fractf(float x) {
     return modff(x, &wh);
 }
 
-int nfloor(float a) {
+int nfloorf(float a) {
     if (a < 0) return (int)(a - 1);
     else return (int)a;
 }
 
-int ndiv(int a, int b) {
+int eucl_div(int a, int b) {
     if (a >= 0) return a / b;
     else return (a - b + 1) / b;
 }
 
-int nmod(int a, int b) {
+int eucl_mod(int a, int b) {
     return (b + (a % b)) % b;
 }
 
