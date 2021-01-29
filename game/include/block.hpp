@@ -3,6 +3,7 @@
 
 #include "util/util.hpp"
 #include "item.hpp"
+#include <map>
 
 class Item;
 
@@ -12,21 +13,18 @@ private:
     glm::vec2 tex;
     int txi, tyi;
 public:
-    static uint atlasWidth, atlasHeight;
-    static uint texSize;
-
     Block();
-    Block(short int id, const glm::vec2 &tex);
+    Block(uint16_t id);
 
     Item toItem() const;
 
     uint16_t getId() const;
     glm::vec2 getTex() const;
-};
 
-#define BLOCK_DAIR      Block(0, { 0, 0 })
-#define BLOCK_DGRASS    Block(1, { 0, 0 })
-#define BLOCK_DSTONE    Block(2, { 1, 0 })
-#define BLOCK_DWOOD     Block(3, { 2, 0 })
+    static uint atlasWidth, atlasHeight;
+    static uint texSize;
+    static std::map<uint16_t, Block> blocksLib;
+    static Block createBlock(uint16_t id, const glm::vec2 &tex);
+};
 
 #endif

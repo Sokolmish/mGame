@@ -106,8 +106,15 @@ Block GameWorld::getBlock(int x, int y, int z) const {
     if (chunk != chunks.end())
         return chunk->second.getBlock(eucl_mod(x, 16), y, eucl_mod(z, 16));
     else
-        return BLOCK_DAIR;
+        return Block();
 }
+
+void GameWorld::destroyBlock(int x, int y, int z) {
+    auto chunk = chunks.find({ eucl_div(x, 16), eucl_div(z, 16) });
+    if (chunk != chunks.end())
+        chunk->second.destroyBlock(eucl_mod(x, 16), y, eucl_mod(z, 16));
+}
+
 
 void GameWorld::setBlock(const glm::ivec3 &pos, const Block &block) {
     setBlock(pos.x, pos.y, pos.z, block);
@@ -115,6 +122,10 @@ void GameWorld::setBlock(const glm::ivec3 &pos, const Block &block) {
 
 Block GameWorld::getBlock(const glm::ivec3 &pos) const {
     return getBlock(pos.x, pos.y, pos.z);
+}
+
+void GameWorld::destroyBlock(const glm::ivec3 &pos) {
+    destroyBlock(pos.x, pos.y, pos.z);
 }
 
 bool GameWorld::checkBlock(int x, int y, int z) const {
@@ -127,4 +138,13 @@ bool GameWorld::checkBlock(int x, int y, int z) const {
 
 bool GameWorld::checkBlock(const glm::ivec3 &vec) const {
     return checkBlock(vec.x, vec.y, vec.z);
+}
+
+
+const std::map<std::pair<int, int>, Chunk>& GameWorld::getChunksData() const {
+    return chunks;
+}
+
+std::map<std::pair<int, int>, Chunk>& GameWorld::getChunks() {
+    return chunks;
 }

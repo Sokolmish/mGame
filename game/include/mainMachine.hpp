@@ -57,6 +57,8 @@ public:
     void clickMouse(int key, int action);
     void clickKeyboard(int key, int action);
     void resize(int width, int height);
+
+    void save(const std::string &path) const;
 };
 
 #endif

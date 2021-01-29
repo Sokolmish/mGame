@@ -18,6 +18,7 @@ private:
     std::map<std::pair<int, int>, Chunk> chunks;
 
     void showChunk(const Chunk &chunk, const glm::mat4 &m_proj_view) const;
+
 public:
     GameWorld(int cwidth, int cheight);
     ~GameWorld();
@@ -26,11 +27,18 @@ public:
 
     void setBlock(int x, int y, int z, const Block &block);
     void setBlock(const glm::ivec3 &pos, const Block &block);
+
     Block getBlock(int x, int y, int z) const;
     Block getBlock(const glm::ivec3 &pos) const;
 
+    void destroyBlock(int x, int y, int z);
+    void destroyBlock(const glm::ivec3 &pos);
+
     bool checkBlock(int x, int y, int z) const;
     bool checkBlock(const glm::ivec3 &vec) const;
+
+    const std::map<std::pair<int, int>, Chunk>& getChunksData() const;
+    std::map<std::pair<int, int>, Chunk>& getChunks();
 };
 
 #endif

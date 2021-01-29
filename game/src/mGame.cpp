@@ -90,6 +90,24 @@ int main() {
     WindowIcon wIcon("./game/textures/experimentalIcon.png");
     wIcon.use(window);
 
+    // Blocks creating
+    Block::blocksLib = {
+        { 1, Block::createBlock(1, { 0, 0 }) },
+        { 2, Block::createBlock(2, { 1, 0 }) },
+        { 3, Block::createBlock(3, { 2, 0 }) }
+    };
+
+    // Items creating
+    Item::itemsLib = {
+        { 1, Item::createItem(1, true, 0, 0) },
+        { 2, Item::createItem(2, true, 1, 0) },
+        { 3, Item::createItem(3, true, 2, 0) },
+        { 101, Item::createItem(101, false, 0, 0) },
+        { 102, Item::createItem(102, false, 2, 1) },
+        { 103, Item::createItem(103, false, 4, 2) },
+        { 104, Item::createItem(104, false, 5, 2) }
+    };
+
     // Main infinity loop
     mainMachine = new MainMachine(window);
     mainMachine->enterMainLoop();

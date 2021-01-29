@@ -1,5 +1,6 @@
 #include "../include/mainMachine.hpp"
 #include "../include/inputEvents.hpp"
+#include "../include/gameSaver.hpp"
 
 MainMachine::MainMachine(GLFWwindow *window) {
     this->window = window;
@@ -20,37 +21,18 @@ MainMachine::MainMachine(GLFWwindow *window) {
     lastAttackTime = curTime;
 
     //! TEMP
-    for (int xx = 0; xx < 16; xx++)
-        for (int zz = 0; zz < 16; zz++)
-            world->setBlock(xx, 2, zz, BLOCK_DGRASS);
-    for (int xx = 7; xx < 10; xx++)
-        for (int zz = 7; zz < 10; zz++)
-            world->setBlock(xx, 5, zz, BLOCK_DSTONE);
-    for (int yy = 0; yy < 16; yy++)
-        world->setBlock(2, yy, 2, BLOCK_DWOOD);
-    for (int xx = 3; xx < 5; xx++)
-        for (int yy = 3; yy < 8; yy++)
-            world->setBlock(xx, yy, 2, BLOCK_DWOOD);
-    for (int zz = 5; zz < 9; zz++)
-        world->setBlock(5, 3, zz, BLOCK_DSTONE);
-    for (int zz = 9; zz < 13; zz++)
-        world->setBlock(5, 4, zz, BLOCK_DSTONE);
-    world->setBlock(7, 6, 4, BLOCK_DSTONE);
-    world->setBlock(7, 6, 3, BLOCK_DSTONE);
-    world->setBlock(8, 6, 3, BLOCK_DSTONE);
+    GameSaver loader("./saves/dev1");
+    loader.loadChunk(0, 0, world->getChunks().at(std::make_pair(0, 0)));
     //! TEMP
     player->setPos(5.f, 7, 5.f);
     player->setYaw(M_PI_4);
-    player->sidebar[0] = Item(1, true, 0, 0);
-    player->sidebar[1] = Item(4, true, 1, 0);
-    player->sidebar[2] = Item(2, true, 2, 0);
-    player->sidebar[7] = Item(1, true, 0, 0);
-    player->sidebar[6] = Item(3, false, 2, 1);
-    player->inventory[0] = Item(5, false, 1, 1);
-    player->inventory[2] = Item(5, true, 2, 0);
-    player->inventory[8] = Item(5, false, 2, 1);
-    player->inventory[14] = Item(5, false, 1, 1);
-    player->inventory[20] = Item(5, true, 1, 0);
+    player->sidebar[0] = Item(1);
+    player->sidebar[1] = Item(2);
+    player->sidebar[2] = Item(3);
+    player->sidebar[6] = Item(101);
+    player->sidebar[7] = Item(102);
+    player->inventory[0] = Item(103);
+    player->inventory[4] = Item(104);
 
     setState(GlobalGameState::SINGLE_GAME);
 }
@@ -160,7 +142,7 @@ void MainMachine::enterMainLoop() {
 
                 if (canAttack()) {
                     if (world->checkBlock(hiblock)) {
-                        world->setBlock(hiblock, Block(0, { 0, 0 }));
+                        world->destroyBlock(hiblock);
                         lastAttackTime = glfwGetTime();
                     }
                 }
@@ -246,6 +228,19 @@ void MainMachine::setCursorHiding(bool isHide) {
     InputPoller::oldmy = my;
 }
 
+// Saving
+
+void MainMachine::save(const std::string &path) const {
+    GameSaver saver(path);
+    for (const auto &e : world->getChunksData()) {
+        if (!saver.saveChunk(e.first.first, e.first.second, e.second)) {
+            std::cout << "Chunk saving error: ("
+                    << e.first.first << "," << e.first.second
+                    << ")" << std::endl;
+        }
+    }
+}
+
 // Input
 
 void MainMachine::clickMouse(int key, int action) {
@@ -270,6 +265,9 @@ void MainMachine::clickKeyboard(int key, int action) {
     else if (key == GLFW_KEY_E && action == GLFW_PRESS) {
         interfaceOpened = !interfaceOpened;
         setCursorHiding(!interfaceOpened);
+    }
+    else if (key == GLFW_KEY_P && action == GLFW_PRESS) {
+        save("./saves/dev1");
     }
 }
 
