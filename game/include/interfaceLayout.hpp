@@ -9,17 +9,13 @@
 
 class InterfaceLayout {
 private:
-    Shader cshader, tshader;
-    GLuint vao[2], vbo[2];
+    Shader tshader;
+    GLuint vao[1], vbo[1];
     float *buff;
     int vertexCount;
 
     int selectedCell;
     std::vector<Item> sidebar;
-
-    size_t fillCrosshair(float *buff, uint width, uint height) const;
-    size_t fillSidebar(float *buff, uint width, uint height) const;
-    // size_t fillCells(float *buff, uint width, uint height) const;
 
     mutable iventory_config::Config cfg;
 

@@ -63,24 +63,31 @@ int main() {
     Shader::loadShader("wireShader");
 
     // Textures loading
-    GLuint textures[2];
+    GLuint textures[3];
+    Image *img;
+
     glGenTextures(sizeof(textures) / sizeof(GLuint), textures);
     Image::saveImage("blocks", textures[0]);
     Image::saveImage("items", textures[1]);
+    Image::saveImage("interface", textures[2]);
 
-    Image img1("./game/textures/blocks.png");
+    img = new Image("./game/textures/blocks.png");
     Block::texSize = BLOCK_TEXTURE_SIZE;
-    Block::atlasWidth = img1.getW();
-    Block::atlasHeight = img1.getH();
-    loadTexture(textures[0], img1);
-    img1.release();
+    Block::atlasWidth = img->getW();
+    Block::atlasHeight = img->getH();
+    loadTexture(textures[0], *img);
+    delete img;
 
-    Image img2("./game/textures/items.png");
+    img = new Image("./game/textures/items.png");
     Item::texSize = ITEM_TEXTURE_SIZE;
-    Item::atlasWidth = img2.getW();
-    Item::atlasHeight = img2.getH();
-    loadTexture(textures[1], img2);
-    img2.release();
+    Item::atlasWidth = img->getW();
+    Item::atlasHeight = img->getH();
+    loadTexture(textures[1], *img);
+    delete img;
+
+    img = new Image("./game/textures/interface.png");
+    loadTexture(textures[2], *img);
+    delete img;
 
     // Cursors loading
     Cursor expCursor("./game/textures/experimentalCursor1.png");

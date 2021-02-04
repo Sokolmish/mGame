@@ -14,8 +14,8 @@ namespace iventory_config {
         float cell_margin = 8;        // Cell margin
         float inv_offset = 65.f;      // Size between sidebar and inventory
 
-        float cross_width = 2.f;      // Crosshair width (thickness of the lines)
-        float cross_offse = 10.f;     // Crosshair offset (lenght of the lines)
+        float cross_wsize = 20.f;
+        float cross_hsize = 20.f;
 
         float int_height = (cell_size + cell_margin) * 9 + cell_margin;             // Total height
         float side_width = cell_size + cell_margin + cell_margin;                   // Sidebar total width

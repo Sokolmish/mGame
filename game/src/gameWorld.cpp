@@ -21,7 +21,7 @@ GameWorld::GameWorld(int cwidth, int cheight) {
     glBindVertexArray(cubeVAO);
     glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
 
-    glBufferData(GL_ARRAY_BUFFER, buffSize * sizeof(GLfloat), nullptr, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, buffSize * sizeof(GLfloat), nullptr, GL_STREAM_DRAW);
     size_t stride = 5 * sizeof(GLfloat);
     glEnableVertexAttribArray(0); // Center's pos
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)(0 * sizeof(GLfloat)));

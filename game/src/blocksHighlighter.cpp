@@ -21,7 +21,7 @@ BlocksHighlighter::BlocksHighlighter() {
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
-    glBufferData(GL_ARRAY_BUFFER, 48 * sizeof(GLfloat), buff, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 48 * sizeof(GLfloat), buff, GL_DYNAMIC_DRAW); // TODO: STREAM?
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)(0 * sizeof(GLfloat)));
     glEnableVertexAttribArray(1);

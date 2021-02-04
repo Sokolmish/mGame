@@ -13,9 +13,12 @@ private:
 
     static std::map<std::string, GLuint> staticStorage;
 public:
+    Image();
     Image(const std::string &path);
     ~Image();
-    void release();
+
+    void resize(int w, int h);
+
     uint8_t* getData() const;
     int getW() const;
     int getH() const;
