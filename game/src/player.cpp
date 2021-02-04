@@ -114,9 +114,9 @@ bool Player::getSelectedBlock(const GameWorld &world, glm::ivec3 &block, WDir &f
 bool Player::isGrounded(const GameWorld &world) const {
     for (int xx = nfloorf(pos.x - halfSize); xx <= pos.x + halfSize; xx++) {
         for (int zz = nfloorf(pos.z - halfSize); zz <= pos.z + halfSize; zz++) {
-            if (fractf(pos.y) < 2e-2f && world.checkBlock(xx, pos.y - 1, zz))
+            if (fractf(pos.y) < 0.02f && world.checkBlock(xx, pos.y - 1, zz))
                 return true;
-            else if (fractf(pos.y) > 1.f - 2e-2f && world.checkBlock(xx, pos.y, zz))
+            else if (fractf(pos.y) > 1.f - 0.02f && world.checkBlock(xx, pos.y, zz))
                 return true;
         }
     }
