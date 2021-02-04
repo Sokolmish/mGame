@@ -104,7 +104,7 @@ void InterfaceLayout::show(const glm::mat4 &m_ortho, float width, float height) 
         }
     }
 
-    int itemsTexOffset = (vertexCount * 2 + 36) * SZ_FLT;
+    uint itemsTexOffset = (vertexCount * 2 + 36) * SZ_FLT;
 
     tshader.use();
     tshader.setUniform("projection", m_ortho);
