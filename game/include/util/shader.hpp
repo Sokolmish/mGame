@@ -1,7 +1,7 @@
 #ifndef __SHADER_H__
 #define __SHADER_H__
 
-#include "glew.hpp"
+#include "../lib/glew.hpp"
 
 #include <string>
 #include <map>

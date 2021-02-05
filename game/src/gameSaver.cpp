@@ -6,7 +6,32 @@
 #include <filesystem>
 #include <system_error>
 
+#include "../lib/json.hpp"
+using json = nlohmann::json;
+
 namespace fs = std::filesystem;
+
+
+// Local static
+
+static std::string readTextFile(const std::string &path) {
+    std::ifstream ifs(path);
+    std::string line;
+    std::stringstream ss;
+    while (std::getline(ifs, line))
+        ss << line << std::endl;
+    ifs.close();
+    return ss.str();
+}
+
+static void writeTextFile(const std::string &path, const std::string &text) {
+    std::ofstream ofs(path);
+    ofs << text << std::endl;
+    ofs.close();
+}
+
+
+// Constructor
 
 GameSaver::GameSaver(const std::string &path) {
     savePath = path;
@@ -107,6 +132,86 @@ bool GameSaver::loadChunk(int x, int y, Chunk &chunk) {
         uint16_t blockId = *(reinterpret_cast<uint16_t*>(&data[ind + 2]));
         chunk.data.insert({ blockInd, Block(blockId) });
     }
+
+    return true;
+}
+
+bool GameSaver::savePlayer(const Player &player) {
+    std::cout << "Saving player data" << std::endl;
+
+    json sidebar = json::array();
+    for (size_t i = 0; i < player.sidebar.size(); i++) {
+        sidebar.push_back(json({
+            { "Id", player.sidebar[i].Id },
+            { "index", i }
+        }));
+    }
+
+    json inventory = json::array();
+    for (size_t i = 0; i < player.inventory.size(); i++) {
+        inventory.push_back(json({
+            { "Id", player.inventory[i].Id },
+            { "index", i }
+        }));
+    }
+
+    json playerJson = {
+        { "pos", json::array({
+            player.getPos().x,
+            player.getPos().y,
+            player.getPos().z
+        })},
+        { "velocity", json::array({
+            player.getVelocity().x,
+            player.getVelocity().y,
+            player.getVelocity().z
+        })},
+        { "acceleration", json::array({
+            player.getAcceleration().x,
+            player.getAcceleration().y,
+            player.getAcceleration().z
+        })},
+        { "yaw", player.getYaw() },
+        { "pitch", player.getPitch() },
+        { "isFlight", player.isFlight() },
+        { "selectedItem", player.getSelectedCell() },
+        { "sidebar", sidebar },
+        { "inventory", inventory }
+    };
+
+    writeTextFile(savePath + "/player.json", playerJson.dump(-1));
+    std::cout << "Player data saved" << std::endl;
+    return true;
+}
+
+bool GameSaver::loadPlayer(Player &player) {
+    std::string file = readTextFile(savePath + "/player.json");
+    json playerData = json::parse(file);
+
+    player.setPos(
+        playerData["pos"][0].get<float>(),
+        playerData["pos"][1].get<float>(),
+        playerData["pos"][2].get<float>()
+    );
+    player.setVelocity(glm::vec3(
+        playerData["velocity"][0].get<float>(),
+        playerData["velocity"][1].get<float>(),
+        playerData["velocity"][2].get<float>()
+    ));
+    player.setAcceleration(glm::vec3(
+        playerData["acceleration"][0].get<float>(),
+        playerData["acceleration"][1].get<float>(),
+        playerData["acceleration"][2].get<float>()
+    ));
+    player.setYaw(playerData["yaw"].get<float>());
+    player.setPitch(playerData["pitch"].get<float>());
+    player.setFlight(playerData["isFlight"].get<bool>());
+    player.selectItem(playerData["selectedItem"].get<int>());
+    
+    for (const auto &e : playerData["sidebar"])
+        player.sidebar[e["index"].get<int>()] = e["Id"].get<uint16_t>();
+    for (const auto &e : playerData["inventory"])
+        player.inventory[e["index"].get<int>()] = e["Id"].get<uint16_t>();
 
     return true;
 }

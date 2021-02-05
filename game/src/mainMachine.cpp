@@ -20,19 +20,9 @@ MainMachine::MainMachine(GLFWwindow *window) {
     lastIntercationTime = curTime;
     lastAttackTime = curTime;
 
-    //! TEMP
     GameSaver loader("./saves/dev1");
     loader.loadChunk(0, 0, world->getChunks().at(std::make_pair(0, 0)));
-    //! TEMP
-    player->setPos(5.f, 7, 5.f);
-    player->setYaw(M_PI_4);
-    player->sidebar[0] = Item(1);
-    player->sidebar[1] = Item(2);
-    player->sidebar[2] = Item(3);
-    player->sidebar[6] = Item(101);
-    player->sidebar[7] = Item(102);
-    player->inventory[0] = Item(103);
-    player->inventory[4] = Item(104);
+    loader.loadPlayer(*player);
 
     setState(GlobalGameState::SINGLE_GAME);
 }
@@ -232,13 +222,14 @@ void MainMachine::setCursorHiding(bool isHide) {
 
 void MainMachine::save(const std::string &path) const {
     GameSaver saver(path);
-    for (const auto &e : world->getChunksData()) {
-        if (!saver.saveChunk(e.first.first, e.first.second, e.second)) {
-            std::cout << "Chunk saving error: ("
-                    << e.first.first << "," << e.first.second
-                    << ")" << std::endl;
-        }
-    }
+    // for (const auto &e : world->getChunksData()) {
+    //     if (!saver.saveChunk(e.first.first, e.first.second, e.second)) {
+    //         std::cout << "Chunk saving error: ("
+    //                 << e.first.first << "," << e.first.second
+    //                 << ")" << std::endl;
+    //     }
+    // }
+    saver.savePlayer(*player);
 }
 
 // Input

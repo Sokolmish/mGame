@@ -6,10 +6,10 @@
 #define STBI_NO_PIC
 #define STBI_NO_PNM
 #define STB_IMAGE_IMPLEMENTATION
-#include "../../include/util/stb_image.hpp"
+#include "../../lib/stb_image.hpp"
 
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
-#include "../../include/util/stb_image_resize.hpp"
+#include "../../lib/stb_image_resize.hpp"
 
 #include <cstring>
 #include <cassert>

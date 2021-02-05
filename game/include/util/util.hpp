@@ -1,7 +1,7 @@
 #ifndef __UTIL_H__
 #define __UTIL_H__
 
-#include "glew.hpp"
+#include "../lib/glew.hpp"
 #include "GLFW/glfw3.h"
 
 #include "param.hpp"
