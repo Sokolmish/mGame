@@ -1,10 +1,10 @@
 #ifndef __INTERFACE_LAYOUT_H__
 #define __INTERFACE_LAYOUT_H__
 
-#include "util/util.hpp"
-#include "util/shader.hpp"
-#include "item.hpp"
-#include "configurations.hpp"
+#include "../util/util.hpp"
+#include "../util/shader.hpp"
+#include "../item.hpp"
+#include "../configurations.hpp"
 #include <vector>
 
 class InterfaceLayout {
@@ -17,7 +17,11 @@ private:
     int selectedCell;
     std::vector<Item> sidebar;
 
-    mutable iventory_config::Config cfg;
+    const iventory_config::Config cfg;
+
+    mutable float lastWidth;
+    mutable float lastHeight;
+    mutable int lastSelected;
 
 public:
     InterfaceLayout();

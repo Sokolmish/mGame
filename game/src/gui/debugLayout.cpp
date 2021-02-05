@@ -1,4 +1,4 @@
-#include "../include/debugLayout.hpp"
+#include "../../include/gui/debugLayout.hpp"
 #include <sstream>
 
 DebugLayout::DebugLayout() {

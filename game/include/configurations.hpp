@@ -17,25 +17,13 @@ namespace iventory_config {
         float cross_wsize = 20.f;
         float cross_hsize = 20.f;
 
-        float int_height = (cell_size + cell_margin) * 9 + cell_margin;             // Total height
-        float side_width = cell_size + cell_margin + cell_margin;                   // Sidebar total width
-        float inv_width = (cell_size + cell_margin) * 3 + cell_margin;              // Inventory total width
+        float int_height = (cell_size + cell_margin) * 9 + cell_margin;     // Total height
+        float side_width = cell_size + cell_margin + cell_margin;           // Sidebar total width
+        float inv_width = (cell_size + cell_margin) * 3 + cell_margin;      // Inventory total width
 
-        float hor_center;       // Horizontal center
-        float vert_center;      // Vertical center
+        float inv_left_pos = cell_size + cell_margin + cell_margin + inv_offset;  // Inventory left pos
 
-        float inv_left_pos = cell_size + cell_margin + cell_margin + inv_offset;    // Inventory left pos
-        float int_bot_pos;                                                          // Bottom pos
-
-        Config(float width, float height) {
-            hor_center = width / 2.f;
-            vert_center = height / 2.f;
-            int_bot_pos = vert_center - int_height / 2.f;
-        }
-
-        Config() {
-            int_bot_pos = 0;
-        }
+        // float int_bot_pos; // Bottom pos (vert_center - int_height / 2.f;)
     };
 }
 

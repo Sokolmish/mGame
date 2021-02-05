@@ -7,10 +7,10 @@
 #include "player.hpp"
 #include "gameWorld.hpp"
 
-#include "debugLayout.hpp"
 #include "blocksHighlighter.hpp"
-#include "interfaceLayout.hpp"
-#include "inventoryLayout.hpp"
+#include "gui/debugLayout.hpp"
+#include "gui/interfaceLayout.hpp"
+#include "gui/inventoryLayout.hpp"
 
 #include <set>
 
