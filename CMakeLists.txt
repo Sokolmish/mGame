@@ -4,7 +4,7 @@ project(mGame VERSION 1.0.0)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O1")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O1")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
     message("Enable O3")
@@ -21,7 +21,7 @@ include_directories(${GLM_INCLUDE_DIRS})
 
 find_package(GLEW REQUIRED)
 include_directories(${GLEW_INCLUDE_DIRS})
- 
+
 find_package(glfw3 REQUIRED)
 include_directories(${GLFW_INCLUDE_DIRS})
 
@@ -46,9 +46,9 @@ include_directories(
 )
 
 add_executable(mGame ${all_SRCS})
-target_link_libraries (mGame 
-    ${OPENGL_LIBRARIES} 
-    ${GLEW_LIBRARIES} 
-    glfw ${GLFW_LIBRARIES} 
+target_link_libraries (mGame
+    ${OPENGL_LIBRARIES}
+    ${GLEW_LIBRARIES}
+    glfw ${GLFW_LIBRARIES}
     ${FREETYPE_LIBRARIES}
 )

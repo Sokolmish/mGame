@@ -26,7 +26,7 @@ MainMachine::MainMachine(GLFWwindow *window) {
     lastAttackTime = curTime;
 
     setState(GlobalGameState::SINGLE_GAME);
-    interfaceOpened = false;
+    isInterfaceOpened = false;
     setCursorHiding(false);
 }
 
@@ -67,12 +67,11 @@ void MainMachine::enterMainLoop() {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             glm::vec3 delta(0.f);
-            if (!interfaceOpened) {
+            if (!isInterfaceOpened) {
                 InputPoller::pollLooking(window, *player, dt);
                 delta = InputPoller::pollMovement(window, *player, dt);
             }
-            // TODO: Alternative input scheme when interface opened
-            if (!interfaceOpened && !player->isFlight() && player->isGrounded(*world)) {
+            if (!isInterfaceOpened && !player->isFlight() && player->isGrounded(*world)) {
                 player->setAcceleration(glm::vec3(0));
                 player->setVelocity(glm::vec3(0));
                 // TODO: make jump method
@@ -80,7 +79,6 @@ void MainMachine::enterMainLoop() {
                     player->setVelocity(glm::vec3(0, 4.85, 0));
             }
             player->doPhysics(window, *world, dt, delta);
-
 
             // Matrices
             Camera cam = player->getCamera();
@@ -97,11 +95,11 @@ void MainMachine::enterMainLoop() {
             // Cube shader
             world->show(m_proj_view);
 
-            // Highlighting
+            // Interaction with world
             glm::ivec3 hiblock;
             WDir hiface;
             bool isBlockSelected = player->getSelectedBlock(*world, hiblock, hiface);
-            if (!interfaceOpened) {
+            if (!isInterfaceOpened) {
                 if (isBlockSelected)
                     blocksSelectLayout->show(m_proj_view, hiblock);
 
@@ -121,10 +119,12 @@ void MainMachine::enterMainLoop() {
                         else if (hiface == DOWN)
                             setPos.y--;
 
-                        glm::vec3 pos = player->getPos();
-                        bool noInPlayer = nfloorf(pos.y) > setPos.y || setPos.y > nfloorf(pos.y + player->height) ||
-                            nfloorf(pos.x - player->halfSize) > setPos.x || setPos.x > nfloorf(pos.x + player->halfSize) ||
-                            nfloorf(pos.z - player->halfSize) > setPos.z || setPos.z > nfloorf(pos.z + player->halfSize);
+                        const glm::vec3 pos = player->getPos();
+                        const float plHalfSize = player->halfSize;
+                        const bool noInPlayer =
+                            nfloorf(pos.y) > setPos.y || setPos.y > nfloorf(pos.y + player->height) ||
+                            nfloorf(pos.x - plHalfSize) > setPos.x || setPos.x > nfloorf(pos.x + plHalfSize) ||
+                            nfloorf(pos.z - plHalfSize) > setPos.z || setPos.z > nfloorf(pos.z + plHalfSize);
 
                         if (noInPlayer && !world->checkBlock(setPos)) {
                             world->setBlock(setPos, player->getSelectedItem().toBlock());
@@ -151,7 +151,7 @@ void MainMachine::enterMainLoop() {
             debugLayout->show(m_ortho, width, height);
 
             // Interface
-            if (!interfaceOpened) {
+            if (!isInterfaceOpened) {
                 interfaceLayout->changeGeometry(width, height);
                 interfaceLayout->updateSidebarItems(player->sidebar);
                 interfaceLayout->selectSidebarCell(player->getSelectedCell());
@@ -176,7 +176,7 @@ bool MainMachine::isKeyPressed(int code) const {
 }
 
 bool MainMachine::isMousePressed(MouseButton code) const {
-    int t;
+    int t = -1;
     if (code == MOUSE_LEFT)
         t = GLFW_MOUSE_BUTTON_LEFT;
     else if (code == MOUSE_RIGHT)
@@ -206,8 +206,8 @@ bool MainMachine::canAttack() const {
 }
 
 void MainMachine::setCursorHiding(bool isHide) {
-    hideCursor = isHide;
-    if (hideCursor)
+    isCursorHided = isHide;
+    if (isCursorHided)
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     else {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -223,20 +223,20 @@ void MainMachine::setCursorHiding(bool isHide) {
 
 void MainMachine::save(const std::string &path) const {
     GameSaver saver(path);
-    // for (const auto &e : world->getChunksData()) {
-    //     if (!saver.saveChunk(e.first.first, e.first.second, e.second)) {
-    //         std::cout << "Chunk saving error: ("
-    //                 << e.first.first << "," << e.first.second
-    //                 << ")" << std::endl;
-    //     }
-    // }
+    for (const auto &e : world->getChunksData()) {
+        if (!saver.saveChunk(e.first.first, e.first.second, e.second)) {
+            std::cout << "Chunk saving error: ("
+                    << e.first.first << "," << e.first.second
+                    << ")" << std::endl;
+        }
+    }
     saver.savePlayer(*player);
 }
 
 // Input
 
 void MainMachine::clickMouse(float x, float y, int key, int action) {
-    if (interfaceOpened) {
+    if (isInterfaceOpened) {
         inventoryLayout->click(x, y, key, action);
     }
 }
@@ -251,14 +251,14 @@ void MainMachine::clickKeyboard(int key, int action) {
     }
 
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-        setCursorHiding(!hideCursor);
+        setCursorHiding(!isCursorHided);
     }
     else if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
         player->setFlight(!player->isFlight());
     }
     else if (key == GLFW_KEY_E && action == GLFW_PRESS) {
-        interfaceOpened = !interfaceOpened;
-        setCursorHiding(!interfaceOpened);
+        isInterfaceOpened = !isInterfaceOpened;
+        setCursorHiding(!isInterfaceOpened);
     }
     else if (key == GLFW_KEY_P && action == GLFW_PRESS) {
         save("./saves/dev1");

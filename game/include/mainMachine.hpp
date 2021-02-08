@@ -34,7 +34,8 @@ private:
     std::unique_ptr<InventoryLayout> inventoryLayout;
 
     uint fps;
-    bool hideCursor;
+    bool isCursorHided;
+    bool isInterfaceOpened;
 
     bool isKeyPressed(int code) const;
     bool isMousePressed(MouseButton code) const;
@@ -43,8 +44,6 @@ private:
     float lastAttackTime;
     bool canInteract() const;
     bool canAttack() const;
-
-    bool interfaceOpened;
 
 public:
     MainMachine(GLFWwindow *window);
