@@ -12,7 +12,7 @@ static void loadRectange(float *buff, float ax, float ay, float bx, float by) {
         buff[i] = vertices[i];
 }
 
-InterfaceLayout::InterfaceLayout() {
+InterfaceLayout::InterfaceLayout(Player *player) {
     tshader = Shader::getShader("flatTShader");
 
     vertexCount = 6 + 6 + 6 + (9 * 6); // 72
@@ -61,63 +61,57 @@ InterfaceLayout::InterfaceLayout() {
     glBindVertexArray(0);
 
     // Other
-    selectedCell = 1;
-
-    lastWidth = -1.f;
-    lastHeight = -1.f;
-    lastSelected = -1;
+    this->player = player;
+    this->selectedCell = 1;
 }
 
 InterfaceLayout::~InterfaceLayout() {
     delete[] buff;
 }
 
-void InterfaceLayout::show(const glm::mat4 &m_ortho, float width, float height) const {
+void InterfaceLayout::changeGeometry(float width, float height) {
     size_t offset = 0;
 
-    if (selectedCell != lastSelected || width != lastWidth || height != lastHeight) {
-        float hor_center = width / 2.f;
-        float vert_center = height / 2.f;
-        float bot_pos = vert_center - cfg.int_height / 2.f;
+    float hor_center = width / 2.f;
+    float vert_center = height / 2.f;
+    float bot_pos = vert_center - cfg.int_height / 2.f;
 
-        // Crosshair pos
+    // Crosshair pos
+    loadRectange(buff + offset,
+        hor_center - cfg.cross_wsize, vert_center - cfg.cross_hsize,
+        hor_center + cfg.cross_wsize, vert_center + cfg.cross_hsize
+    );
+    offset += 12;
+    // Sidebar pos
+    loadRectange(buff + offset, 0.f, bot_pos, cfg.side_width, bot_pos + cfg.int_height);
+    offset += 12;
+    // Selection pos
+    float selYOff = bot_pos + (8 - selectedCell) * (cfg.cell_margin + cfg.cell_size);
+    float selSize = cfg.cell_margin + cfg.cell_size + cfg.cell_margin;
+    loadRectange(buff + offset, 0, selYOff, selSize, selYOff + selSize);
+    offset += 12;
+    // Items pos
+    for (int j = 8; j >= 0; j--) {
+        float itemYOff = bot_pos + cfg.cell_margin + j * (cfg.cell_size + cfg.cell_margin);
         loadRectange(buff + offset,
-            hor_center - cfg.cross_wsize, vert_center - cfg.cross_hsize,
-            hor_center + cfg.cross_wsize, vert_center + cfg.cross_hsize
+            cfg.cell_margin, itemYOff,
+            cfg.cell_margin + cfg.cell_size, itemYOff + cfg.cell_size
         );
         offset += 12;
-        // Sidebar pos
-        loadRectange(buff + offset, 0.f, bot_pos, cfg.side_width, bot_pos + cfg.int_height);
-        offset += 12;
-        // Selection pos
-        float selYOff = bot_pos + (8 - selectedCell) * (cfg.cell_margin + cfg.cell_size);
-        float selSize = cfg.cell_margin + cfg.cell_size + cfg.cell_margin;
-        loadRectange(buff + offset, 0, selYOff, selSize, selYOff + selSize);
-        offset += 12;
-        // Items pos
-        for (int j = 8; j >= 0; j--) {
-            float itemYOff = bot_pos + cfg.cell_margin + j * (cfg.cell_size + cfg.cell_margin);
-            loadRectange(buff + offset,
-                cfg.cell_margin, itemYOff,
-                cfg.cell_margin + cfg.cell_size, itemYOff + cfg.cell_size
-            );
-            offset += 12;
-        }
-
-        lastWidth = width;
-        lastHeight = height;
-        lastSelected = selectedCell;
     }
+}
 
+void InterfaceLayout::show(const glm::mat4 &m_ortho) {
     // Items tex
-    offset = (vertexCount * 2 + 36);
+    size_t offset = (vertexCount * 2 + 36);
     float itemWidth = Item::texSize / static_cast<float>(Item::atlasWidth);
     float itemHeight = Item::texSize / static_cast<float>(Item::atlasHeight);
     for (uint i = 0; i < 9; i++) {
-        if (sidebar[i].isExist()) {
+        const Item &cellItem = player->sidebar[i];
+        if (cellItem.isExist()) {
             loadRectange(buff + offset,
-                sidebar[i].tx, sidebar[i].ty + itemHeight,
-                sidebar[i].tx + itemWidth, sidebar[i].ty
+                cellItem.tx, cellItem.ty + itemHeight,
+                cellItem.tx + itemWidth, cellItem.ty
             );
         }
         offset += 12;
@@ -143,12 +137,12 @@ void InterfaceLayout::show(const glm::mat4 &m_ortho, float width, float height) 
     bool isBlockTexure = false;
     glBindTexture(GL_TEXTURE_2D, Image::loadImage("items"));
     for (int i = 0; i < 9; i++) {
-        if (sidebar[i].isExist()) {
-            if (sidebar[i].isBlock() && !isBlockTexure) {
+        if (player->sidebar[i].isExist()) {
+            if (player->sidebar[i].isBlock() && !isBlockTexure) {
                 isBlockTexure = true;
                 glBindTexture(GL_TEXTURE_2D, Image::loadImage("blocks"));
             }
-            else if (sidebar[i].isItem() && isBlockTexure) {
+            else if (player->sidebar[i].isItem() && isBlockTexure) {
                 isBlockTexure = false;
                 glBindTexture(GL_TEXTURE_2D, Image::loadImage("items"));
             }
@@ -163,5 +157,5 @@ void InterfaceLayout::selectSidebarCell(int cellnum) {
 }
 
 void InterfaceLayout::updateSidebarItems(const std::vector<Item> &items) {
-    sidebar = items;
+    player->sidebar = items;
 }

@@ -12,7 +12,7 @@ static void loadRectange(float *buff, float ax, float ay, float bx, float by) {
         buff[i] = vertices[i];
 }
 
-InventoryLayout::InventoryLayout() {
+InventoryLayout::InventoryLayout(Player *player) {
     tshader = Shader::getShader("flatTShader");
 
     vertexCount = (1 + 1 + 9 + 27) * 6;
@@ -52,17 +52,18 @@ InventoryLayout::InventoryLayout() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    sidebar = std::vector<Item>(9);
-    inventory = std::vector<Item>(27);
+    this->player = player;
+    cells = std::vector<Cell>();
 }
 
 InventoryLayout::~InventoryLayout() {
     delete[] buff;
 }
 
-void InventoryLayout::show(const glm::mat4 &m_ortho, float width, float height) const {
-    size_t offset = 0;
+void InventoryLayout::changeGeometry(float width, float height) {
+    cells = std::vector<Cell>();
 
+    size_t offset = 0;
     float vert_center = height / 2.f;
     float bot_pos = vert_center - cfg.int_height / 2.f;
 
@@ -80,38 +81,51 @@ void InventoryLayout::show(const glm::mat4 &m_ortho, float width, float height) 
     offset += 12;
     // Sidebar items pos
     for (int j = 8; j >= 0; j--) {
-        const Item &cellItem = sidebar[8 - j];
+        const Item &cellItem = player->sidebar[8 - j];
+        float yoff = bot_pos + cfg.cell_margin + j * (cfg.cell_size + cfg.cell_margin);
         if (cellItem.isExist()) {
-            float yoff = bot_pos + cfg.cell_margin + j * (cfg.cell_size + cfg.cell_margin);
             loadRectange(buff + offset,
                 cfg.cell_margin, yoff,
                 cfg.cell_margin + cfg.cell_size, yoff + cfg.cell_size
             );
         }
+        cells.push_back(Cell{
+            cfg.cell_margin, yoff,
+            cfg.cell_margin + cfg.cell_size, yoff + cfg.cell_size,
+            true, j
+        });
         offset += 12;
     }
     // Inventory items pos
     for (int xx = 0; xx < 3; xx++) {
         float xoff = cfg.inv_left_pos + cfg.cell_margin + xx * (cfg.cell_size + cfg.cell_margin);
         for (int yy = 8; yy >= 0; yy--) {
-            const Item &cellItem = inventory[xx * 9 + (8 - yy)];
+            const Item &cellItem = player->inventory[xx * 9 + (8 - yy)];
+            float yoff = bot_pos + cfg.cell_margin + yy * (cfg.cell_size + cfg.cell_margin);
             if (cellItem.isExist()) {
-                float yoff = bot_pos + cfg.cell_margin + yy * (cfg.cell_size + cfg.cell_margin);
                 loadRectange(buff + offset,
                     xoff, yoff,
                     xoff + cfg.cell_size, yoff + cfg.cell_size
                 );
             }
+            cells.push_back(Cell{
+                xoff, yoff,
+                xoff + cfg.cell_size, yoff + cfg.cell_size,
+                false, xx * 9 + yy
+            });
             offset += 12;
         }
     }
+}
 
-    // Items tex
-    offset = (vertexCount * 2 + 24);
+void InventoryLayout::show(const glm::mat4 &m_ortho) {
+    size_t offset = (vertexCount * 2 + 24);
     float itemWidth = Item::texSize / static_cast<float>(Item::atlasWidth);
     float itemHeight = Item::texSize / static_cast<float>(Item::atlasHeight);
+
+    // Items texs
     for (int j = 8; j >= 0; j--) {
-        const Item &cellItem = sidebar[8 - j];
+        const Item &cellItem = player->sidebar[8 - j];
         if (cellItem.isExist()) {
             loadRectange(buff + offset,
                 cellItem.tx, cellItem.ty + itemHeight,
@@ -122,7 +136,7 @@ void InventoryLayout::show(const glm::mat4 &m_ortho, float width, float height) 
     }
     for (int xx = 0; xx < 3; xx++) {
         for (int yy = 8; yy >= 0; yy--) {
-            const Item &cellItem = inventory[xx * 9 + (8 - yy)];
+            const Item &cellItem = player->inventory[xx * 9 + (8 - yy)];
             if (cellItem.isExist()) {
                 loadRectange(buff + offset,
                     cellItem.tx, cellItem.ty + itemHeight,
@@ -153,12 +167,12 @@ void InventoryLayout::show(const glm::mat4 &m_ortho, float width, float height) 
     glBindTexture(GL_TEXTURE_2D, Image::loadImage("items"));
     bool isBlockTexure = false;
     for (int i = 0; i < 9; i++) {
-        if (sidebar[i].isExist()) {
-            if (sidebar[i].isBlock() && !isBlockTexure) {
+        if (player->sidebar[i].isExist()) {
+            if (player->sidebar[i].isBlock() && !isBlockTexure) {
                 isBlockTexure = true;
                 glBindTexture(GL_TEXTURE_2D, Image::loadImage("blocks"));
             }
-            else if (sidebar[i].isItem() && isBlockTexure) {
+            else if (player->sidebar[i].isItem() && isBlockTexure) {
                 isBlockTexure = false;
                 glBindTexture(GL_TEXTURE_2D, Image::loadImage("items"));
             }
@@ -166,12 +180,12 @@ void InventoryLayout::show(const glm::mat4 &m_ortho, float width, float height) 
         }
     }
     for (int i = 0; i < 27; i++) {
-        if (inventory[i].isExist()) {
-            if (inventory[i].isBlock() && !isBlockTexure) {
+        if (player->inventory[i].isExist()) {
+            if (player->inventory[i].isBlock() && !isBlockTexure) {
                 isBlockTexure = true;
                 glBindTexture(GL_TEXTURE_2D, Image::loadImage("blocks"));
             }
-            else if (inventory[i].isItem() && isBlockTexure) {
+            else if (player->inventory[i].isItem() && isBlockTexure) {
                 isBlockTexure = false;
                 glBindTexture(GL_TEXTURE_2D, Image::loadImage("items"));
             }
@@ -182,10 +196,28 @@ void InventoryLayout::show(const glm::mat4 &m_ortho, float width, float height) 
     glBindVertexArray(0);
 }
 
-void InventoryLayout::updateSidebar(const std::vector<Item> &items) {
-    this->sidebar = items;
-}
+void InventoryLayout::click(float x, float y, int code, int action) {
+    if (code == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        for (const auto &cell : cells) {
+            if (cell.x1 <= x && x <= cell.x2 && cell.y1 <= y && y <= cell.y2) {
+                Item &curItem = cell.isSidebar ?
+                    player->sidebar[cell.index] :
+                    player->inventory[cell.index];
 
-void InventoryLayout::updateInventory(const std::vector<Item> &items) {
-    this->inventory = items;
+                if (curItem.isExist() && pickedItem.isExist()) {
+                    std::swap(pickedItem, curItem);
+                }
+                else if (curItem.isExist()) {
+                    pickedItem = curItem;
+                    curItem = Item();
+                }
+                else if (pickedItem.isExist()) {
+                    curItem = pickedItem;
+                    pickedItem = Item();
+                }
+
+                break;
+            }
+        }
+    }
 }

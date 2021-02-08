@@ -9,22 +9,25 @@ MainMachine::MainMachine(GLFWwindow *window) {
     player = new Player();
     world = new GameWorld(3, 3);
 
-    interfaceOpened = false;
-
-    setCursorHiding(false);
+    debugLayout = std::make_unique<DebugLayout>();
+    blocksSelectLayout = std::make_unique<BlocksHighlighter>();
+    interfaceLayout = std::make_unique<InterfaceLayout>(player);
+    inventoryLayout = std::make_unique<InventoryLayout>(player);
 
     glfwGetWindowSize(window, &this->width, &this->height);
     this->ratio = (float)width / (float)height;
-
-    float curTime = glfwGetTime();
-    lastIntercationTime = curTime;
-    lastAttackTime = curTime;
 
     GameSaver loader("./saves/dev1");
     loader.loadChunk(0, 0, world->getChunks().at(std::make_pair(0, 0)));
     loader.loadPlayer(*player);
 
+    float curTime = glfwGetTime();
+    lastIntercationTime = curTime;
+    lastAttackTime = curTime;
+
     setState(GlobalGameState::SINGLE_GAME);
+    interfaceOpened = false;
+    setCursorHiding(false);
 }
 
 void MainMachine::enterMainLoop() {
@@ -100,7 +103,7 @@ void MainMachine::enterMainLoop() {
             bool isBlockSelected = player->getSelectedBlock(*world, hiblock, hiface);
             if (!interfaceOpened) {
                 if (isBlockSelected)
-                    blocksSelectLayout.show(m_proj_view, hiblock);
+                    blocksSelectLayout->show(m_proj_view, hiblock);
 
                 if (canInteract()) {
                     if (player->getSelectedItem().isBlock()) {
@@ -139,31 +142,29 @@ void MainMachine::enterMainLoop() {
             }
 
             // Debug layout
-            debugLayout.setPos(player->getPos());
-            debugLayout.setView(glm::degrees(player->getYaw()), glm::degrees(player->getPitch()));
-            debugLayout.setGrounded(player->isGrounded(*world));
-            debugLayout.setFlightmoded(player->isFlight());
-            debugLayout.setSelectedBlock(hiblock, hiface, isBlockSelected);
-            debugLayout.setFPS(this->fps);
-            debugLayout.show(m_ortho, width, height);
+            debugLayout->setPos(player->getPos());
+            debugLayout->setView(glm::degrees(player->getYaw()), glm::degrees(player->getPitch()));
+            debugLayout->setGrounded(player->isGrounded(*world));
+            debugLayout->setFlightmoded(player->isFlight());
+            debugLayout->setSelectedBlock(hiblock, hiface, isBlockSelected);
+            debugLayout->setFPS(this->fps);
+            debugLayout->show(m_ortho, width, height);
 
             // Interface
             if (!interfaceOpened) {
-                interfaceLayout.updateSidebarItems(player->sidebar);
-                interfaceLayout.selectSidebarCell(player->getSelectedCell());
-                interfaceLayout.show(m_ortho, width, height);
+                interfaceLayout->changeGeometry(width, height);
+                interfaceLayout->updateSidebarItems(player->sidebar);
+                interfaceLayout->selectSidebarCell(player->getSelectedCell());
+                interfaceLayout->show(m_ortho);
             }
             else {
-                inventoryLayout.updateSidebar(player->sidebar);
-                inventoryLayout.updateInventory(player->inventory);
-                inventoryLayout.show(m_ortho, width, height);
+                inventoryLayout->changeGeometry(width, height);
+                inventoryLayout->show(m_ortho);
             }
         }
 
         glfwSwapBuffers(window);
     }
-
-    //
 }
 
 void MainMachine::setState(GlobalGameState state) {
@@ -234,8 +235,10 @@ void MainMachine::save(const std::string &path) const {
 
 // Input
 
-void MainMachine::clickMouse(int key, int action) {
-
+void MainMachine::clickMouse(float x, float y, int key, int action) {
+    if (interfaceOpened) {
+        inventoryLayout->click(x, y, key, action);
+    }
 }
 
 void MainMachine::clickKeyboard(int key, int action) {

@@ -128,7 +128,9 @@ int main() {
 // Input callbacks
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-    mainMachine->clickMouse(button, action);
+    double mx, my;
+    glfwGetCursorPos(window, &mx, &my);
+    mainMachine->clickMouse((float)mx, (float)my, button, action);
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {

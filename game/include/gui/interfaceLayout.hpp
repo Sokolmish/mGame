@@ -5,6 +5,7 @@
 #include "../util/shader.hpp"
 #include "../item.hpp"
 #include "../configurations.hpp"
+#include "../player.hpp"
 #include <vector>
 
 class InterfaceLayout {
@@ -15,19 +16,16 @@ private:
     int vertexCount;
 
     int selectedCell;
-    std::vector<Item> sidebar;
+    Player *player;
 
     const iventory_config::Config cfg;
 
-    mutable float lastWidth;
-    mutable float lastHeight;
-    mutable int lastSelected;
-
 public:
-    InterfaceLayout();
+    InterfaceLayout(Player *player);
     ~InterfaceLayout();
 
-    void show(const glm::mat4 &m_ortho, float width, float height) const;
+    void changeGeometry(float width, float height);
+    void show(const glm::mat4 &m_ortho);
 
     void selectSidebarCell(int cellnum);
     void updateSidebarItems(const std::vector<Item> &items);

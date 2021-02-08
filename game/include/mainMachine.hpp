@@ -13,6 +13,7 @@
 #include "gui/inventoryLayout.hpp"
 
 #include <set>
+#include <memory>
 
 enum class GlobalGameState { LOADING_SCREEN, START_MENU, SINGLE_GAME, SINGLE_PAUSE };
 
@@ -27,10 +28,10 @@ private:
     Player *player;
     GameWorld *world;
 
-    DebugLayout debugLayout;
-    BlocksHighlighter blocksSelectLayout;
-    InterfaceLayout interfaceLayout;
-    InventoryLayout inventoryLayout;
+    std::unique_ptr<DebugLayout> debugLayout;
+    std::unique_ptr<BlocksHighlighter> blocksSelectLayout;
+    std::unique_ptr<InterfaceLayout> interfaceLayout;
+    std::unique_ptr<InventoryLayout> inventoryLayout;
 
     uint fps;
     bool hideCursor;
@@ -54,7 +55,7 @@ public:
     void setState(GlobalGameState state);
     void setCursorHiding(bool isHide);
 
-    void clickMouse(int key, int action);
+    void clickMouse(float x, float y, int key, int action);
     void clickKeyboard(int key, int action);
     void resize(int width, int height);
 
