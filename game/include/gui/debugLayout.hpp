@@ -1,9 +1,9 @@
 #ifndef __DEBUG_LAYOUT_H__
 #define __DEBUG_LAYOUT_H__
 
-#include "../util/util.hpp"
-#include "../util/shader.hpp"
-#include "../util/font.hpp"
+#include "util/util.hpp"
+#include "util/shader.hpp"
+#include "util/font.hpp"
 
 class DebugLayout {
 private:

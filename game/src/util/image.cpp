@@ -1,4 +1,4 @@
-#include "../../include/util/image.hpp"
+#include "util/image.hpp"
 
 #define STBI_NO_PSD
 #define STBI_NO_GIF
@@ -6,10 +6,10 @@
 #define STBI_NO_PIC
 #define STBI_NO_PNM
 #define STB_IMAGE_IMPLEMENTATION
-#include "../../lib/stb_image.hpp"
+#include "stb_image.hpp"
 
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
-#include "../../lib/stb_image_resize.hpp"
+#include "stb_image_resize.hpp"
 
 #include <cstring>
 #include <cassert>

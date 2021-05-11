@@ -1,4 +1,4 @@
-#include "../include/gameSaver.hpp"
+#include "gameSaver.hpp"
 
 #include <iostream>
 #include <fstream>

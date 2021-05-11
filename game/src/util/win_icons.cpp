@@ -1,5 +1,5 @@
-#include "../../include/util/win_icons.hpp"
-#include "../../include/util/image.hpp"
+#include "util/win_icons.hpp"
+#include "util/image.hpp"
 
 // Cursor
 

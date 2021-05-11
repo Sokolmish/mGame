@@ -1,6 +1,6 @@
-#include "../include/mainMachine.hpp"
-#include "../include/inputEvents.hpp"
-#include "../include/gameSaver.hpp"
+#include "mainMachine.hpp"
+#include "inputEvents.hpp"
+#include "gameSaver.hpp"
 
 MainMachine::MainMachine(GLFWwindow *window) {
     this->window = window;

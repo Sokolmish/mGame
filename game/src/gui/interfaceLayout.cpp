@@ -1,5 +1,5 @@
-#include "../../include/gui/interfaceLayout.hpp"
-#include "../../include/util/image.hpp"
+#include "gui/interfaceLayout.hpp"
+#include "util/image.hpp"
 
 #define SZ_FLT sizeof(float)
 

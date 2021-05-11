@@ -1,6 +1,6 @@
-#include "../include/util/util.hpp"
-#include "../include/player.hpp"
-#include "../include/inputEvents.hpp"
+#include "util/util.hpp"
+#include "player.hpp"
+#include "inputEvents.hpp"
 #include <cmath>
 
 Player::Player() {

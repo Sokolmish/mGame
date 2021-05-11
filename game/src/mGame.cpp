@@ -1,8 +1,9 @@
-#include "../include/util/util.hpp"
-#include "../include/util/shader.hpp"
-#include "../include/util/image.hpp"
-#include "../include/util/win_icons.hpp"
-#include "../include/mainMachine.hpp"
+#include "util/util.hpp"
+#include "util/shader.hpp"
+#include "util/image.hpp"
+#include "util/win_icons.hpp"
+#include "mainMachine.hpp"
+
 #include <iostream>
 #include <string>
 

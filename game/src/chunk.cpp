@@ -1,4 +1,4 @@
-#include "../include/chunk.hpp"
+#include "chunk.hpp"
 
 size_t Chunk::getIndex(char x, char y, char z) {
     return (y * 16 + z) * 16 + x;

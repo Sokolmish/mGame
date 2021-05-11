@@ -1,4 +1,4 @@
-#include "../include/item.hpp"
+#include "item.hpp"
 
 // Should be redefined in main!
 uint Item::atlasWidth = 0;  // 128

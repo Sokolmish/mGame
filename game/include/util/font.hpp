@@ -1,7 +1,7 @@
 #ifndef __FONT_H__
 #define __FONT_H__
 
-#include "../lib/glew.hpp"
+#include "glew.hpp"
 #include <string>
 #include <vector>
 #include <map>

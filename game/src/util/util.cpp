@@ -1,4 +1,4 @@
-#include "../../include/util/util.hpp"
+#include "util/util.hpp"
 #include <cmath>
 #include <array>
 

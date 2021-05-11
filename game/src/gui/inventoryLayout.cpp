@@ -1,5 +1,5 @@
-#include "../../include/gui/inventoryLayout.hpp"
-#include "../../include/util/image.hpp"
+#include "gui/inventoryLayout.hpp"
+#include "util/image.hpp"
 
 #define SZ_FLT sizeof(GLfloat)
 

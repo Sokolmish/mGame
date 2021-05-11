@@ -1,4 +1,4 @@
-#include "../include/blocksHighlighter.hpp"
+#include "blocksHighlighter.hpp"
 
 BlocksHighlighter::BlocksHighlighter() {
     shader = Shader::getShader("wireShader");

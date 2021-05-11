@@ -1,4 +1,4 @@
-#include "../include/block.hpp"
+#include "block.hpp"
 
 // Should be redefined in main!
 uint Block::atlasWidth = 0;   // 128

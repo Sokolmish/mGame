@@ -4,15 +4,16 @@ project(mGame VERSION 1.0.0)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O1")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
-    message("Enable O3")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+else ()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O1 -g")
 endif ()
 
 add_compile_options(-Wall)
 
+set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIRS})
 
@@ -28,21 +29,17 @@ include_directories(${GLFW_INCLUDE_DIRS})
 find_package(Freetype REQUIRED)
 include_directories(${FREETYPE_INCLUDE_DIRS})
 
+include_directories(
+    ${PROJECT_SOURCE_DIR}/game/include
+    ${PROJECT_SOURCE_DIR}/game/include/lib
+)
+
 file(GLOB all_SRCS
-    "${PROJECT_SOURCE_DIR}/game/include/*.h"
-    "${PROJECT_SOURCE_DIR}/game/include/*.hpp"
     "${PROJECT_SOURCE_DIR}/game/src/*.cpp"
     "${PROJECT_SOURCE_DIR}/game/src/*.c"
 
-    "${PROJECT_SOURCE_DIR}/game/include/*/*.h"
-    "${PROJECT_SOURCE_DIR}/game/include/*/*.hpp"
     "${PROJECT_SOURCE_DIR}/game/src/*/*.cpp"
     "${PROJECT_SOURCE_DIR}/game/src/*/*.c"
-)
-
-include_directories(
-    ${PROJECT_SOURCE_DIR}/game/headers
-    ${PROJECT_SOURCE_DIR}/game/src
 )
 
 add_executable(mGame ${all_SRCS})

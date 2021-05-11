@@ -1,11 +1,11 @@
 #ifndef __INTERFACE_LAYOUT_H__
 #define __INTERFACE_LAYOUT_H__
 
-#include "../util/util.hpp"
-#include "../util/shader.hpp"
-#include "../item.hpp"
-#include "../configurations.hpp"
-#include "../player.hpp"
+#include "util/util.hpp"
+#include "util/shader.hpp"
+#include "item.hpp"
+#include "configurations.hpp"
+#include "player.hpp"
 #include <vector>
 
 class InterfaceLayout {
