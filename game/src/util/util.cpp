@@ -1,6 +1,8 @@
 #include "util/util.hpp"
 #include <cmath>
 #include <array>
+#include "fmt/core.h"
+#include "fmt/ostream.h"
 
 //
 // Enums
@@ -21,34 +23,33 @@ std::string WDirToString(WDir dir) {
 //
 
 std::ostream& operator<<(std::ostream &os, const glm::vec2 &v) {
-    os << "(" << str_format("%.2f", v.x) << ";" << str_format("%.2f", v.y) << ")";
+    fmt::print(os, "({:.2f};{:.2f})", v.x, v.y);
     return os;
 }
 
 std::ostream& operator<<(std::ostream &os, const glm::vec3 &v) {
-    os << "(" << str_format("%.2f", v.x) << ";" << str_format("%.2f", v.y) << ";" << str_format("%.2f", v.z) << ")";
+    fmt::print(os, "({:.2f};{:.2f};{:.2f})", v.x, v.y, v.z);
     return os;
 }
 
 std::ostream& operator<<(std::ostream &os, const glm::vec4 &v) {
-    os << "(" << str_format("%.2f", v.x) << ";" << str_format("%.2f", v.y) << ";"
-        << str_format("%.2f", v.z) << ";" << str_format("%.2f", v.w) << ")";
+    fmt::print(os, "({:.2f};{:.2f};{:.2f};{:.2f})", v.x, v.y, v.z, v.w);
     return os;
 }
 
 
 std::ostream& operator<<(std::ostream &os, const glm::ivec2 &v) {
-    os << "(" << (int)v.x << ";" << (int)v.y << ")";
+    fmt::print(os, "({};{})", (int)v.x, (int)v.y);
     return os;
 }
 
 std::ostream& operator<<(std::ostream &os, const glm::ivec3 &v) {
-    os << "(" << (int)v.x << ";" << (int)v.y << ";" << (int)v.z << ")";
+    fmt::print(os, "({};{};{})", (int)v.x, (int)v.y, (int)v.z);
     return os;
 }
 
 std::ostream& operator<<(std::ostream &os, const glm::ivec4 &v) {
-    os << "(" << (int)v.x << ";" << (int)v.y << ";" << (int)v.z << ";" << (int)v.w << ")";
+    fmt::print(os, "({};{};{};{})", (int)v.x, (int)v.y, (int)v.z, (int)v.w);
     return os;
 }
 

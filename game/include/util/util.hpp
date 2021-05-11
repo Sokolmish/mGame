@@ -27,19 +27,6 @@ enum MouseButton { MOUSE_NONE, MOUSE_RIGHT, MOUSE_LEFT, MOUSE_MIDDLE };
 
 // String operations
 
-template<typename ...Args>
-std::string str_format(const std::string& format, Args ...args) { // https://stackoverflow.com/a/26221725
-    int size = snprintf(nullptr, 0, format.c_str(), args...) + 1; // Extra space for '\0'
-    if(size <= 0) {
-        throw std::runtime_error("Error during formatting.");
-    }
-    char *buf = new char[size]; // TODO: also use static allocated buffer
-    snprintf(buf, size, format.c_str(), args...);
-    std::string res(buf, buf + size - 1); // We don't want the '\0' inside
-    delete[] buf;
-    return res;
-}
-
 std::ostream& operator<<(std::ostream &os, const glm::vec2 &v);
 std::ostream& operator<<(std::ostream &os, const glm::vec3 &v);
 std::ostream& operator<<(std::ostream &os, const glm::vec4 &v);

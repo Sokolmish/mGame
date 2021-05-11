@@ -40,6 +40,10 @@ file(GLOB all_SRCS
 
     "${PROJECT_SOURCE_DIR}/game/src/*/*.cpp"
     "${PROJECT_SOURCE_DIR}/game/src/*/*.c"
+
+    "${PROJECT_SOURCE_DIR}/game/src/lib/*/*.cpp"
+    "${PROJECT_SOURCE_DIR}/game/src/lib/*/*.c"
+    "${PROJECT_SOURCE_DIR}/game/src/lib/*/*.cc"
 )
 
 add_executable(mGame ${all_SRCS})

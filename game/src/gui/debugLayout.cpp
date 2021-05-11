@@ -1,5 +1,7 @@
 #include "gui/debugLayout.hpp"
 #include <sstream>
+#include "fmt/core.h"
+#include "fmt/ostream.h"
 
 DebugLayout::DebugLayout() {
     shader = Shader::getShader("textShader");
@@ -21,8 +23,8 @@ void DebugLayout::show(const glm::mat4 &m_ortho, float width, float height) cons
     // Position and view direction
     std::stringstream builder;
     builder << "pos:" << pos << " ";
-    builder << "yaw:" << str_format("%.2f", yaw) << " ";
-    builder << "pitch:" << str_format("%.2f", pitch) << " ";
+    fmt::print(builder, "yaw:{:.2f} ", yaw);
+    fmt::print(builder, "pitch:{:.2f} ", pitch);
     if (315 <= yaw || yaw <= 45)
         builder << "face: North ";
     else if (45 <= yaw && yaw <= 135)
@@ -50,7 +52,7 @@ void DebugLayout::show(const glm::mat4 &m_ortho, float width, float height) cons
     font->RenderText(shader, builder.str(), 10, height - 56, 0.5, glm::vec3(0.f));
     // Perfomance
     builder = std::stringstream();
-    builder << "fps: " << fps << " ftime: " << str_format("%.3f", 1.f / fps) << "ms ";
+    fmt::print(builder, "fps: {} ftime: {:.3f}ms ", fps, 1.f / fps);
     font->RenderText(shader, builder.str(), width - 280, height - 20, 0.5, glm::vec3(0.f));
 }
 
