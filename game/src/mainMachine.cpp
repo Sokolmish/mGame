@@ -100,43 +100,44 @@ void MainMachine::enterMainLoop() {
             WDir hiface;
             bool isBlockSelected = player->getSelectedBlock(*world, hiblock, hiface);
             if (!isInterfaceOpened) {
-                if (isBlockSelected)
+                if (isBlockSelected) {
                     blocksSelectLayout->show(m_proj_view, hiblock);
 
-                if (canInteract()) {
-                    if (player->getSelectedItem().isBlock()) {
-                        glm::ivec3 setPos = hiblock;
-                        if (hiface == NORTH)
-                            setPos.z--;
-                        else if (hiface == SOUTH)
-                            setPos.z++;
-                        else if (hiface == EAST)
-                            setPos.x++;
-                        else if (hiface == WEST)
-                            setPos.x--;
-                        else if (hiface == UP)
-                            setPos.y++;
-                        else if (hiface == DOWN)
-                            setPos.y--;
+                    if (canInteract()) {
+                        if (player->getSelectedItem().isBlock()) {
+                            glm::ivec3 setPos = hiblock;
+                            if (hiface == NORTH)
+                                setPos.z--;
+                            else if (hiface == SOUTH)
+                                setPos.z++;
+                            else if (hiface == EAST)
+                                setPos.x++;
+                            else if (hiface == WEST)
+                                setPos.x--;
+                            else if (hiface == UP)
+                                setPos.y++;
+                            else if (hiface == DOWN)
+                                setPos.y--;
 
-                        const glm::vec3 pos = player->getPos();
-                        const float plHalfSize = player->halfSize;
-                        const bool noInPlayer =
-                            nfloorf(pos.y) > setPos.y || setPos.y > nfloorf(pos.y + player->height) ||
-                            nfloorf(pos.x - plHalfSize) > setPos.x || setPos.x > nfloorf(pos.x + plHalfSize) ||
-                            nfloorf(pos.z - plHalfSize) > setPos.z || setPos.z > nfloorf(pos.z + plHalfSize);
+                            const glm::vec3 pos = player->getPos();
+                            const float plHalfSize = player->halfSize;
+                            const bool noInPlayer =
+                                nfloorf(pos.y) > setPos.y || setPos.y > nfloorf(pos.y + player->height) ||
+                                nfloorf(pos.x - plHalfSize) > setPos.x || setPos.x > nfloorf(pos.x + plHalfSize) ||
+                                nfloorf(pos.z - plHalfSize) > setPos.z || setPos.z > nfloorf(pos.z + plHalfSize);
 
-                        if (noInPlayer && !world->checkBlock(setPos)) {
-                            world->setBlock(setPos, player->getSelectedItem().toBlock());
-                            lastIntercationTime = glfwGetTime();
+                            if (noInPlayer && !world->checkBlock(setPos)) {
+                                world->setBlock(setPos, player->getSelectedItem().toBlock());
+                                lastIntercationTime = glfwGetTime();
+                            }
                         }
                     }
-                }
 
-                if (canAttack()) {
-                    if (world->checkBlock(hiblock)) {
-                        world->destroyBlock(hiblock);
-                        lastAttackTime = glfwGetTime();
+                    if (canAttack()) {
+                        if (world->checkBlock(hiblock)) {
+                            world->destroyBlock(hiblock);
+                            lastAttackTime = glfwGetTime();
+                        }
                     }
                 }
             }
