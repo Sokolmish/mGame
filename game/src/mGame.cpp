@@ -121,8 +121,10 @@ int main() {
     mainMachine->enterMainLoop();
 
     // Termination
+    std::cout << "Terminating..." << std::endl;
     delete mainMachine;
     glfwTerminate();
+    std::cout << "Termination completed" << std::endl;
     return 0;
 }
 

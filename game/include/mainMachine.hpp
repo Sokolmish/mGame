@@ -33,7 +33,7 @@ private:
     std::unique_ptr<InterfaceLayout> interfaceLayout;
     std::unique_ptr<InventoryLayout> inventoryLayout;
 
-    uint fps;
+    uint fps = 0u;
     bool isCursorHided;
     bool isInterfaceOpened;
 
