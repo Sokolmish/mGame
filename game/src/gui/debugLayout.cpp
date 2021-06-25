@@ -3,6 +3,8 @@
 #include "fmt/core.h"
 #include "fmt/ostream.h"
 
+using namespace std::string_literals;
+
 DebugLayout::DebugLayout() {
     shader = Shader::getShader("textShader");
     font = new Font("./game/fonts/ConsolaMono-Bold.ttf", 0, 36);
@@ -15,7 +17,7 @@ DebugLayout::~DebugLayout() {
 void DebugLayout::show(const glm::mat4 &m_ortho, float width, float height) const {
     shader.use();
 
-    shader.setUniform("projection", m_ortho);
+    shader.setUniform("projection"s, m_ortho);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
     glEnable(GL_BLEND);

@@ -12,7 +12,7 @@ using json = nlohmann::json;
 namespace fs = std::filesystem;
 
 
-// Local static
+// Files
 
 static std::string readTextFile(const std::string &path) {
     std::ifstream ifs(path);
@@ -90,21 +90,14 @@ bool GameSaver::saveChunk(int x, int y, const Chunk &chunk) {
     }
 
     std::vector<uint8_t> buff;
-    const uint8_t *bytes = nullptr;
 
-    uint16_t size = (uint16_t)chunk.data.size();
-    bytes = reinterpret_cast<const uint8_t*>(&size);
-    buff.push_back(bytes[0]);
-    buff.push_back(bytes[1]);
-    for (const auto &e : chunk.data) {
-        uint16_t tmp16 = e.first;
-        bytes = reinterpret_cast<const uint8_t*>(&tmp16);
-        buff.push_back(bytes[0]);
-        buff.push_back(bytes[1]);
-        tmp16 = e.second.getId();
-        bytes = reinterpret_cast<const uint8_t*>(&tmp16);
-        buff.push_back(bytes[0]);
-        buff.push_back(bytes[1]);
+    buff.push_back((chunk.data.size() & 0x00FF));
+    buff.push_back((chunk.data.size() & 0xFF00) >> 8);
+    for (const auto &[pos, block] : chunk.data) {
+        buff.push_back((pos & 0x00FF));
+        buff.push_back((pos & 0xFF00) >> 8);
+        buff.push_back((block.getId() & 0x00FF));
+        buff.push_back((block.getId() & 0xFF00) >> 8);
     }
 
     std::string filename = "x" + std::to_string(x) + "y" + std::to_string(y);
@@ -125,7 +118,7 @@ bool GameSaver::loadChunk(int x, int y, Chunk &chunk) {
         data.push_back(ifs.get());
     ifs.close();
 
-    uint16_t size = *(reinterpret_cast<uint16_t*>(data.data() + 0));
+    uint16_t size = *(reinterpret_cast<uint16_t*>(data.data()));
     for (size_t i = 0; i < size; i++) {
         size_t ind = 2 + i * 4;
         uint16_t blockInd = *(reinterpret_cast<uint16_t*>(&data[ind]));
@@ -137,6 +130,7 @@ bool GameSaver::loadChunk(int x, int y, Chunk &chunk) {
 }
 
 bool GameSaver::savePlayer(const Player &player) {
+    // TODO: bson
     std::cout << "Saving player data" << std::endl;
 
     json sidebar = json::array();

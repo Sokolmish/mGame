@@ -131,15 +131,20 @@ int main() {
 // Input callbacks
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+    static_cast<void>(mods);
     double mx, my;
     glfwGetCursorPos(window, &mx, &my);
     mainMachine->clickMouse((float)mx, (float)my, button, action);
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    static_cast<void>(window);
+    static_cast<void>(scancode);
+    static_cast<void>(mods);
     mainMachine->clickKeyboard(key, action);
 }
 
 void window_size_callback(GLFWwindow* window, int width, int height) {
+    static_cast<void>(window);
     mainMachine->resize(width, height);
 }

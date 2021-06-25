@@ -17,7 +17,7 @@ private:
 
     std::map<std::pair<int, int>, Chunk> chunks;
 
-    void showChunk(const Chunk &chunk, const glm::mat4 &m_proj_view) const;
+    void showChunk(const Chunk &chunk) const;
 
 public:
     GameWorld(int cwidth, int cheight);

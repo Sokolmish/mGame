@@ -1,6 +1,8 @@
 #include "gui/interfaceLayout.hpp"
 #include "util/image.hpp"
 
+using namespace std::string_literals;
+
 #define SZ_FLT sizeof(float)
 
 static void loadRectange(float *buff, float ax, float ay, float bx, float by) {
@@ -123,7 +125,7 @@ void InterfaceLayout::show(const glm::mat4 &m_ortho) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     tshader.use();
-    tshader.setUniform("projection", m_ortho);
+    tshader.setUniform("projection"s, m_ortho);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
     glBufferData(GL_ARRAY_BUFFER, vertexCount * 4 * SZ_FLT, buff, GL_STREAM_DRAW);

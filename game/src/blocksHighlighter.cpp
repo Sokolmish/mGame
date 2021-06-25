@@ -1,5 +1,7 @@
 #include "blocksHighlighter.hpp"
 
+using namespace std::string_literals;
+
 BlocksHighlighter::BlocksHighlighter() {
     shader = Shader::getShader("wireShader");
 
@@ -53,7 +55,7 @@ void BlocksHighlighter::show(const glm::mat4 &m_proj_view, const glm::vec3 &pos)
             vertices[i][j] = pos[j] - offset + vertices[i][j] * (1 + offset + offset);
 
     shader.use();
-    shader.setUniform("m_proj_view", m_proj_view);
+    shader.setUniform("m_proj_view"s, m_proj_view);
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
     glDisable(GL_BLEND);

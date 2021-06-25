@@ -36,7 +36,7 @@ bool Player::checkNewPos(const GameWorld &world, const glm::vec3 &pos) const {
     return true;
 }
 
-void Player::doPhysics(GLFWwindow *window, const GameWorld &world, float dt, glm::vec3 delta) {
+void Player::doPhysics(const GameWorld &world, float dt, glm::vec3 delta) {
     bool grounded = isGrounded(world);
 
     if (!isFlight()) {

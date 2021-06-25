@@ -78,7 +78,7 @@ void MainMachine::enterMainLoop() {
                 if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
                     player->setVelocity(glm::vec3(0, 4.85, 0));
             }
-            player->doPhysics(window, *world, dt, delta);
+            player->doPhysics(*world, dt, delta);
 
             // Matrices
             Camera cam = player->getCamera();
@@ -224,10 +224,10 @@ void MainMachine::setCursorHiding(bool isHide) {
 
 void MainMachine::save(const std::string &path) const {
     GameSaver saver(path);
-    for (const auto &e : world->getChunksData()) {
-        if (!saver.saveChunk(e.first.first, e.first.second, e.second)) {
+    for (const auto &[pos, chunk] : world->getChunksData()) {
+        if (!saver.saveChunk(pos.first, pos.second, chunk)) {
             std::cout << "Chunk saving error: ("
-                    << e.first.first << "," << e.first.second
+                    << pos.first << "," << pos.second
                     << ")" << std::endl;
         }
     }

@@ -1,6 +1,8 @@
 #include "gameWorld.hpp"
 #include "util/image.hpp"
 
+using namespace std::string_literals;
+
 GameWorld::GameWorld(int cwidth, int cheight) {
     cubeShader = Shader::getShader("cubeShader");
 
@@ -38,22 +40,22 @@ GameWorld::~GameWorld() {
     delete[] buff;
 }
 
-void GameWorld::showChunk(const Chunk &chunk, const glm::mat4 &m_proj_view) const {
-    cubeShader.setUniform("chunkOffset", chunk.offset);
+void GameWorld::showChunk(const Chunk &chunk) const {
+    cubeShader.setUniform("chunkOffset"s, chunk.offset);
 
     uint count = 0;
     uint ind = 0;
-    for (auto cube : chunk.data) {
-        if (cube.second.getId() == 0)
+    for (const auto &[pos, block] : chunk.data) {
+        if (block.getId() == 0)
             continue;
 
         char x, y, z;
-        Chunk::parseIndex(cube.first, x, y, z);
+        Chunk::parseIndex(pos, x, y, z);
         buff[ind++] = (float)x;
         buff[ind++] = (float)y;
         buff[ind++] = (float)z;
-        buff[ind++] = (float)cube.second.getTex().x;
-        buff[ind++] = (float)cube.second.getTex().y;
+        buff[ind++] = (float)block.getTex().x;
+        buff[ind++] = (float)block.getTex().y;
 
         count++;
         if (count == 4096) {
@@ -72,10 +74,10 @@ void GameWorld::showChunk(const Chunk &chunk, const glm::mat4 &m_proj_view) cons
 void GameWorld::show(const glm::mat4 &m_proj_view) const {
     cubeShader.use();
 
-    cubeShader.setUniform("m_proj_view", m_proj_view);
-    cubeShader.setUniform("cubeHalfSize", 1.f);
-    cubeShader.setUniform("textureW", Block::texSize / static_cast<float>(Block::atlasWidth));
-    cubeShader.setUniform("textureH", Block::texSize / static_cast<float>(Block::atlasHeight));
+    cubeShader.setUniform("m_proj_view"s, m_proj_view);
+    cubeShader.setUniform("cubeHalfSize"s, 1.f);
+    cubeShader.setUniform("textureW"s, Block::texSize / static_cast<float>(Block::atlasWidth));
+    cubeShader.setUniform("textureH"s, Block::texSize / static_cast<float>(Block::atlasHeight));
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -86,8 +88,8 @@ void GameWorld::show(const glm::mat4 &m_proj_view) const {
     glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
     glBindTexture(GL_TEXTURE_2D, texture);
 
-    for (const auto &chunk : chunks)
-        showChunk(chunk.second, m_proj_view);
+    for (const auto &[pos, chunk] : chunks)
+        showChunk(chunk);
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);

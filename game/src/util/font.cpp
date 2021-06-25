@@ -8,12 +8,15 @@
 #include <exception>
 #include <cstring>
 
+using namespace std::string_literals;
+
 struct RawChar {
     Font::Character ch;
     uint8_t *buff;
 };
 
 Font::Font(const std::string &path, uint32_t width, uint32_t height) {
+    std::string_view sv;
     FT_Library ft;
     if (FT_Init_FreeType(&ft)) {
         throw std::runtime_error("Freetype: Could not init FreeType Library");
@@ -62,17 +65,16 @@ Font::Font(const std::string &path, uint32_t width, uint32_t height) {
     atlas = new uint8_t[atlasWidth * atlasHeight];
     std::memset(atlas, 0, atlasWidth * atlasHeight); // TODO: mark as debug feature
 
-    for (const auto &ch : rawChars) {
+    for (const auto &[chCode, raw] : rawChars) {
         int ind = 0;
-        const Font::Character &curCh = ch.second.ch;
-        for (int j = 0; j < ch.second.ch.height; j++) {
-            for (int i = 0; i < ch.second.ch.width; i++) {
-                size_t index = (curCh.atlasY * tileHeight + j) * atlasWidth + (curCh.atlasX * tileWidth + i);
-                atlas[index] = ch.second.buff[ind++];
+        for (int j = 0; j < raw.ch.height; j++) {
+            for (int i = 0; i < raw.ch.width; i++) {
+                size_t index = (raw.ch.atlasY * tileHeight + j) * atlasWidth + (raw.ch.atlasX * tileWidth + i);
+                atlas[index] = raw.buff[ind++];
             }
         }
-        characters.insert({ ch.first, ch.second.ch });
-        delete[] ch.second.buff;
+        characters.insert({ chCode, raw.ch });
+        delete[] raw.buff;
     }
 
     FT_Done_Face(face);
@@ -106,7 +108,7 @@ Font::~Font() {
 }
 
 void Font::RenderText(const Shader &s, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color) const {
-    s.setUniform("textColor", color.x, color.y, color.z);
+    s.setUniform("textColor"s, color.x, color.y, color.z);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
     glBindVertexArray(VAO);

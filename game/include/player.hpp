@@ -48,7 +48,7 @@ public:
     bool isFlight() const;
     void setFlight(bool flight);
 
-    void doPhysics(GLFWwindow *window, const GameWorld &world, float dt, glm::vec3 delta);
+    void doPhysics(const GameWorld &world, float dt, glm::vec3 delta);
     bool isGrounded(const GameWorld &world) const;
     bool getSelectedBlock(const GameWorld &world, glm::ivec3 &block, WDir &face);
 
