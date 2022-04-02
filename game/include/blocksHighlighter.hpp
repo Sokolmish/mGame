@@ -1,5 +1,5 @@
-#ifndef __BLOCKS_HIGHLIGHTER_H__
-#define __BLOCKS_HIGHLIGHTER_H__
+#ifndef BLOCKS_HIGHLIGHTER_H_
+#define BLOCKS_HIGHLIGHTER_H_
 
 #include "glew.hpp"
 #include "util/shader.hpp"

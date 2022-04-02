@@ -1,5 +1,5 @@
-#ifndef __MAIN_MACHINE_H__
-#define __MAIN_MACHINE_H__
+#ifndef MAIN_MACHINE_H_
+#define MAIN_MACHINE_H_
 
 #include "util/util.hpp"
 #include "util/shader.hpp"

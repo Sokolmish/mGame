@@ -1,5 +1,5 @@
-#ifndef __DEBUG_LAYOUT_H__
-#define __DEBUG_LAYOUT_H__
+#ifndef DEBUG_LAYOUT_H_
+#define DEBUG_LAYOUT_H_
 
 #include "util/util.hpp"
 #include "util/shader.hpp"

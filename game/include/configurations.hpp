@@ -1,5 +1,5 @@
-#ifndef __CONFIGURATIONS_HPP__
-#define __CONFIGURATIONS_HPP__
+#ifndef CONFIGURATIONS_HPP_
+#define CONFIGURATIONS_HPP_
 
 #include <glm/vec4.hpp>
 

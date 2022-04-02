@@ -1,5 +1,5 @@
-#ifndef __INTERFACE_LAYOUT_H__
-#define __INTERFACE_LAYOUT_H__
+#ifndef INTERFACE_LAYOUT_H_
+#define INTERFACE_LAYOUT_H_
 
 #include "util/util.hpp"
 #include "util/shader.hpp"

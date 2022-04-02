@@ -1,5 +1,5 @@
-#ifndef __GAME_WORLD_H__
-#define __GAME_WORLD_H__
+#ifndef GAME_WORLD_H_
+#define GAME_WORLD_H_
 
 #include "util/util.hpp"
 #include "util/shader.hpp"

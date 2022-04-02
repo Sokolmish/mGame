@@ -1,5 +1,5 @@
-#ifndef __INVENTORY_LAYOUT_H__
-#define __INVENTORY_LAYOUT_H__
+#ifndef INVENTORY_LAYOUT_H_
+#define INVENTORY_LAYOUT_H_
 
 #include "util/util.hpp"
 #include "util/shader.hpp"
@@ -29,7 +29,7 @@ private:
     const iventory_config::Config cfg;
 
 public:
-    InventoryLayout(Player *player);
+    explicit InventoryLayout(Player *player);
     ~InventoryLayout();
 
     void changeGeometry(float width, float height);

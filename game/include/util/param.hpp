@@ -1,5 +1,5 @@
-#ifndef __PARAM_H__
-#define __PARAM_H__
+#ifndef PARAM_H_
+#define PARAM_H_
 
 #define VERSION "1.0.0_dev"
 #define WINDOW_TITLE "mGame"

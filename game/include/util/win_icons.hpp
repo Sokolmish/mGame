@@ -1,5 +1,5 @@
-#ifndef __WIN_ICONS_H__
-#define __WIN_ICONS_H__
+#ifndef WIN_ICONS_H_
+#define WIN_ICONS_H_
 
 #include "util.hpp"
 #include "util/image.hpp"

@@ -1,5 +1,5 @@
-#ifndef __FONT_H__
-#define __FONT_H__
+#ifndef FONT_H_
+#define FONT_H_
 
 #include "glew.hpp"
 #include <string>

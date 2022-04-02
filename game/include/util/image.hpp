@@ -1,5 +1,5 @@
-#ifndef __IMAGE_H__
-#define __IMAGE_H__
+#ifndef IMAGE_H_
+#define IMAGE_H_
 
 #include "util.hpp"
 #include <string>
@@ -14,7 +14,7 @@ private:
     static std::map<std::string, GLuint> staticStorage;
 public:
     Image();
-    Image(const std::string &path);
+    explicit Image(const std::string &path);
     ~Image();
 
     void resize(int w, int h);

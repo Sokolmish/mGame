@@ -1,5 +1,5 @@
-#ifndef __BLOCK_H__
-#define __BLOCK_H__
+#ifndef BLOCK_H_
+#define BLOCK_H_
 
 #include "util/util.hpp"
 #include "item.hpp"

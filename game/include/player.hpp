@@ -1,5 +1,5 @@
-#ifndef __PLAYER_H__
-#define __PLAYER_H__
+#ifndef PLAYER_H_
+#define PLAYER_H_
 
 #include "util/util.hpp"
 #include "camera.hpp"

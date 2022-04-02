@@ -1,5 +1,5 @@
-#ifndef __UTIL_H__
-#define __UTIL_H__
+#ifndef UTIL_H_
+#define UTIL_H_
 
 #include "glew.hpp"
 #include "GLFW/glfw3.h"

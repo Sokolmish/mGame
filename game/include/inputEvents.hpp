@@ -1,5 +1,5 @@
-#ifndef __INPUT_EVENTS_H__
-#define __INPUT_EVENTS_H__
+#ifndef INPUT_EVENTS_H_
+#define INPUT_EVENTS_H_
 
 #include "glew.hpp"
 #include <GLFW/glfw3.h>

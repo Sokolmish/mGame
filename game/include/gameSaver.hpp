@@ -1,5 +1,5 @@
-#ifndef __GAME_SAVER_H__
-#define __GAME_SAVER_H__
+#ifndef GAME_SAVER_H_
+#define GAME_SAVER_H_
 
 #include <string>
 
