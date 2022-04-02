@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <sstream>
 #include <filesystem>
 #include <system_error>
 
@@ -183,9 +182,9 @@ bool GameSaver::loadPlayer(Player &player) {
     player.selectItem(playerData["selectedItem"].get<int>());
     
     for (const auto &e : playerData["sidebar"])
-        player.sidebar[e["index"].get<int>()] = e["Id"].get<uint16_t>();
+        player.sidebar[e["index"].get<int>()] = Item(e["Id"].get<uint16_t>());
     for (const auto &e : playerData["inventory"])
-        player.inventory[e["index"].get<int>()] = e["Id"].get<uint16_t>();
+        player.inventory[e["index"].get<int>()] = Item(e["Id"].get<uint16_t>());
 
     return true;
 }

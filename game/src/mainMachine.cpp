@@ -21,7 +21,7 @@ MainMachine::MainMachine(GLFWwindow *window) {
     loader.loadChunk(0, 0, world->getChunks().at(std::make_pair(0, 0)));
     loader.loadPlayer(*player);
 
-    float curTime = glfwGetTime();
+    float curTime = static_cast<float>(glfwGetTime());
     lastIntercationTime = curTime;
     lastAttackTime = curTime;
 
@@ -33,12 +33,12 @@ MainMachine::MainMachine(GLFWwindow *window) {
 void MainMachine::enterMainLoop() {
     // glfwSwapInterval(0);
 
-    float timePhys = glfwGetTime();  // Used for physics, updates every frame
-    float timeFPS = timePhys;        // Used for fps counting, updates every second
+    float timePhys = static_cast<float>(glfwGetTime()); // Used for physics, updates every frame
+    float timeFPS = timePhys; // Used for fps counting, updates every second
     uint framesCounter = 0;
     while (!glfwWindowShouldClose(window)) {
         // Time deltas
-        float nTime = glfwGetTime();
+        float nTime = static_cast<float>(glfwGetTime());
         float dt = nTime - timePhys;
         timePhys = nTime;
 
@@ -129,7 +129,7 @@ void MainMachine::enterMainLoop() {
 
                             if (noInPlayer && !world->checkBlock(setPos)) {
                                 world->setBlock(setPos, player->getSelectedItem().toBlock());
-                                lastIntercationTime = glfwGetTime();
+                                lastIntercationTime = static_cast<float>(glfwGetTime());
                             }
                         }
                     }
@@ -137,11 +137,14 @@ void MainMachine::enterMainLoop() {
                     if (canAttack()) {
                         if (world->checkBlock(hiblock)) {
                             world->destroyBlock(hiblock);
-                            lastAttackTime = glfwGetTime();
+                            lastAttackTime = static_cast<float>(glfwGetTime());
                         }
                     }
                 }
             }
+
+            float fwidth = static_cast<float>(width);
+            float fheight = static_cast<float>(height);
 
             // Debug layout
             debugLayout->setPos(player->getPos());
@@ -150,17 +153,17 @@ void MainMachine::enterMainLoop() {
             debugLayout->setFlightmoded(player->isFlight());
             debugLayout->setSelectedBlock(hiblock, hiface, isBlockSelected);
             debugLayout->setFPS(this->fps);
-            debugLayout->show(m_ortho, width, height);
+            debugLayout->show(m_ortho, fwidth, fheight);
 
             // Interface
             if (!isInterfaceOpened) {
-                interfaceLayout->changeGeometry(width, height);
+                interfaceLayout->changeGeometry(fwidth, fheight);
                 interfaceLayout->updateSidebarItems(player->sidebar);
                 interfaceLayout->selectSidebarCell(player->getSelectedCell());
                 interfaceLayout->show(m_ortho);
             }
             else {
-                inventoryLayout->changeGeometry(width, height);
+                inventoryLayout->changeGeometry(fwidth, fheight);
                 inventoryLayout->show(m_ortho);
             }
         }
@@ -192,7 +195,7 @@ bool MainMachine::isMousePressed(MouseButton code) const {
 }
 
 bool MainMachine::canInteract() const {
-    float curTime = glfwGetTime();
+    float curTime = static_cast<float>(glfwGetTime());
     if (isMousePressed(MOUSE_RIGHT) && curTime - lastIntercationTime > DELAY_AFTER_USE)
         return true;
     else
@@ -200,7 +203,7 @@ bool MainMachine::canInteract() const {
 }
 
 bool MainMachine::canAttack() const {
-    float curTime = glfwGetTime();
+    float curTime = static_cast<float>(glfwGetTime());
     if (isMousePressed(MOUSE_LEFT) && curTime - lastAttackTime > DELAY_AFTER_DESTROY)
         return true;
     else
@@ -267,9 +270,9 @@ void MainMachine::clickKeyboard(int key, int action) {
     }
 }
 
-void MainMachine::resize(int width, int height) {
-    this->width = width;
-    this->height = height;
+void MainMachine::resize(int width_, int height_) {
+    this->width = width_;
+    this->height = height_;
     this->ratio = (float)width / (float)height;
 }
 

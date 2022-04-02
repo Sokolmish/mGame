@@ -1,9 +1,7 @@
 #include "util/util.hpp"
 #include <cmath>
-#include <array>
 #include <sstream>
 #include <fstream>
-#include "fmt/core.h"
 #include "fmt/ostream.h"
 
 //

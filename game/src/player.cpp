@@ -23,10 +23,10 @@ Player::Player() {
 
 // ...
 
-bool Player::checkNewPos(const GameWorld &world, const glm::vec3 &pos) const {
-    for (int yy = nfloorf(pos.y); yy <= pos.y + height; yy++) {
-        for (int xx = nfloorf(pos.x - halfSize); xx <= pos.x + halfSize; xx++) {
-            for (int zz = nfloorf(pos.z - halfSize); zz <= pos.z + halfSize; zz++) {
+bool Player::checkNewPos(const GameWorld &world, const glm::vec3 &newPos) const {
+    for (int yy = nfloorf(newPos.y); yy <= newPos.y + height; yy++) {
+        for (int xx = nfloorf(newPos.x - halfSize); xx <= newPos.x + halfSize; xx++) {
+            for (int zz = nfloorf(newPos.z - halfSize); zz <= newPos.z + halfSize; zz++) {
                 if (world.checkBlock(xx, yy, zz)) {
                     return false;
                 }
@@ -159,11 +159,11 @@ void Player::move(const glm::vec3 &delta) {
 
 // View angles getters/setters
 
-void Player::setYaw(float yaw) {
-    this->yaw = yaw;
+void Player::setYaw(float yaw_) {
+    this->yaw = yaw_;
 }
-void Player::setPitch(float pitch) {
-    this->pitch = pitch;
+void Player::setPitch(float pitch_) {
+    this->pitch = pitch_;
 }
 float Player::getYaw() const {
     return yaw;

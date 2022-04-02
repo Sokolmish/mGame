@@ -14,7 +14,7 @@ private:
     int txi, tyi;
 public:
     Block();
-    Block(uint16_t id);
+    explicit Block(uint16_t id);
 
     Item toItem() const;
 

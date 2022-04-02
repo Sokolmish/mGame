@@ -10,9 +10,9 @@ float InputPoller::coeffCameraKeyboard = 1.8f;
 float InputPoller::coeffCameraMouse = 0.3f;
 
 static float stepYaw(float yaw, float d) {
-    yaw = fmodf(yaw - d, 2 * M_PI);
+    yaw = fmodf(yaw - d, 2.f * (float)M_PI);
     if (yaw < 0)
-        return 2 * M_PI + yaw;
+        return 2.f * (float)M_PI + yaw;
     else
         return yaw;
 }
@@ -83,8 +83,8 @@ bool InputPoller::pollLooking(GLFWwindow *window, Player &player, float dt) {
     // Mouse
     double mx, my;
     glfwGetCursorPos(window, &mx, &my);
-    double dmx = mx - oldmx;
-    double dmy = my - oldmy;
+    float dmx = static_cast<float>(mx - oldmx);
+    float dmy = static_cast<float>(my - oldmy);
     oldmx = mx;
     oldmy = my;
 

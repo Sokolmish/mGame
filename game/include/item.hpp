@@ -14,7 +14,7 @@ struct Item {
     int txi, tyi; // texture indices
 
     Item();
-    Item(uint16_t id);
+    explicit Item(uint16_t id);
 
     Block toBlock() const;
 

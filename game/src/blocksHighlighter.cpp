@@ -50,9 +50,9 @@ void BlocksHighlighter::show(const glm::mat4 &m_proj_view, const glm::vec3 &pos)
         {+1, +1, -0},
         {-0, +1, -0}
     };
-    for (int i = 0; i < 8; i++)
+    for (auto &vert : vertices)
         for (int j = 0; j < 3; j++)
-            vertices[i][j] = pos[j] - offset + vertices[i][j] * (1 + offset + offset);
+            vert[j] = pos[j] - offset + vert[j] * (1 + offset + offset);
 
     shader.use();
     // TODO: save uniforms locations

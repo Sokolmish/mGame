@@ -6,10 +6,10 @@
 
 class Cursor {
 private:
-    int width, height;
+//    int width, height;
     GLFWcursor *cursor;
 public:
-    Cursor(const std::string &path);
+    explicit Cursor(const std::string &path);
     void use(GLFWwindow *window) const;
     // TODO: destructor?
     // TODO: prohibit copying?
@@ -22,7 +22,7 @@ private:
     Image **images;
 public:
     // TODO: more than 1 icons
-    WindowIcon(const std::string &path);
+    explicit WindowIcon(const std::string &path);
     WindowIcon(WindowIcon const&) = delete;
     WindowIcon& operator=(WindowIcon const&) = delete;
     ~WindowIcon();

@@ -1,6 +1,5 @@
 #include "gui/debugLayout.hpp"
 #include <sstream>
-#include "fmt/core.h"
 #include "fmt/ostream.h"
 
 using namespace std::string_literals;
@@ -58,17 +57,17 @@ void DebugLayout::show(const glm::mat4 &m_ortho, float width, float height) cons
     font->RenderText(shader, builder.str(), width - 280, height - 20, 0.5, glm::vec3(0.f));
 }
 
-void DebugLayout::setPos(const glm::vec3 &pos) {
-    this->pos = pos;
+void DebugLayout::setPos(const glm::vec3 &pos_) {
+    this->pos = pos_;
 }
 
 void DebugLayout::setPos(float x, float y, float z) {
     this->pos = glm::vec3(x, y, z);
 }
 
-void DebugLayout::setView(float yaw, float pitch) {
-    this->yaw = yaw;
-    this->pitch = pitch;
+void DebugLayout::setView(float yaw_, float pitch_) {
+    this->yaw = yaw_;
+    this->pitch = pitch_;
 }
 
 void DebugLayout::setGrounded(bool flag) {
@@ -85,6 +84,6 @@ void DebugLayout::setSelectedBlock(const glm::ivec3 &block, WDir face, bool flag
     selectedFace = face;
 }
 
-void DebugLayout::setFPS(uint fps) {
-    this->fps = fps;
+void DebugLayout::setFPS(uint fps_) {
+    this->fps = fps_;
 }

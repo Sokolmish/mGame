@@ -1,10 +1,7 @@
 #include "util/shader.hpp"
 
 #include <iostream>
-#include <fstream>
-#include <sstream>
 #include <string>
-#include <dirent.h>
 
 #include <glm/gtc/type_ptr.hpp>
 

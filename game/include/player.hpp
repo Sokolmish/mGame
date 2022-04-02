@@ -15,7 +15,7 @@ private:
     glm::vec3 acceleration;
     bool flightMode;
 
-    bool checkNewPos(const GameWorld &world, const glm::vec3 &pos) const;
+    bool checkNewPos(const GameWorld &world, const glm::vec3 &newPos) const;
 public:
     int selectedItem;
     std::vector<Item> sidebar;
@@ -35,8 +35,8 @@ public:
     void move(float dx, float dy, float dz);
     void move(const glm::vec3 &delta);
 
-    void setYaw(float yaw);
-    void setPitch(float pitch);
+    void setYaw(float yaw_);
+    void setPitch(float pitch_);
     float getYaw() const;
     float getPitch() const;
 

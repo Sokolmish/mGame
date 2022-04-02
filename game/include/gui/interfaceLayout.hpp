@@ -21,7 +21,7 @@ private:
     const iventory_config::Config cfg;
 
 public:
-    InterfaceLayout(Player *player);
+    explicit InterfaceLayout(Player *player);
     ~InterfaceLayout();
 
     void changeGeometry(float width, float height);

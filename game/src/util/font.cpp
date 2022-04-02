@@ -16,7 +16,6 @@ struct RawChar {
 };
 
 Font::Font(const std::string &path, uint32_t width, uint32_t height) {
-    std::string_view sv;
     FT_Library ft;
     if (FT_Init_FreeType(&ft)) {
         throw std::runtime_error("Freetype: Could not init FreeType Library");
@@ -96,9 +95,9 @@ Font::Font(const std::string &path, uint32_t width, uint32_t height) {
     glGenBuffers(1, &VBO);
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, nullptr, GL_STREAM_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), nullptr);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
