@@ -8,6 +8,8 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+#include "util/util.hpp"
+
 #define SHADER_INFOLOG_BUFSIZE 1024
 
 std::string Shader::shaderDirectory = "./";
@@ -20,20 +22,20 @@ Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath, c
     GLuint vertexId, fragmentId, geometryId = 0;
     bool hasGeometry = geometryPath.length() != 0;
     // Vertex shader
-    src = readFile(vertexPath);
+    src = readTextFile(vertexPath);
     ptr = src.c_str();
     vertexId = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexId, 1, &ptr, nullptr);
     glCompileShader(vertexId);
     // Fragment shader
-    src = readFile(fragmentPath);
+    src = readTextFile(fragmentPath);
     ptr = src.c_str();
     fragmentId = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentId, 1, &ptr, nullptr);
     glCompileShader(fragmentId);
     // Geometry shader
     if (hasGeometry) {
-        src = readFile(geometryPath);
+        src = readTextFile(geometryPath);
         ptr = src.c_str();
         geometryId = glCreateShader(GL_GEOMETRY_SHADER);
         glShaderSource(geometryId, 1, &ptr, nullptr);
@@ -101,16 +103,6 @@ Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath, c
 
 Shader::Shader() {
     initialized = false;
-}
-
-std::string Shader::readFile(const std::string &path) {
-    // TODO: check for better methods
-    std::ifstream in;
-    in.open(path);
-    std::stringstream ss;
-    ss << in.rdbuf();
-    in.close();
-    return ss.str();
 }
 
 inline bool checkFileExist(const std::string &name) {

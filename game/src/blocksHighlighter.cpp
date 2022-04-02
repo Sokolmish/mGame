@@ -9,7 +9,7 @@ BlocksHighlighter::BlocksHighlighter() {
     for (size_t i = 24; i < 48; i++)
         buff[i] = 0.f;
 
-    uint indices[16] = {
+    const uint indices[16] = {
         2, 6, 7, 3, 2,
         1, 5, 6, 7,
         4, 5, 1, 0,
@@ -55,6 +55,7 @@ void BlocksHighlighter::show(const glm::mat4 &m_proj_view, const glm::vec3 &pos)
             vertices[i][j] = pos[j] - offset + vertices[i][j] * (1 + offset + offset);
 
     shader.use();
+    // TODO: save uniforms locations
     shader.setUniform("m_proj_view"s, m_proj_view);
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);

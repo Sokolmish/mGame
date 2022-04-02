@@ -1,6 +1,8 @@
 #include "util/util.hpp"
 #include <cmath>
 #include <array>
+#include <sstream>
+#include <fstream>
 #include "fmt/core.h"
 #include "fmt/ostream.h"
 
@@ -17,6 +19,27 @@ std::string WDirToString(WDir dir) {
     else if (dir == DOWN)   return "Down";
     else                    return "error_WDir";
 }
+
+//
+// Files
+//
+
+std::string readTextFile(const std::string &path) {
+    // TODO: check for better methods
+    std::ifstream in;
+    in.open(path);
+    std::stringstream ss;
+    ss << in.rdbuf();
+    in.close();
+    return ss.str();
+}
+
+void writeTextFile(const std::string &path, const std::string &text) {
+    std::ofstream ofs(path);
+    ofs << text << std::endl;
+    ofs.close();
+}
+
 
 //
 // Printers

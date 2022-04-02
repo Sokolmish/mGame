@@ -11,26 +11,6 @@ using json = nlohmann::json;
 
 namespace fs = std::filesystem;
 
-
-// Files
-
-static std::string readTextFile(const std::string &path) {
-    std::ifstream ifs(path);
-    std::string line;
-    std::stringstream ss;
-    while (std::getline(ifs, line))
-        ss << line << std::endl;
-    ifs.close();
-    return ss.str();
-}
-
-static void writeTextFile(const std::string &path, const std::string &text) {
-    std::ofstream ofs(path);
-    ofs << text << std::endl;
-    ofs.close();
-}
-
-
 // Constructor
 
 GameSaver::GameSaver(const std::string &path) {

@@ -25,6 +25,11 @@ std::string WDirToString(WDir dir);
 
 enum MouseButton { MOUSE_NONE, MOUSE_RIGHT, MOUSE_LEFT, MOUSE_MIDDLE };
 
+// Files
+
+std::string readTextFile(const std::string &path);
+void writeTextFile(const std::string &path, const std::string &text);
+
 // String operations
 
 std::ostream& operator<<(std::ostream &os, const glm::vec2 &v);

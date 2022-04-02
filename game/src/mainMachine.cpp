@@ -53,15 +53,16 @@ void MainMachine::enterMainLoop() {
         glfwPollEvents();
         glViewport(0, 0, width, height);
 
+        // TODO: switched table or something else
         if (globalState == GlobalGameState::LOADING_SCREEN) {
             // TODO
         }
-        else if (globalState == GlobalGameState::START_MENU) {
-            // TODO
-        }
-        else if (globalState == GlobalGameState::SINGLE_PAUSE) {
-            // TODO
-        }
+        // else if (globalState == GlobalGameState::START_MENU) {
+        //     // TODO
+        // }
+        // else if (globalState == GlobalGameState::SINGLE_PAUSE) {
+        //     // TODO
+        // }
         else if (globalState == GlobalGameState::SINGLE_GAME) {
             glClearColor(0.509f, 0.788f, 0.902f, 1.f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
